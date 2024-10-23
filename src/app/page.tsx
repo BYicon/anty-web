@@ -1,11 +1,27 @@
-import Image from "next/image";
+"use client";
+import { Footer } from "@/components/Footer";
+import { Nav } from "@/components/Nav";
+import { useState } from "react";
+
 
 export default function Home() {
+  const [isConnected, setIsConnected] = useState(false);
+  const connectWallet = async () => {
+    if (!window.ethereum) return alert("Please install MetaMask");
+    // const network = await handleNetworkSwitch();
+    // const accounts = await window.ethereum.request({
+    //   method: "eth_requestAccounts",
+    // });
+
+    // setCurrentAccount(accounts[0]);
+    // setError("");
+  };
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        MIRC
-      </div>
+    <main className="min-h-screen p-4 flex flex-col">
+      <Nav />
+      <div className="flex flex-1 flex-col items-center justify-center"></div>
+      <Footer />
     </main>
   );
 }
