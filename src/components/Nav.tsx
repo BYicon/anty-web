@@ -5,10 +5,9 @@ import {
 import { useWalletConnection } from "@/shared/hooks/useWalletConnection";
 import useWalletStore from "@/stores/useStore";
 import { useEffect } from "react";
-
+import ThemeToggle from "./ThemeToggle";
 console.log('process.env', process.env.NODE_ENV);
-
-export const Nav = () => {
+const Nav = () => {
   const { account, balance, setAccount, setBalance } = useWalletStore();
   const { connectWallet } = useWalletConnection();
 
@@ -48,6 +47,7 @@ export const Nav = () => {
         Logo
       </div>
       <div className="flex items-center gap-4">
+        <ThemeToggle />
         {account ? (
           <span className="text-sm">
             {account.slice(0, 4)}...{account.slice(-4)}:{balance}
@@ -64,3 +64,5 @@ export const Nav = () => {
     </nav>
   );
 };
+
+export default Nav;
