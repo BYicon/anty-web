@@ -1,0 +1,37 @@
+@import "./variable.scss";
+@import "./animate.scss";
+@import "./mixin.scss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,body {
+  background-color: var(--background-color);
+  color: var(--colors-text);
+  min-width: 1280px;
+}
+
+.x-icon {
+  filter: hue-rotate(45deg) saturate(2);
+  &:hover {
+    filter: none;
+  }
+}
+
+.min-section-height {
+  min-height: var(--min-section-height);
+}
+
+.common-section {
+  @extend .min-section-height;
+  @apply px-4;
+}
+
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

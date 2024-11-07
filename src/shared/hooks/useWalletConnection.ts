@@ -1,8 +1,5 @@
-import { useState, useEffect } from "react";
 import { networks } from "@/shared/constant/networks";
-import { ethers } from "ethers";
-import { useMount } from "ahooks";
-import useWalletStore from "@/stores/useStore";
+import { useWalletStore} from "@/stores/useStore";
 
 /**
  * 钱包

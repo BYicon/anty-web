@@ -1,0 +1,76 @@
+.heat-beating {
+  animation: heat-beating 1s infinite;
+}
+@keyframes heat-beating {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+
+.rotate-90-vertical-fwd {
+	-webkit-animation: rotate-90-vertical-fwd 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) infinite both;
+	        animation: rotate-90-vertical-fwd 0.4s cubic-bezier(0.250, 0.460, 0.450, 0.940) infinite both;
+}
+
+ @-webkit-keyframes rotate-90-vertical-fwd {
+  0% {
+    -webkit-transform: rotateY(0);
+            transform: rotateY(0);
+  }
+  100% {
+    -webkit-transform: rotateY(90deg);
+            transform: rotateY(90deg);
+  }
+}
+
+.rotate-scale-down {
+	-webkit-animation: rotate-scale-down 4s linear infinite forwards;
+	        animation: rotate-scale-down 4s linear infinite forwards;
+}
+ @-webkit-keyframes rotate-scale-down {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(0.5) rotateZ(180deg);
+            transform: scale(0.5) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}
+@keyframes rotate-scale-down {
+  0% {
+    -webkit-transform: scale(1) rotateZ(0);
+            transform: scale(1) rotateZ(0);
+  }
+  50% {
+    -webkit-transform: scale(0.5) rotateZ(180deg);
+            transform: scale(0.5) rotateZ(180deg);
+  }
+  100% {
+    -webkit-transform: scale(1) rotateZ(360deg);
+            transform: scale(1) rotateZ(360deg);
+  }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite; /* 3秒的动画，缓入缓出，无限循环 */
+}
+.floating:hover {
+  animation-play-state: paused; /* 鼠标悬停时暂停动画 */
+}
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* 向上移动10像素 */
+  }
+  100% {
+    transform: translateY(0);
+  }
+}

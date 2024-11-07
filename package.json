@@ -10,7 +10,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/cssinjs": "^1.21.1",
+    "@tailwindcss/forms": "^0.5.9",
+    "add": "^2.0.6",
     "ahooks": "^3.8.1",
+    "antd": "^5.21.6",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "ethers": "^5",
     "next": "14.2.2",

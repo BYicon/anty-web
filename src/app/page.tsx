@@ -1,13 +1,13 @@
-import Footer from "@/components/Footer";
-import Nav  from "@/components/Nav";
+"use client";
+
+import HeaderSection from "@/components/header-section/header-section";
+import Centered from "@/components/centered/centered";
 
 export default function Home() {
-
   return (
-    <main className="min-h-screen p-x-4 flex flex-col">
-      <Nav />
-      <div className="flex flex-1 flex-col items-center justify-center"></div>
-      <Footer />
+    <main className="home-page">
+      <HeaderSection />
+      <Centered />
     </main>
   );
 }
