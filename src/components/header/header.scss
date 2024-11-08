@@ -1,7 +1,11 @@
-.main-nav {
+.main-header {
   @apply sticky top-0 z-50 flex w-full items-center justify-between px-4 border-b border-gray-300; 
   background-color: var(--colors-backgroundAlt);
   color: var(--colors-text);
   height: var(--nav-height);
   border-bottom: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
+}
+
+.main-nav {
+  @apply flex items-center gap-16 mr-16 text-sm font-bold;
 }
