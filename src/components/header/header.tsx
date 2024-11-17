@@ -2,13 +2,13 @@
 import {
   checkIfWalletIsConnected,
 } from "@/shared/helper";
-import { useWalletConnection } from "@/shared/hooks/useWalletConnection";
+import { useWalletConnection } from "@/hooks/useWalletConnection";
 import { useWalletStore } from "@/stores/useStore";
 import { useEffect } from "react";
 import ThemeToggle from "../theme-toggle/theme-toggle";
 import { useCommonStore } from "@/stores/useStore";
 import "./header.scss";
-import { EnumTheme } from "@/shared/constant/enums";
+import { EnumTheme } from "@/shared/enums";
 import Link from "next/link";
 
 console.log('process.env', process.env.NODE_ENV);
@@ -17,6 +17,7 @@ const Header = () => {
   const { connectWallet } = useWalletConnection();
   const { theme, initTheme } = useCommonStore();
   const connectWalletHandler = () => {
+    console.log('process.env.NEXT_PUBLIC_NETWORK_KEY', process.env.NEXT_PUBLIC_NETWORK_KEY);
     connectWallet(process.env.NEXT_PUBLIC_NETWORK_KEY as string);
   };
 

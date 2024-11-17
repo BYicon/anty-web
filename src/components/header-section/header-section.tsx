@@ -1,14 +1,21 @@
 "use client";
 import { useCommonStore } from "@/stores/useStore";
-import { EnumTheme } from "@/shared/constant/enums";
+import { EnumTheme } from "@/shared/enums";
 import Widget from "@/components/widget/widget";
 import Image from "next/image";
 
 const HeaderSection = () => {
   const { theme } = useCommonStore();
 
+  const xLinks = [
+    "https://x.com/elonmusk",
+    "https://x.com/VitalikButerin",
+    "https://x.com/solana",
+  ];
+
   const onWidgetClick = () => {
-    window.open("https://x.com/VitalikButerin", "_blank");
+    const randomIndex = Math.floor(Math.random() * xLinks.length);
+    window.open(xLinks[randomIndex], "_blank");
   };
 
   return (

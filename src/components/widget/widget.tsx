@@ -1,4 +1,4 @@
-import { EnumTheme } from "../../shared/constant/enums";
+import { EnumTheme } from "@/shared/enums";
 import { useCommonStore } from "@/stores/useStore";
 import clsx from "clsx";
 

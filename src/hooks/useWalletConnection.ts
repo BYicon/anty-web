@@ -1,4 +1,4 @@
-import { networks } from "@/shared/constant/networks";
+import { networks } from "@/shared/networks";
 import { useWalletStore} from "@/stores/useStore";
 
 /**

@@ -1,6 +1,6 @@
 import { getBalance } from "@/shared/helper";
 import { create} from "zustand";
-import { EnumTheme } from "@/shared/constant/enums";
+import { EnumTheme } from "@/shared/enums";
 
 interface ICommonStoreState {
   theme: EnumTheme;

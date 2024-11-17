@@ -1,6 +1,6 @@
 "use client";
 import { useCommonStore } from "@/stores/useStore";
-import { EnumTheme } from "@/shared/constant/enums";
+import { EnumTheme } from "@/shared/enums";
 
 const HeaderSection = () => {
   const { theme } = useCommonStore();

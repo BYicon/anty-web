@@ -1,4 +1,4 @@
-import { networks } from "./constant/networks";
+import { networks } from "./networks";
 import { ethers, utils } from "ethers";
 
 /**
