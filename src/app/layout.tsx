@@ -2,9 +2,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import * as dotenv from "dotenv";
 import "../../public/iconfont/iconfont.css";
-import StyledComponentsRegistry from "./_lib/AntdRegistry";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
+import { cookieToInitialState } from "wagmi";
+import { headers } from "next/headers";
+
+import { getConfig } from "@/wagmi";
+import { Providers } from "@/app/providers";
 import "@/styles/globals.scss";
 
 dotenv.config();
@@ -21,14 +25,18 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(
+    getConfig(),
+    headers().get("cookie")
+  );
   return (
     <html>
       <body className={`${inter.className} min-h-screen`}>
-        <StyledComponentsRegistry>
+        <Providers initialState={initialState}>
           <Header />
-            {children}
+          {children}
           <Footer />
-        </StyledComponentsRegistry>
+        </Providers>
       </body>
     </html>
   );
