@@ -7,8 +7,9 @@ import Header from "@/components/header/header";
 import { cookieToInitialState } from "wagmi";
 import { headers } from "next/headers";
 
-import { getConfig } from "@/wagmi";
+import { getConfig } from "@/app/wagmi";
 import { Providers } from "@/app/providers";
+import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
 
 dotenv.config();
