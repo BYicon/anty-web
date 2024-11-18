@@ -4,90 +4,140 @@ import {
   useBalance,
   useSimulateContract,
   useWriteContract,
+  useReadContract,
+  useWatchContractEvent,
 } from "wagmi";
 import usdtAbi from "@/abi/USDT.json";
-import { useEffect } from "react";
+import mainAbi from "@/abi/NFTMIR.json";
+import "./recharge.scss";
+import { useState } from "react";
+import UsdtApprove from "@/components/usdt-approve/usdt-approve";
 
-const USDT_ADDRESS = process.env.NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
+const USDT_ADDRESS = process.env
+  .NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
+const MAIN_CONTRACT_ADDRESS = process.env
+  .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
 
 export default function Recharge() {
-  const { address } = useAccount();
-  const {data: hash, isPending, writeContract } = useWriteContract();
+  const { address: currentAddress } = useAccount();
+  const { data: hash, writeContract } = useWriteContract();
+  const [useid, setUserid] = useState<string>("");
+  const [rechargeAmount, setRechargeAmount] = useState<string>("");
+  const [inviter, setInviter] = useState<string>("");
 
-  const { data: usdtBalance } = useBalance({
-    address: address,
+  // 获取当前用户授权USDT的额度
+  const {
+    data: allowanceData,
+    refetch: refetchAllowance,
+    error: allowanceError,
+    isSuccess: allowanceIsSuccess,
+  } = useReadContract({
+    address: USDT_ADDRESS,
+    abi: usdtAbi.abi,
+    functionName: "allowance",
+    args: [currentAddress, MAIN_CONTRACT_ADDRESS],
+  });
+
+  const { data: usdtBalance, refetch: refetchUsdtBalance } = useBalance({
+    address: currentAddress,
     token: USDT_ADDRESS,
   });
 
-  useEffect(() => {
-    console.log('usdtBalance 🚀🚀🚀', usdtBalance);
-  }, [usdtBalance]);
+  const onApprove = () => {
+    refetchAllowance();
+  };
 
   const {
-    data: contractData,
-    error: simulateError,
-    isSuccess,
-    isLoading,
+    data: rechargeData,
+    error: rechargeError,
+    isPending: rechargeIsPending,
+    isSuccess: rechargeIsSuccess,
+    isLoading: rechargeIsLoading,
   } = useSimulateContract({
-    address: USDT_ADDRESS,
-    abi: usdtAbi.abi,
-    functionName: "transfer",
-    args: ["0xxx", 10 * 10 ** 18],
+    address: MAIN_CONTRACT_ADDRESS,
+    abi: mainAbi.abi,
+    functionName: "recharge",
+    args: [useid, currentAddress, +rechargeAmount * 10 ** 18],
+  });
+  
+  const onRecharge = async () => {
+    if(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18) {
+      alert('授权额度不足');
+      return;
+    }
+    if (rechargeAmount && useid){
+      await writeContract(rechargeData!.request);
+      if (rechargeIsSuccess) {
+        console.log("rechargeIsSuccess 🚀🚀🚀", rechargeIsSuccess);
+      } else {
+        console.log("error 🚀🚀🚀", rechargeError);
+      }
+    } else {
+      alert("请输入正确的用户id和充值金额");
+    }
+  };
+  useWatchContractEvent({
+    address: MAIN_CONTRACT_ADDRESS,
+    abi: mainAbi.abi,
+    eventName: "Recharge",
+    onLogs(logs) {
+      console.log("Recharge event logs 🔵🔵🔵", logs);
+      refetchUsdtBalance();
+      refetchAllowance();
+    },
+    onError(error) {
+      console.log("Recharge event error 🔴🔴🔴", error);
+    },
   });
 
-  const onRecharge = async () => {
-    if(address) {
-      const result = await writeContract(contractData!.request);
-      console.log('result 🚀🚀🚀', result);
-      if(isSuccess) {
-        console.log('hash 🚀🚀🚀', hash);
-      }
-    }
-  }
-
-
-
   return (
-    <div>
-      <div>余额：{usdtBalance?.formatted} {usdtBalance?.symbol}</div>
-      <div className="common-section mt-16 max-w-5xl mx-auto">
-        {/* 写一个可爱风格的表单布局, 卡片形式 卡片宽度500px 阴影 */}
-        <div className="flex flex-col gap-4 p-4 border border-gray-300 rounded-md w-full shadow-md p-16 bg-white">
-          <div className="flex flex-col gap-2">
+    <div className="recharge-page">
+      <div>
+        余额：{usdtBalance?.formatted} {usdtBalance?.symbol}
+      </div>
+      <div>授权额度：{Number(allowanceData) / 10 ** 18}</div>
+      <div className="recharge-page-content">
+        <div className="recharge-form">
+          <div className="recharge-form-item">
             <label className="text-sm font-bold">Userid</label>
             <input
-              className="border border-gray-300 rounded-md p-2 text-xs"
+              className="recharge-form-item-input"
               type="text"
+              value={useid}
+              placeholder="Wechat MP Userid"
+              onChange={(e) => setUserid(e.target.value)}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold">Recharge Amount</label>
+          <div className="recharge-form-item">
+            <label className="text-sm font-bold">Amount</label>
             <input
-              className="border border-gray-300 rounded-md p-2 text-xs"
+              className="recharge-form-item-input"
               type="text"
+              placeholder="Recharge USDT Amount"
+              value={rechargeAmount}
+              onChange={(e) => setRechargeAmount(e.target.value)}
             />
           </div>
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-bold">Recharge Amount</label>
-            <input
-              className="border border-gray-300 rounded-md p-2 text-xs"
-              type="text"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
+          <div className="recharge-form-item">
             <label className="text-sm font-bold">Inviter</label>
             <input
-              className="border border-gray-300 rounded-md p-2 text-xs"
+              className="recharge-form-item-input"
               type="text"
+              placeholder="Wallet Address"
+              value={inviter}
+              onChange={(e) => setInviter(e.target.value)}
             />
           </div>
-          <button
-            className="border border-gray-300 rounded-md p-2 text-xs max-w-20 mx-auto"
-            type="button"
-            onClick={onRecharge}
-          >
-            Recharge
-          </button>
+          <div className="recharge-form-actions">
+            <UsdtApprove onApprove={onApprove} />
+            <button
+              className="btn-primary w-[180px] mt-4"
+              type="button"
+              onClick={onRecharge}
+            >
+              Recharge
+            </button>
+          </div>
         </div>
       </div>
     </div>

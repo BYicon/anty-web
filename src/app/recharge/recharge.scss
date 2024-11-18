@@ -1,0 +1,23 @@
+.recharge-page {
+  @apply min-h-screen;
+  padding: 20px;
+  background: var(--colors-gradientBubblegum);
+}
+.recharge-page-content {
+  @apply mt-16 max-w-2xl mx-auto rounded-xl mb-16;
+  background: var(--colors-backgroundAlt);
+}
+.recharge-form {
+  @apply flex flex-col gap-4 p-4 border border-gray-300 rounded-xl w-full shadow-md p-16;
+}
+.recharge-form-item {
+  @apply flex flex-col gap-2;
+}
+.recharge-form-item-input {
+  @apply border border-gray-300 rounded-xl p-2 text-xs h-[52px];
+  background: var(--colors-input);
+}
+
+.recharge-form-actions {
+  @apply flex flex-row gap-4;
+}

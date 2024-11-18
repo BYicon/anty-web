@@ -9,3 +9,8 @@
 .main-nav {
   @apply flex items-center gap-16 mr-16 text-sm font-bold;
 }
+
+.eth-price {
+  @apply text-sm font-bold text-sm;
+  color: var(--colors-textSubtle);
+}
