@@ -2,21 +2,16 @@
 import {
   useAccount,
   useBalance,
-  useConnect,
-  useDisconnect,
-  useReadContract,
   useSimulateContract,
-  useSwitchChain,
   useWriteContract,
 } from "wagmi";
 import usdtAbi from "@/abi/USDT.json";
 import { useEffect } from "react";
 
-const USDT_ADDRESS = '0xxx';
+const USDT_ADDRESS = process.env.NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
 
 export default function Recharge() {
   const { address } = useAccount();
-  const { connectors, connect, status, error } = useConnect();
   const {data: hash, isPending, writeContract } = useWriteContract();
 
   const { data: usdtBalance } = useBalance({
