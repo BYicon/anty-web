@@ -23,7 +23,7 @@ export default function Recharge() {
   const { data: hash, writeContract } = useWriteContract();
   const [useid, setUserid] = useState<string>("");
   const [rechargeAmount, setRechargeAmount] = useState<string>("");
-  const [inviter, setInviter] = useState<string>("");
+  const [referral, setReferral] = useState<string>("");
 
   // 获取当前用户授权USDT的额度
   const {
@@ -59,13 +59,13 @@ export default function Recharge() {
     functionName: "recharge",
     args: [useid, currentAddress, +rechargeAmount * 10 ** 18],
   });
-  
+
   const onRecharge = async () => {
-    if(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18) {
-      alert('授权额度不足');
+    if (Number(allowanceData) < Number(rechargeAmount) * 10 ** 18) {
+      alert("授权额度不足");
       return;
     }
-    if (rechargeAmount && useid){
+    if (rechargeAmount && useid) {
       await writeContract(rechargeData!.request);
       if (rechargeIsSuccess) {
         console.log("rechargeIsSuccess 🚀🚀🚀", rechargeIsSuccess);
@@ -92,10 +92,10 @@ export default function Recharge() {
 
   return (
     <div className="recharge-page">
-      <div>
+      {/* <div>
         余额：{usdtBalance?.formatted} {usdtBalance?.symbol}
       </div>
-      <div>授权额度：{Number(allowanceData) / 10 ** 18}</div>
+      <div>授权额度：{allowanceData?.toString()}</div> */}
       <div className="recharge-page-content">
         <div className="recharge-form">
           <div className="recharge-form-item">
@@ -119,24 +119,27 @@ export default function Recharge() {
             />
           </div>
           <div className="recharge-form-item">
-            <label className="text-sm font-bold">Inviter</label>
+            <label className="text-sm font-bold">Referral</label>
             <input
               className="recharge-form-item-input"
               type="text"
-              placeholder="Wallet Address"
-              value={inviter}
-              onChange={(e) => setInviter(e.target.value)}
+              placeholder="Referral Wallet Address"
+              value={referral}
+              onChange={(e) => setReferral(e.target.value)}
             />
           </div>
           <div className="recharge-form-actions">
-            <UsdtApprove onApprove={onApprove} />
-            <button
-              className="btn-primary w-[180px] mt-4"
-              type="button"
-              onClick={onRecharge}
-            >
-              Recharge
-            </button>
+            {(allowanceData as bigint) < BigInt(+rechargeAmount * 10 ** 18) ? (
+              <UsdtApprove onApprove={onApprove} amount={rechargeAmount} />
+            ) : (
+              <button
+                className="btn-primary h-[56px] w-[360px] mt-16"
+                type="button"
+                onClick={onRecharge}
+              >
+                Recharge
+              </button>
+            )}
           </div>
         </div>
       </div>

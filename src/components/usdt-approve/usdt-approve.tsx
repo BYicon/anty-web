@@ -12,6 +12,7 @@ const MAIN_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
 
 export default function UsdtApprove(props: {
+  amount: string | number;
   onApprove: () => void;
 }) {
   const { address: currentAddress } = useAccount();
@@ -25,7 +26,7 @@ export default function UsdtApprove(props: {
     address: USDT_ADDRESS,
     abi: usdtAbi.abi,
     functionName: "approve",
-    args: [MAIN_CONTRACT_ADDRESS, 1000 * 10 ** 18],
+    args: [MAIN_CONTRACT_ADDRESS, +props.amount * 10 ** 18],
   });
 
   const { data: hash, writeContract } = useWriteContract();
@@ -59,7 +60,7 @@ export default function UsdtApprove(props: {
   });
 
   return (
-    <button className="btn-primary w-[180px] mt-4" type="button" onClick={onApproveHandler}>
+    <button className="btn-secondary w-[360px] h-[56px] mt-16" type="button" onClick={onApproveHandler}>
       Approve
     </button>
   );

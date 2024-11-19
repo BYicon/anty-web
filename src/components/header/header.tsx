@@ -9,11 +9,16 @@ import { useAccount} from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useQuery } from "@tanstack/react-query";
 import { getEthereumRealTimePrice } from "@/http/api";
-
+import { useRouter } from "next/navigation";
 console.log("process.env", process.env.NODE_ENV);
 const Header = () => {
   const { theme, initTheme } = useCommonStore();
   const account = useAccount();
+  const router = useRouter();
+
+  const goHome = () => {
+    router.push("/");
+  };
 
   // const { data: ethereumRealTimePrice } = useQuery({
   //   queryKey: ["ethereumRealTimePrice"],
@@ -28,7 +33,7 @@ const Header = () => {
 
   return (
     <header className="main-header">
-      <div className="text-2xl z-10 max-w-5xl items-center justify-between font-mono text-sm flex fs-20">
+      <div className="text-2xl z-10 max-w-5xl items-center justify-between font-mono text-sm flex fs-20 cursor-pointer" onClick={goHome}>
         <img
           src="/images/logo.png"
           alt="logo"
