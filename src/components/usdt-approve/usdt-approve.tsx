@@ -13,7 +13,9 @@ const MAIN_CONTRACT_ADDRESS = process.env
 
 export default function UsdtApprove(props: {
   amount: string | number;
-  onApprove: () => void;
+  onApprove?: () => void;
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
 }) {
   const { address: currentAddress } = useAccount();
   const {
@@ -31,6 +33,7 @@ export default function UsdtApprove(props: {
 
   const { data: hash, writeContract } = useWriteContract();
   const onApproveHandler = async () => {
+    props.onApprove && props.onApprove();
     if (currentAddress) {
       const result = await writeContract(approveData!.request);
       console.log("result 🚀🚀🚀", result);
@@ -47,8 +50,7 @@ export default function UsdtApprove(props: {
     eventName: "Approval",
     onLogs(logs) {
       console.log("USDTApproval event logs 🔵🔵🔵", logs);
-      // 向父组件传递事件
-      props.onApprove();
+      props.onSuccess && props.onSuccess();
       // 解析event
     //   const event = logs[0];
     //   const { args } = event;
@@ -56,6 +58,7 @@ export default function UsdtApprove(props: {
     },
     onError(error) {
       console.log("USDTApproval event error 🔴🔴🔴", error);
+      props.onError && props.onError(error);
     },
   });
 

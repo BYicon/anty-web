@@ -10,8 +10,12 @@ import {
 import usdtAbi from "@/abi/USDT.json";
 import mainAbi from "@/abi/NFTMIR.json";
 import "./recharge.scss";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import UsdtApprove from "@/components/usdt-approve/usdt-approve";
+import { useNftRedeem } from "@/hooks/useNftRedeem";
+import NftCard from "@/components/nft-card/nft-card";
+import html2canvas from "html2canvas";
+import Loading from "@/components/loading/loading";
 
 const USDT_ADDRESS = process.env
   .NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
@@ -20,10 +24,12 @@ const MAIN_CONTRACT_ADDRESS = process.env
 
 export default function Recharge() {
   const { address: currentAddress } = useAccount();
-  const { data: hash, isPending: writeIsPending, isSuccess: writeIsSuccess, writeContract } = useWriteContract();
+  const { data: hash, isPending: writeIsPending, isSuccess: writeIsSuccess, isError: writeIsError, writeContract } = useWriteContract();
   const [useid, setUserid] = useState<string>("");
   const [rechargeAmount, setRechargeAmount] = useState<string>("");
   const [referral, setReferral] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState("loading...");
 
   // 获取当前用户授权USDT的额度
   const {
@@ -43,10 +49,19 @@ export default function Recharge() {
     token: USDT_ADDRESS,
   });
 
-  const onApprove = () => {
-    refetchAllowance();
+  const onApproveHandler = () => {
+    setIsLoading(true);
+    setLoadingText("approving...");
+  }
 
-  };
+  // 授权成功
+  const onApproveSuccess = () => {
+    setIsLoading(false);
+    refetchAllowance();
+  }
+  const onApproveError = (error: any) => {
+    setIsLoading(false);
+  }
 
   const {
     data: rechargeData,
@@ -58,7 +73,7 @@ export default function Recharge() {
     address: MAIN_CONTRACT_ADDRESS,
     abi: mainAbi.abi,
     functionName: "recharge",
-    args: [useid, currentAddress, +rechargeAmount * 10 ** 18],
+    args: [useid, +rechargeAmount * 10 ** 18],
   });
 
   const onRecharge = async () => {
@@ -67,7 +82,13 @@ export default function Recharge() {
       return;
     }
     if (rechargeAmount && useid) {
-      await writeContract(rechargeData!.request);
+      setIsLoading(true);
+      setLoadingText("recharging...");
+      const res = await writeContract(rechargeData!.request);
+      console.log('res 🟢🟢🟢', res);
+      console.log("writeIsPending 🚀🚀🚀", writeIsPending);
+      console.log("writeIsSuccess 🚀🚀🚀", writeIsSuccess);
+      console.log("writeIsError 🔴🔴🔴", writeIsError);
       if (rechargeIsSuccess) {
         console.log("rechargeIsSuccess 🚀🚀🚀", rechargeIsSuccess);
       } else {
@@ -85,8 +106,16 @@ export default function Recharge() {
       console.log("Recharge event logs 🔵🔵🔵", logs);
       refetchUsdtBalance();
       refetchAllowance();
+      setIsLoading(false);
+      if(logs.length > 0) { 
+        const mintableTokenIds = (logs[0] as any).args.mintableTokenIds;
+        if(mintableTokenIds.length > 0) {
+          alert(`恭喜获得${mintableTokenIds.join(",")}，共${mintableTokenIds.length}个NFT`);
+        }
+      }
     },
     onError(error) {
+      setIsLoading(false);
       console.log("Recharge event error 🔴🔴🔴", error);
     },
   });
@@ -96,20 +125,38 @@ export default function Recharge() {
     setNeedApprove(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18); // TODO: 精度问题
   }, [allowanceData, rechargeAmount]);
 
+
+  // const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
+
+
+  function generateImage() {
+      const cardElement = document.getElementById("card-12") as HTMLElement;
+      html2canvas(cardElement, {
+        scale: 2,
+      }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        console.log(imgData);
+        // For demonstration, let's display the image
+        const imgElement = document.createElement("img");
+        imgElement.src = imgData;
+        document.body.appendChild(imgElement);
+      });
+  }
+
   return (
     <div className="recharge-page">
       <div className="recharge-page-content">
         <div className="recharge-form">
           <div className="recharge-form-title">
             <h1 className="recharge-form-title-text">
-              Buy G coins {writeIsSuccess ? "writeIsSuccess..." : "writeIsPending"}
+              Buy G coins
             </h1>
             <p className="recharge-form-title-desc">
               Buy G coins for your WECHAT MINI PROGRAM
             </p>
           </div>
           <div className="recharge-form-allowance">
-              <text className="iconfont icon-balance icon-licai relative top-[-2px]"></text>${usdtBalance?.formatted || "0"}
+              <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>${usdtBalance?.formatted || "0"}
           </div>
           <div className="recharge-form-item">
             <label className="recharge-form-item-label">USER ID</label>
@@ -126,7 +173,7 @@ export default function Recharge() {
             <input
               className="recharge-form-item-input"
               type="text"
-              placeholder="Recharge USDT Amount"
+              placeholder="USDT"
               value={rechargeAmount}
               onChange={(e) => setRechargeAmount(e.target.value)}
             />
@@ -143,7 +190,7 @@ export default function Recharge() {
           </div>
           <div className="recharge-form-actions">
             {needApprove ? (
-              <UsdtApprove onApprove={onApprove} amount={rechargeAmount} />
+              <UsdtApprove onApprove={() => onApproveHandler()} onSuccess={onApproveSuccess} onError={onApproveError} amount={rechargeAmount} />
             ) : (
               <button
                 className="btn-primary h-[56px] w-[360px]"
@@ -156,6 +203,9 @@ export default function Recharge() {
           </div>
         </div>
       </div>
+      {/* <NftCard id="card-12" tokenId={12} />
+      <button onClick={() => setModalIsOpen(true)}>Open Modal</button> */}
+      <Loading loading={isLoading} loadingText={loadingText} />
     </div>
   );
 }

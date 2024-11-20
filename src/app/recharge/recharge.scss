@@ -7,7 +7,7 @@
   @apply mt-16 max-w-2xl mx-auto mb-16;
 }
 .recharge-form {
-  @apply flex flex-col gap-4 p-4 border border-gray-300 shadow-md p-16;
+  @apply flex flex-col gap-4 px-16 py-8 border border-gray-300 shadow-md;
   width: 520px;
   background: var(--colors-backgroundAlt);
   border-radius: var(--radii-card);
@@ -33,7 +33,6 @@
   @apply absolute left-4 top-[50%] font-bold;
   width: 100px;
   transform: translateY(-50%);
-  z-index: 1;
 }
 .recharge-form-item-input {
   @apply border rounded-xl p-4 text-base font-bold text-right;
