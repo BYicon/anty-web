@@ -10,7 +10,7 @@ import {
 import usdtAbi from "@/abi/USDT.json";
 import mainAbi from "@/abi/NFTMIR.json";
 import "./recharge.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UsdtApprove from "@/components/usdt-approve/usdt-approve";
 
 const USDT_ADDRESS = process.env
@@ -20,7 +20,7 @@ const MAIN_CONTRACT_ADDRESS = process.env
 
 export default function Recharge() {
   const { address: currentAddress } = useAccount();
-  const { data: hash, writeContract } = useWriteContract();
+  const { data: hash, isPending: writeIsPending, isSuccess: writeIsSuccess, writeContract } = useWriteContract();
   const [useid, setUserid] = useState<string>("");
   const [rechargeAmount, setRechargeAmount] = useState<string>("");
   const [referral, setReferral] = useState<string>("");
@@ -45,6 +45,7 @@ export default function Recharge() {
 
   const onApprove = () => {
     refetchAllowance();
+
   };
 
   const {
@@ -90,16 +91,28 @@ export default function Recharge() {
     },
   });
 
+  const [needApprove, setNeedApprove] = useState(false);
+  useEffect(() => {
+    setNeedApprove(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18); // TODO: 精度问题
+  }, [allowanceData, rechargeAmount]);
+
   return (
     <div className="recharge-page">
-      {/* <div>
-        余额：{usdtBalance?.formatted} {usdtBalance?.symbol}
-      </div>
-      <div>授权额度：{allowanceData?.toString()}</div> */}
       <div className="recharge-page-content">
         <div className="recharge-form">
+          <div className="recharge-form-title">
+            <h1 className="recharge-form-title-text">
+              Buy G coins {writeIsSuccess ? "writeIsSuccess..." : "writeIsPending"}
+            </h1>
+            <p className="recharge-form-title-desc">
+              Buy G coins for your WECHAT MINI PROGRAM
+            </p>
+          </div>
+          <div className="recharge-form-allowance">
+              <text className="iconfont icon-balance icon-licai relative top-[-2px]"></text>${usdtBalance?.formatted || "0"}
+          </div>
           <div className="recharge-form-item">
-            <label className="text-sm font-bold">Userid</label>
+            <label className="recharge-form-item-label">USER ID</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -109,7 +122,7 @@ export default function Recharge() {
             />
           </div>
           <div className="recharge-form-item">
-            <label className="text-sm font-bold">Amount</label>
+            <label className="recharge-form-item-label">AMOUNT</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -119,7 +132,7 @@ export default function Recharge() {
             />
           </div>
           <div className="recharge-form-item">
-            <label className="text-sm font-bold">Referral</label>
+            <label className="recharge-form-item-label">REFERRAL</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -129,11 +142,11 @@ export default function Recharge() {
             />
           </div>
           <div className="recharge-form-actions">
-            {(allowanceData as bigint) < BigInt(+rechargeAmount * 10 ** 18) ? (
+            {needApprove ? (
               <UsdtApprove onApprove={onApprove} amount={rechargeAmount} />
             ) : (
               <button
-                className="btn-primary h-[56px] w-[360px] mt-16"
+                className="btn-primary h-[56px] w-[360px]"
                 type="button"
                 onClick={onRecharge}
               >

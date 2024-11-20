@@ -60,7 +60,7 @@ export default function UsdtApprove(props: {
   });
 
   return (
-    <button className="btn-secondary w-[360px] h-[56px] mt-16" type="button" onClick={onApproveHandler}>
+    <button className="btn-secondary w-[360px] h-[56px]" type="button" onClick={onApproveHandler}>
       Approve
     </button>
   );
