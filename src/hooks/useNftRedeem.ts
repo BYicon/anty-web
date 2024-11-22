@@ -4,16 +4,15 @@ import { useEffect } from "react";
 
 const NFT_ADDRESS = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS as `0x${string}`;
 export const useNftRedeem = () => {
-    const { address } = useAccount();
-    const { data: waitingForRedeem, refetch: refetchWaitingForRedeem } = useReadContract({
+    const { address: currentAddress } = useAccount();
+    const { data: waitingForRedeem, error: waitingForRedeemError, refetch: refetchWaitingForRedeem } = useReadContract({
         address: NFT_ADDRESS,
         abi: nftAbi.abi,
         functionName: "getWaitingForRedeem",
-        args: [address],
+        args: [currentAddress],
     });
-    useEffect(() => {
-    }, [waitingForRedeem]);
-
+    console.log("waitingForRedeemError 🟢🟢🟢", waitingForRedeemError);
+    console.log("currentAddress 🟢🟢🟢", currentAddress);
     return {
         waitingForRedeem,
         refetchWaitingForRedeem,

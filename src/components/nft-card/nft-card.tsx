@@ -18,6 +18,11 @@ export default function NftCard({
       <div className="card-number" id="cardNumber">
         {cardNumber}
       </div>
+      <div className="nft-card-mask">
+        <div className="nft-card-id">NO.{cardNumber}</div>
+        <div className="nft-card-status">waiting for redeem</div>
+        <div className="btn-primary">Redeem</div>
+      </div>
     </div>
   );
 }

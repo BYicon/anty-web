@@ -1,0 +1,8 @@
+.nfts-page {
+  @apply px-4 py-8 min-h-screen;
+  background-color: var(--colors-backgroundAlt);
+}
+
+.nfts-page-content-nft {
+  @apply grid grid-cols-4 gap-6 auto-rows-fr;
+}

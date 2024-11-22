@@ -49,8 +49,8 @@ const Header = () => {
           <Link href="/recharge" className="hover:text-blue-500">
             Recharge
           </Link>
-          <Link href="/about" className="hover:text-blue-500">
-            About
+          <Link href="/nfts" className="hover:text-blue-500">
+            NFTs
           </Link>
         </nav>
         <ThemeToggle />

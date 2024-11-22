@@ -1,21 +1,29 @@
 .nft-card {
-    width: 300px;
-    height: 180px;
-    background-color: #f0f0f0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    color: #333;
+  @apply relative w-64 h-40 bg-gray-100 rounded-lg shadow-md flex flex-col justify-center items-center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+.card-number {
+  @apply text-2xl font-bold;
+}
+.card-title {
+  @apply text-lg mb-2;
+}
+
+.nft-card-mask {
+  @apply absolute top-0 left-0 w-full h-full flex flex-col justify-center items-center;
+  background-color: var(--colors-text99);
+  border-radius: 10px;
+  .nft-card-id {
+    @apply text-white text-lg;
   }
-  .card-number {
-    font-size: 24px;
-    font-weight: bold;
+  .nft-card-status {
+    @apply text-white text-lg;
   }
-  .card-title {
-    font-size: 18px;
-    margin-bottom: 10px;
+  .nft-card-redeem {
+    @apply text-white text-lg cursor-pointer bg-blue-500 rounded-md px-4 py-2 mt-2;
   }
+}

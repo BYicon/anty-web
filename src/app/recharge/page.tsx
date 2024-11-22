@@ -22,7 +22,7 @@ const USDT_ADDRESS = process.env
 const MAIN_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
 
-export default function Recharge() {
+export default function RechargePage() {
   const { address: currentAddress } = useAccount();
   const { data: hash, isPending: writeIsPending, isSuccess: writeIsSuccess, isError: writeIsError, writeContract } = useWriteContract();
   const [useid, setUserid] = useState<string>("");
@@ -30,6 +30,20 @@ export default function Recharge() {
   const [referral, setReferral] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("loading...");
+
+   // 获取当前用户授权USDT的额度
+   const {
+    data: waitingForRedeemData,
+    refetch,
+    error: waitingForRedeemError,
+    isSuccess: waitingForRedeemIsSuccess,
+  } = useReadContract({
+    address: MAIN_CONTRACT_ADDRESS,
+    abi: mainAbi.abi,
+    functionName: "getWaitingForRedeem",
+    args: [currentAddress],
+  });
+
 
   // 获取当前用户授权USDT的额度
   const {
@@ -126,8 +140,7 @@ export default function Recharge() {
   }, [allowanceData, rechargeAmount]);
 
 
-  // const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
-
+  const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
 
   function generateImage() {
       const cardElement = document.getElementById("card-12") as HTMLElement;
@@ -142,6 +155,7 @@ export default function Recharge() {
         document.body.appendChild(imgElement);
       });
   }
+
 
   return (
     <div className="recharge-page">
@@ -203,8 +217,6 @@ export default function Recharge() {
           </div>
         </div>
       </div>
-      {/* <NftCard id="card-12" tokenId={12} />
-      <button onClick={() => setModalIsOpen(true)}>Open Modal</button> */}
       <Loading loading={isLoading} loadingText={loadingText} />
     </div>
   );
