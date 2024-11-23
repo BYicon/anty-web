@@ -142,20 +142,6 @@ export default function RechargePage() {
 
   const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
 
-  function generateImage() {
-      const cardElement = document.getElementById("card-12") as HTMLElement;
-      html2canvas(cardElement, {
-        scale: 2,
-      }).then((canvas) => {
-        const imgData = canvas.toDataURL("image/png");
-        console.log(imgData);
-        // For demonstration, let's display the image
-        const imgElement = document.createElement("img");
-        imgElement.src = imgData;
-        document.body.appendChild(imgElement);
-      });
-  }
-
 
   return (
     <div className="recharge-page">

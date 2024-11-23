@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const IPFS_KEY = process.env.IPFS_KEY;
-const IPFS_FILE_PATH = process.env.IPFS_FILE_PATH;
+const IPFS_KEY = process.env.NEXT_PUBLIC_IPFS_KEY;
+const IPFS_FILE_PATH = process.env.NEXT_PUBLIC_IPFS_FILE_PATH;
 
 export const getEthereumRealTimePrice = async () => {
   const result = await axios.get(

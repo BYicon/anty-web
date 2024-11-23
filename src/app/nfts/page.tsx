@@ -34,18 +34,8 @@ export default function NftsPage() {
     args: [currentAddress],
   });
 
-  function generateImage() {
-    const cardElement = document.getElementById("card-12") as HTMLElement;
-    html2canvas(cardElement, {
-      scale: 2,
-    }).then((canvas) => {
-      const imgData = canvas.toDataURL("image/png");
-      console.log(imgData);
-      // For demonstration, let's display the image
-      const imgElement = document.createElement("img");
-      imgElement.src = imgData;
-      document.body.appendChild(imgElement);
-    });
+  const onRedeem = () => {
+    refetchWaitingForRedeem();
   }
 
   useEffect(() => {
@@ -57,7 +47,7 @@ export default function NftsPage() {
       <div className="nfts-page-content-nft">
         {waitingForRedeem &&
           (waitingForRedeem as any).map((item: any) => (
-            <NftCard key={item} id={`card-${item}`} tokenId={item} />
+            <NftCard key={item} id={`card-${item}`} tokenId={item} onRedeem={onRedeem} />
           ))}
       </div>
       <Loading loading={isLoading} loadingText={loadingText} />
