@@ -38,6 +38,10 @@ html,body {
 
 .common-btn {
   @apply border border-gray-300 rounded-xl p-2 text-xl mx-auto text-sm px-4 py-3 font-bold cursor-pointer;
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .btn-primary {

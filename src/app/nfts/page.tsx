@@ -6,32 +6,27 @@ import {
   useReadContract,
   useWatchContractEvent,
 } from "wagmi";
-import mainAbi from "@/abi/NFTMIR.json";
+import nftAbi from "@/abi/NFTMIR";
 import { useEffect, useRef, useState } from "react";
 import NftCard from "@/components/nft-card/nft-card";
 import html2canvas from "html2canvas";
 import Loading from "@/components/loading/loading";
 import "./nfts.scss";
 
-const MAIN_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
-
 export default function NftsPage() {
   const { address: currentAddress } = useAccount();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("loading...");
-
-  // const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
   const {
     data: waitingForRedeem,
     error: waitingForRedeemError,
     refetch: refetchWaitingForRedeem,
     queryKey
   } = useReadContract({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
+    address: nftAbi.contractAddress,
+    abi: nftAbi.abi,
     functionName: "getWaitingForRedeem",
-    args: [currentAddress],
+    args: [currentAddress as `0x${string}`],
   });
 
   const onRedeem = () => {

@@ -6,44 +6,44 @@ import {
   useWriteContract,
   useReadContract,
   useWatchContractEvent,
+  useWaitForTransactionReceipt,
 } from "wagmi";
-import usdtAbi from "@/abi/USDT.json";
-import mainAbi from "@/abi/NFTMIR.json";
+import usdtAbi from "@/abi/USDT";
+import nftAbi from "@/abi/NFTMIR";
 import "./recharge.scss";
 import { useEffect, useRef, useState } from "react";
 import UsdtApprove from "@/components/usdt-approve/usdt-approve";
-import { useNftRedeem } from "@/hooks/useNftRedeem";
 import NftCard from "@/components/nft-card/nft-card";
 import html2canvas from "html2canvas";
 import Loading from "@/components/loading/loading";
 
-const USDT_ADDRESS = process.env
-  .NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
-const MAIN_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
-
 export default function RechargePage() {
   const { address: currentAddress } = useAccount();
-  const { data: hash, isPending: writeIsPending, isSuccess: writeIsSuccess, isError: writeIsError, writeContract } = useWriteContract();
-  const [useid, setUserid] = useState<string>("");
+  const {
+    data: hash,
+    isPending: writeIsPending,
+    isSuccess: writeIsSuccess,
+    isError: writeIsError,
+    writeContract,
+  } = useWriteContract();
+  const [userid, setUserid] = useState<string>("");
   const [rechargeAmount, setRechargeAmount] = useState<string>("");
   const [referral, setReferral] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [loadingText, setLoadingText] = useState("loading...");
 
-   // 获取当前用户授权USDT的额度
-   const {
+  // 获取当前用户授权USDT的额度
+  const {
     data: waitingForRedeemData,
     refetch,
     error: waitingForRedeemError,
     isSuccess: waitingForRedeemIsSuccess,
   } = useReadContract({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
+    address: usdtAbi.contractAddress as `0x${string}`,
+    abi: nftAbi.abi,
     functionName: "getWaitingForRedeem",
-    args: [currentAddress],
+    args: [currentAddress as `0x${string}`],
   });
-
 
   // 获取当前用户授权USDT的额度
   const {
@@ -52,30 +52,29 @@ export default function RechargePage() {
     error: allowanceError,
     isSuccess: allowanceIsSuccess,
   } = useReadContract({
-    address: USDT_ADDRESS,
+    address: usdtAbi.contractAddress as `0x${string}`,
     abi: usdtAbi.abi,
     functionName: "allowance",
-    args: [currentAddress, MAIN_CONTRACT_ADDRESS],
+    args: [
+      currentAddress as `0x${string}`,
+      nftAbi.contractAddress as `0x${string}`,
+    ],
   });
 
   const { data: usdtBalance, refetch: refetchUsdtBalance } = useBalance({
     address: currentAddress,
-    token: USDT_ADDRESS,
+    token: usdtAbi.contractAddress as `0x${string}`,
   });
 
-  const onApproveHandler = () => {
-    setIsLoading(true);
-    setLoadingText("approving...");
-  }
+  const onApproveHandler = () => {};
 
   // 授权成功
   const onApproveSuccess = () => {
-    setIsLoading(false);
     refetchAllowance();
-  }
+  };
   const onApproveError = (error: any) => {
-    setIsLoading(false);
-  }
+    console.log("onApproveError", error);
+  };
 
   const {
     data: rechargeData,
@@ -84,10 +83,10 @@ export default function RechargePage() {
     isSuccess: rechargeIsSuccess,
     isLoading: rechargeIsLoading,
   } = useSimulateContract({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
+    address: nftAbi.contractAddress as `0x${string}`,
+    abi: nftAbi.abi,
     functionName: "recharge",
-    args: [useid, +rechargeAmount * 10 ** 18],
+    args: [BigInt(userid), BigInt(rechargeAmount) * BigInt(10 ** 18)],
   });
 
   const onRecharge = async () => {
@@ -95,11 +94,9 @@ export default function RechargePage() {
       alert("授权额度不足");
       return;
     }
-    if (rechargeAmount && useid) {
-      setIsLoading(true);
+    if (rechargeAmount && userid) {
       setLoadingText("recharging...");
-      const res = await writeContract(rechargeData!.request);
-      console.log('res 🟢🟢🟢', res);
+      await writeContract(rechargeData!.request);
       console.log("writeIsPending 🚀🚀🚀", writeIsPending);
       console.log("writeIsSuccess 🚀🚀🚀", writeIsSuccess);
       console.log("writeIsError 🔴🔴🔴", writeIsError);
@@ -112,58 +109,55 @@ export default function RechargePage() {
       alert("请输入正确的用户id和充值金额");
     }
   };
-  useWatchContractEvent({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
-    eventName: "Recharge",
-    onLogs(logs) {
-      console.log("Recharge event logs 🔵🔵🔵", logs);
+  const {
+    isLoading: isRechargeLoading,
+    isSuccess: isRechargeSuccess,
+    error: isRechargeError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  useEffect(() => {
+    setIsLoading(isRechargeLoading);
+  }, [isRechargeLoading]);
+
+  useEffect(() => {
+    if (isRechargeSuccess) {
+      console.log("isRechargeSuccess 🟢🟢🟢", isRechargeSuccess);
       refetchUsdtBalance();
       refetchAllowance();
-      setIsLoading(false);
-      if(logs.length > 0) { 
-        const mintableTokenIds = (logs[0] as any).args.mintableTokenIds;
-        if(mintableTokenIds.length > 0) {
-          alert(`恭喜获得${mintableTokenIds.join(",")}，共${mintableTokenIds.length}个NFT`);
-        }
-      }
-    },
-    onError(error) {
-      setIsLoading(false);
-      console.log("Recharge event error 🔴🔴🔴", error);
-    },
-  });
+      alert("充值成功");
+    }
+    if (isRechargeError) {
+      console.log("isRechargeError 🔴🔴🔴", isRechargeError);
+    }
+  }, [isRechargeSuccess, isRechargeError]);
 
   const [needApprove, setNeedApprove] = useState(false);
   useEffect(() => {
     setNeedApprove(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18); // TODO: 精度问题
   }, [allowanceData, rechargeAmount]);
 
-
-  const { waitingForRedeem, refetchWaitingForRedeem } = useNftRedeem();
-
-
   return (
     <div className="recharge-page">
       <div className="recharge-page-content">
         <div className="recharge-form">
           <div className="recharge-form-title">
-            <h1 className="recharge-form-title-text">
-              Buy G coins
-            </h1>
+            <h1 className="recharge-form-title-text">Buy G coins</h1>
             <p className="recharge-form-title-desc">
               Buy G coins for your WECHAT MINI PROGRAM
             </p>
           </div>
           <div className="recharge-form-allowance">
-              <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>${usdtBalance?.formatted || "0"}
+            <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>
+            ${usdtBalance?.formatted || "0"}
           </div>
           <div className="recharge-form-item">
             <label className="recharge-form-item-label">USER ID</label>
             <input
               className="recharge-form-item-input"
               type="text"
-              value={useid}
+              value={userid}
               placeholder="Wechat MP Userid"
               onChange={(e) => setUserid(e.target.value)}
             />
@@ -190,7 +184,12 @@ export default function RechargePage() {
           </div>
           <div className="recharge-form-actions">
             {needApprove ? (
-              <UsdtApprove onApprove={() => onApproveHandler()} onSuccess={onApproveSuccess} onError={onApproveError} amount={rechargeAmount} />
+              <UsdtApprove
+                onApprove={() => onApproveHandler()}
+                onSuccess={onApproveSuccess}
+                onError={onApproveError}
+                amount={rechargeAmount}
+              />
             ) : (
               <button
                 className="btn-primary h-[56px] w-[360px]"

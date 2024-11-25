@@ -1,6 +1,6 @@
 import { useSimulateContract, useWatchContractEvent, useWriteContract } from "wagmi";
 import "./nft-card.scss";
-import mainAbi from '@/abi/NFTMIR.json';
+import nftAbi from '@/abi/NFTMIR';
 import { useState } from "react";
 import { uploadToIPFS } from "@/http/api";
 import html2canvas from "html2canvas";
@@ -55,10 +55,10 @@ export default function NftCard({
     isSuccess: redeemIsSuccess,
     isLoading: redeemIsLoading,
   } = useSimulateContract({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
+    address: nftAbi.contractAddress,
+    abi: nftAbi.abi,
     functionName: "redeem",
-    args: [tokenId, 'https://ioby.cn/'],
+    args: [BigInt(tokenId), 'https://ioby.cn/'],
   });
 
   const handleRedeem = async () => {
@@ -66,15 +66,15 @@ export default function NftCard({
     console.log('img 🚀🚀🚀', img);
     const tx = await writeContract({
       ...redeemData!.request,
-      args: [tokenId, img],
+      args: [BigInt(tokenId), img as string],
     });
     console.log('tx 🚀🚀🚀', tx);
   };
 
 
   useWatchContractEvent({
-    address: MAIN_CONTRACT_ADDRESS,
-    abi: mainAbi.abi,
+    address: nftAbi.contractAddress,
+    abi: nftAbi.abi,
     eventName: "Redeem",
     onLogs(logs) {
       console.log("Redeem event logs 🔵🔵🔵", logs);

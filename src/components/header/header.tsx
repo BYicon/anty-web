@@ -7,9 +7,9 @@ import { EnumTheme } from "@/shared/enums";
 import Link from "next/link";
 import { useAccount} from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useQuery } from "@tanstack/react-query";
-import { getEthereumRealTimePrice } from "@/http/api";
 import { useRouter } from "next/navigation";
+import { formatEther } from "viem"; // TODO: ethereum price
+
 console.log("process.env", process.env.NODE_ENV);
 const Header = () => {
   const { theme, initTheme } = useCommonStore();
@@ -19,12 +19,6 @@ const Header = () => {
   const goHome = () => {
     router.push("/");
   };
-
-  // const { data: ethereumRealTimePrice } = useQuery({
-  //   queryKey: ["ethereumRealTimePrice"],
-  //   queryFn: getEthereumRealTimePrice,
-  //   refetchInterval: 1000,
-  // });
 
   useEffect(() => {
     initTheme();

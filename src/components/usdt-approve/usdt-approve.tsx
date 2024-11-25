@@ -1,15 +1,8 @@
-import { useWatchContractEvent } from "wagmi";
-import usdtAbi from "@/abi/USDT.json";
-import {
-  useAccount,
-  useWriteContract,
-  useSimulateContract,
-} from "wagmi";
-
-const USDT_ADDRESS = process.env
-  .NEXT_PUBLIC_USDT_CONTRACT_ADDRESS as `0x${string}`;
-const MAIN_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_MAIN_CONTRACT_ADDRESS as `0x${string}`;
+import { useWaitForTransactionReceipt } from "wagmi";
+import usdtAbi from "@/abi/USDT";
+import nftAbi from "@/abi/NFTMIR";
+import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
+import { useEffect } from "react";
 
 export default function UsdtApprove(props: {
   amount: string | number;
@@ -25,10 +18,10 @@ export default function UsdtApprove(props: {
     isLoading: approveIsLoading,
     isPending: approveIsPending,
   } = useSimulateContract({
-    address: USDT_ADDRESS,
+    address: usdtAbi.contractAddress,
     abi: usdtAbi.abi,
     functionName: "approve",
-    args: [MAIN_CONTRACT_ADDRESS, +props.amount * 10 ** 18],
+    args: [nftAbi.contractAddress, BigInt(+props.amount * 10 ** 18)],
   });
 
   const { data: hash, writeContract } = useWriteContract();
@@ -44,27 +37,42 @@ export default function UsdtApprove(props: {
       }
     }
   };
-  useWatchContractEvent({
-    address: USDT_ADDRESS,
-    abi: usdtAbi.abi,
-    eventName: "Approval",
-    onLogs(logs) {
-      console.log("USDTApproval event logs 🔵🔵🔵", logs);
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed, error: isConfirmError } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+
+  useEffect(() => {
+    if (isConfirmed) {  
+      console.log("isConfirmed 🟢🟢🟢", isConfirmed);
       props.onSuccess && props.onSuccess();
-      // 解析event
-    //   const event = logs[0];
-    //   const { args } = event;
-    //   console.log("args 🚀🚀🚀", args);
-    },
-    onError(error) {
-      console.log("USDTApproval event error 🔴🔴🔴", error);
-      props.onError && props.onError(error);
-    },
-  });
+    }
+    if (isConfirmError) {
+      console.log("isConfirmError 🔴🔴🔴", isConfirmError);
+      props.onError && props.onError(isConfirmError);
+    }
+  }, [isConfirmed, isConfirmError]);
+
+  // useWatchContractEvent({
+  //   address: usdtAbi.contractAddress as `0x${string}`,
+  //   abi: usdtAbi.abi,
+  //   eventName: "Approval",
+  //   onLogs(logs) {
+  //     console.log("Approval event logs 🔵🔵🔵", logs);
+  //   }
+  // })
 
   return (
-    <button className="btn-secondary w-[360px] h-[56px]" type="button" onClick={onApproveHandler}>
-      Approve
-    </button>
+    <div>
+      <button
+        className="btn-secondary w-[360px] h-[56px]"
+        type="button"
+        disabled={isConfirming}
+        onClick={onApproveHandler}
+      >
+        Approve{isConfirming ? "..." : ""}
+      </button>
+    </div>
   );
 }
