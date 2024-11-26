@@ -3,6 +3,12 @@
   background-color: var(--colors-backgroundAlt);
 }
 
-.nfts-page-content-nft {
-  @apply grid grid-cols-4 gap-6 auto-rows-fr;
+.nft-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.nft-list-title {
+  @apply text-2xl font-bold mb-4 mt-8;
 }

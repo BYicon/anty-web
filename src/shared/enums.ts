@@ -3,3 +3,8 @@ export enum EnumTheme {
   Light = "light",
   Dark = "dark",
 }
+
+export enum EnumNftStatus {
+  WAITING_FOR_REDEEM = "waiting_for_redeem",
+  REDEEMED = "redeemed",
+}

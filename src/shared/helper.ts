@@ -1,47 +1,13 @@
-import { networks } from "./networks";
-import { ethers, utils } from "ethers";
+import crypto from "crypto";
 
-/**
- * 检查钱包是否已经登陆
- */
-export const checkIfWalletIsConnected = async () => {
-  if (!window.ethereum) return alert("Please Install MetaMask");
-  //   const network = await changeNetwork({ networkName: "localhost" });
-  const account = await window.ethereum.request({ method: "eth_accounts" });
-  return account[0] || "";
-};
+export function generateHash(input: string) {
+  // 使用 SHA-256 哈希函数
+  const hash = crypto.createHash("sha256");
+  hash.update(input.toString());
+  // 获取哈希值并截取前16位
+  return hash.digest("hex").slice(0, 16);
+}
 
-/**
- * 获取余额
- * @param account 钱包地址
- */
-export const getBalance = async (account: string) => {
-  if (!window.ethereum) return;
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const balance = await provider.getBalance(account);
-  const balanceStr = ethers.utils.formatEther(balance);
-  return balanceStr;
-};
-
-/**
- * 切换网络
- */
-export const changeNetwork = async ({
-  networkName,
-}: {
-  networkName: string;
-}) => {
-  try {
-    if (!window.ethereum) throw new Error("No crypto wallet found");
-    await window.ethereum.request({
-      method: "wallet_addEthereumChain",
-      params: [
-        {
-          ...networks[networkName],
-        },
-      ],
-    });
-  } catch (err: any) {
-    console.log(err.message);
-  }
-};
+export function padTokenId(tokenId: number, length: number = 8) {
+  return tokenId.toString().padStart(length, "0");
+}
