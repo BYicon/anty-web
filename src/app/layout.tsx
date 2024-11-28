@@ -11,6 +11,7 @@ import { getConfig } from "@/config/wagmi";
 import { Providers } from "@/app/providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
+import { Toaster } from "@/components/ui/toaster";
 
 dotenv.config();
   
@@ -37,6 +38,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster />
         </Providers>
       </body>
     </html>

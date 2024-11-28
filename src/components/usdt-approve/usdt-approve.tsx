@@ -3,8 +3,11 @@ import usdtAbi from "@/abi/USDT";
 import nftAbi from "@/abi/NFTMIR";
 import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function UsdtApprove(props: {
+  className?: string;
   amount: string | number;
   onApprove?: () => void;
   onSuccess?: () => void;
@@ -65,14 +68,10 @@ export default function UsdtApprove(props: {
 
   return (
     <div>
-      <button
-        className="btn-secondary w-[360px] h-[56px]"
-        type="button"
-        disabled={isConfirming}
-        onClick={onApproveHandler}
-      >
-        Approve{isConfirming ? "..." : ""}
-      </button>
+      <Button className={`${props.className}`} variant="secondary" disabled={isConfirming} onClick={onApproveHandler}>
+        {isConfirming ? <Loader2 className="animate-spin" /> : ""}
+        Approve
+      </Button>
     </div>
   );
 }

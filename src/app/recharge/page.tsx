@@ -11,14 +11,19 @@ import {
 import usdtAbi from "@/abi/USDT";
 import nftAbi from "@/abi/NFTMIR";
 import "./recharge.scss";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import UsdtApprove from "@/components/usdt-approve/usdt-approve";
-import html2canvas from "html2canvas";
-import Loading from "@/components/loading/loading";
 import ConnectWalletButton from "@/components/ConnectWalletButton/ConnectWalletButton";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RechargePage() {
   const { address: currentAddress } = useAccount();
+  const [userid, setUserid] = useState<string>("");
+  const [rechargeAmount, setRechargeAmount] = useState<string>("");
+  const [referral, setReferral] = useState<string>("");
+  const { toast } = useToast();
   const {
     data: hash,
     isPending: writeIsPending,
@@ -26,32 +31,9 @@ export default function RechargePage() {
     isError: writeIsError,
     writeContract,
   } = useWriteContract();
-  const [userid, setUserid] = useState<string>("");
-  const [rechargeAmount, setRechargeAmount] = useState<string>("");
-  const [referral, setReferral] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("loading...");
 
   // 获取当前用户授权USDT的额度
-  const {
-    data: waitingForRedeemData,
-    refetch,
-    error: waitingForRedeemError,
-    isSuccess: waitingForRedeemIsSuccess,
-  } = useReadContract({
-    address: usdtAbi.contractAddress as `0x${string}`,
-    abi: nftAbi.abi,
-    functionName: "getWaitingForRedeem",
-    args: [currentAddress as `0x${string}`],
-  });
-
-  // 获取当前用户授权USDT的额度
-  const {
-    data: allowanceData,
-    refetch: refetchAllowance,
-    error: allowanceError,
-    isSuccess: allowanceIsSuccess,
-  } = useReadContract({
+  const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
     address: usdtAbi.contractAddress as `0x${string}`,
     abi: usdtAbi.abi,
     functionName: "allowance",
@@ -76,6 +58,7 @@ export default function RechargePage() {
     console.log("onApproveError", error);
   };
 
+  // TODO: learn more 。。。
   const {
     data: rechargeData,
     error: rechargeError,
@@ -95,7 +78,6 @@ export default function RechargePage() {
       return;
     }
     if (rechargeAmount && userid) {
-      setLoadingText("recharging...");
       await writeContract(rechargeData!.request);
       console.log("writeIsPending 🚀🚀🚀", writeIsPending);
       console.log("writeIsSuccess 🚀🚀🚀", writeIsSuccess);
@@ -118,18 +100,21 @@ export default function RechargePage() {
   });
 
   useEffect(() => {
-    setIsLoading(isRechargeLoading);
-  }, [isRechargeLoading]);
-
-  useEffect(() => {
     if (isRechargeSuccess) {
       console.log("isRechargeSuccess 🟢🟢🟢", isRechargeSuccess);
       refetchUsdtBalance();
       refetchAllowance();
-      alert("充值成功");
+      toast({
+        title: "Success",
+        description: "You have successfully recharged.",
+      });
     }
     if (isRechargeError) {
-      console.log("isRechargeError 🔴🔴🔴", isRechargeError);
+      toast({
+        title: "Error",
+        description: "There was a problem with your request.",
+        variant: "destructive",
+      });
     }
   }, [isRechargeSuccess, isRechargeError]);
 
@@ -139,7 +124,7 @@ export default function RechargePage() {
   }, [allowanceData, rechargeAmount]);
 
   return (
-    <div className="recharge-page">
+    <div className="recharge-page common-page">
       <div className="recharge-page-content">
         <div className="recharge-form">
           <div className="recharge-form-title">
@@ -153,7 +138,7 @@ export default function RechargePage() {
             ${usdtBalance?.formatted || "0"}
           </div>
           <div className="recharge-form-item">
-            <label className="recharge-form-item-label">USER ID</label>
+            <label className="recharge-form-item-label">User ID</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -163,7 +148,7 @@ export default function RechargePage() {
             />
           </div>
           <div className="recharge-form-item">
-            <label className="recharge-form-item-label">AMOUNT</label>
+            <label className="recharge-form-item-label">Amount</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -173,7 +158,7 @@ export default function RechargePage() {
             />
           </div>
           <div className="recharge-form-item">
-            <label className="recharge-form-item-label">REFERRAL</label>
+            <label className="recharge-form-item-label">Referral</label>
             <input
               className="recharge-form-item-input"
               type="text"
@@ -185,26 +170,30 @@ export default function RechargePage() {
           <div className="recharge-form-actions">
             {needApprove ? (
               <UsdtApprove
+                className="recharge-actions-button"
                 onApprove={() => onApproveHandler()}
                 onSuccess={onApproveSuccess}
                 onError={onApproveError}
                 amount={rechargeAmount}
               />
             ) : currentAddress ? (
-              <button
-                className="btn-primary h-[56px] w-[360px]"
-                type="button"
+              <Button
+                className="recharge-actions-button"
+                size="lg"
                 onClick={onRecharge}
+                disabled={isRechargeLoading}
               >
-                Recharge
-              </button>
+                {isRechargeLoading && (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                )}
+                {isRechargeLoading ? "Recharging..." : "Recharge"}
+              </Button>
             ) : (
               <ConnectWalletButton />
             )}
           </div>
         </div>
       </div>
-      <Loading loading={isLoading} loadingText={loadingText} />
     </div>
   );
 }

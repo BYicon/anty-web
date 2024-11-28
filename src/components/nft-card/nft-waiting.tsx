@@ -10,6 +10,10 @@ import { uploadToIPFS } from "@/http/api";
 import html2canvas from "html2canvas";
 import { createIcon } from "@/shared/blockies";
 import { generateHash, padTokenId } from "@/shared/utils";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@radix-ui/react-toast";
 
 export default function NftCard({
   id,
@@ -26,6 +30,7 @@ export default function NftCard({
 }) {
   const cardNumber = padTokenId(tokenId);
   const { data: tx, writeContract } = useWriteContract();
+  const { toast } = useToast();
 
   function generateImage() {
     const cardElement = document.getElementById(id) as HTMLElement;
@@ -82,6 +87,12 @@ export default function NftCard({
       onRedeemSuccess && onRedeemSuccess();
     }
     if (isRedeemError) {
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+        variant: "destructive",
+        action: <ToastAction altText="Try again" onClick={handleRedeem}>Try again</ToastAction>,
+      });
       onRedeemError && onRedeemError();
     }
   }, [isRedeemSuccess, isRedeemError]);
@@ -103,19 +114,20 @@ export default function NftCard({
   return (
     <div className="nft-card">
       <div className="nft-card-content">
-        <div className="card-title">NFT Membership Card</div>
+        <div className="card-title">VIP</div>
         <div className="card-number" id="cardNumber">
-          {cardNumber}
+          NO.{cardNumber}
         </div>
         <div className="text-md text-gray-500 mt-2">
           <span className="text-black">status:</span> waiting for redeem
         </div>
       </div>
       <div className="mt-4 px-4">
-        <div className="flex justify-end items-center">
-          <button className="btn-primary" disabled={isRedeemLoading} onClick={handleRedeem}>
+        <div className="flex items-center">
+          <Button onClick={handleRedeem} className="w-full h-10">
+          {isRedeemLoading ? <Loader2 className="animate-spin" /> : ""}
             {isRedeemLoading ? "Redeeming..." : "Redeem"}
-          </button>
+          </Button>
         </div>
       </div>
       {/* 用户生成图片 */}

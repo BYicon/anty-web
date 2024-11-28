@@ -1,13 +1,17 @@
 "use client";
-import {
-  useAccount,
-  useReadContract,
-} from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import nftAbi from "@/abi/NFTMIR";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import NftCardWaiting from "@/components/nft-card/nft-waiting";
 import NftCardMinted from "@/components/nft-card/nft-minted";
 import Loading from "@/components/loading/loading";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import "./nfts.scss";
 
 export default function NftsPage() {
@@ -17,7 +21,6 @@ export default function NftsPage() {
 
   const {
     data: userNfts,
-    error: userNftsError,
     refetch: refetchUserNfts,
   } = useReadContract({
     address: nftAbi.contractAddress,
@@ -28,7 +31,6 @@ export default function NftsPage() {
 
   const {
     data: waitingForRedeem,
-    error: waitingForRedeemError,
     refetch: refetchWaitingForRedeem,
   } = useReadContract({
     address: nftAbi.contractAddress,
@@ -38,16 +40,12 @@ export default function NftsPage() {
   });
 
   const onRedeem = () => {
-    setIsLoading(true);
-    setLoadingText("Redeeming...");
   };
   const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
-    setIsLoading(false);
   };
   const onRedeemError = () => {
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -57,32 +55,44 @@ export default function NftsPage() {
   }, [userNfts]);
 
   return (
-    <div className="nfts-page">
+    <div className="nfts-page common-page">
       {userNfts && userNfts.length > 0 && (
         <>
-          <div className="nft-list-title">Owned</div>
-          <div className="nft-list">
-            {(userNfts as any).map((item: any) => (
-              <NftCardMinted key={item.tokenID} data={item} />
-            ))}
-          </div>
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Owned</CardTitle>
+              <CardDescription>total {userNfts.length} NFTs</CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-4 gap-8">
+              {userNfts.map((item: any) => (
+                <NftCardMinted key={item.tokenID} data={item} />
+              ))}
+            </CardContent>
+          </Card>
         </>
       )}
       {waitingForRedeem && waitingForRedeem.length > 0 && (
         <>
-          <div className="nft-list-title">Waiting for redeem</div>
-          <div className="nft-list">
-            {(waitingForRedeem as any).map((item: any) => (
-              <NftCardWaiting
-                key={item}
-                id={`card-${item}`}
-                tokenId={item}
-                onRedeem={onRedeem}
-                onRedeemSuccess={onRedeemSuccess}
-                onRedeemError={onRedeemError}
-              />
-            ))}
-          </div>
+          <Card className="bg">
+            <CardHeader>
+              <CardTitle>Waiting For Redeem</CardTitle>
+              <CardDescription>
+                total {waitingForRedeem.length} waiting for redeem
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-4 gap-8">
+              {(waitingForRedeem as any).map((item: any) => (
+                <NftCardWaiting
+                  key={item}
+                  id={`card-${item}`}
+                  tokenId={item}
+                  onRedeem={onRedeem}
+                  onRedeemSuccess={onRedeemSuccess}
+                  onRedeemError={onRedeemError}
+                />
+              ))}
+            </CardContent>
+          </Card>
         </>
       )}
       <Loading loading={isLoading} loadingText={loadingText} />

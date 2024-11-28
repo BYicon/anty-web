@@ -1,16 +1,12 @@
 .recharge-page {
-  @apply min-h-screen;
-  padding: 20px;
-  background: var(--colors-gradientBubblegum);
 }
 .recharge-page-content {
   @apply mt-16 max-w-2xl mx-auto mb-16;
 }
 .recharge-form {
-  @apply flex flex-col gap-4 px-16 py-8 border border-gray-300 shadow-md;
+  @apply flex flex-col gap-4 px-16 py-8 border border-gray-300 shadow-md rounded-xl;
   width: 520px;
   background: var(--colors-backgroundAlt);
-  border-radius: var(--radii-card);
 }
 .recharge-form-title {
   @apply flex flex-col font-bold text-xl;
@@ -44,4 +40,10 @@
 
 .recharge-form-actions {
   @apply mx-auto mt-4;
+}
+
+.recharge-actions-button {
+  width: 360px;
+  height: 56px;
+  border-radius: 1rem;
 }

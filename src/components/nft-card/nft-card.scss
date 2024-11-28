@@ -1,10 +1,10 @@
 $card-label-bg: rgba(40, 13, 95, 0.2);
 .nft-card {
-  @apply relative w-64 rounded-lg shadow-md pb-4;
+  @apply relative w-64 rounded-lg shadow-lg pb-4;
+  background: var(--colors-input);
 }
 .nft-card-content {
-  @apply relative w-full min-h-40 bg-gray-300 shadow-md flex flex-col justify-center items-center;
-  border-radius: 10px 10px 0 0;
+  @apply relative w-full min-h-40 bg-gray-300 shadow-md flex flex-col justify-center items-center opacity-80 rounded-t-lg;
   color: #333;
 }
 .card-number {
