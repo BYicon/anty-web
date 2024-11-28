@@ -13,7 +13,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
 
 dotenv.config();
-
+  
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

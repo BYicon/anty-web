@@ -9,16 +9,20 @@ import { useEffect, useState } from "react";
 import { uploadToIPFS } from "@/http/api";
 import html2canvas from "html2canvas";
 import { createIcon } from "@/shared/blockies";
-import { generateHash, padTokenId } from "@/shared/helper";
+import { generateHash, padTokenId } from "@/shared/utils";
 
 export default function NftCard({
   id,
   tokenId,
   onRedeem,
+  onRedeemSuccess,
+  onRedeemError,
 }: {
   id: string;
   tokenId: number;
   onRedeem?: () => void;
+  onRedeemSuccess?: () => void;
+  onRedeemError?: () => void;
 }) {
   const cardNumber = padTokenId(tokenId);
   const { data: tx, writeContract } = useWriteContract();
@@ -56,7 +60,7 @@ export default function NftCard({
 
   const handleRedeem = async () => {
     const img = await generateImage();
-    console.log("img 🚀🚀🚀", img);
+    onRedeem && onRedeem();
     await writeContract({
       address: nftAbi.contractAddress,
       abi: nftAbi.abi,
@@ -75,10 +79,10 @@ export default function NftCard({
 
   useEffect(() => {
     if (isRedeemSuccess) {
-      onRedeem && onRedeem();
+      onRedeemSuccess && onRedeemSuccess();
     }
     if (isRedeemError) {
-      alert(isRedeemError.message);
+      onRedeemError && onRedeemError();
     }
   }, [isRedeemSuccess, isRedeemError]);
 

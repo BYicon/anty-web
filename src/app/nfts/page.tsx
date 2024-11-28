@@ -1,10 +1,7 @@
 "use client";
 import {
   useAccount,
-  useSimulateContract,
-  useWriteContract,
   useReadContract,
-  useWatchContractEvent,
 } from "wagmi";
 import nftAbi from "@/abi/NFTMIR";
 import { useEffect, useRef, useState } from "react";
@@ -29,7 +26,6 @@ export default function NftsPage() {
     args: [currentAddress as `0x${string}`],
   });
 
-
   const {
     data: waitingForRedeem,
     error: waitingForRedeemError,
@@ -42,14 +38,21 @@ export default function NftsPage() {
   });
 
   const onRedeem = () => {
+    setIsLoading(true);
+    setLoadingText("Redeeming...");
+  };
+  const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
+    setIsLoading(false);
+  };
+  const onRedeemError = () => {
+    setIsLoading(false);
   };
 
   useEffect(() => {
     if (userNfts) {
       console.log("userNfts", userNfts);
-
     }
   }, [userNfts]);
 
@@ -59,11 +62,9 @@ export default function NftsPage() {
         <>
           <div className="nft-list-title">Owned</div>
           <div className="nft-list">
-          {
-          (userNfts as any).map((item: any) => (
-            <NftCardMinted key={item.tokenID} data={item} />
-            ))
-          }
+            {(userNfts as any).map((item: any) => (
+              <NftCardMinted key={item.tokenID} data={item} />
+            ))}
           </div>
         </>
       )}
@@ -71,9 +72,16 @@ export default function NftsPage() {
         <>
           <div className="nft-list-title">Waiting for redeem</div>
           <div className="nft-list">
-          {(waitingForRedeem as any).map((item: any) => (
-            <NftCardWaiting key={item} id={`card-${item}`} tokenId={item} onRedeem={onRedeem} />
-          ))}
+            {(waitingForRedeem as any).map((item: any) => (
+              <NftCardWaiting
+                key={item}
+                id={`card-${item}`}
+                tokenId={item}
+                onRedeem={onRedeem}
+                onRedeemSuccess={onRedeemSuccess}
+                onRedeemError={onRedeemError}
+              />
+            ))}
           </div>
         </>
       )}

@@ -25,7 +25,7 @@ export function Providers(props: {
   return (
     <WagmiProvider config={config} initialState={props.initialState}>
       <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider theme={theme === EnumTheme.Dark ? darkTheme() : lightTheme()}>{props.children}</RainbowKitProvider>
+          <RainbowKitProvider coolMode theme={theme === EnumTheme.Dark ? darkTheme() : lightTheme()}>{props.children}</RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   )

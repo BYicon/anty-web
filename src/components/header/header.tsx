@@ -22,7 +22,15 @@ const Header = () => {
 
   useEffect(() => {
     initTheme();
-    console.log("account", account);
+
+    // const lang = getISOLang();
+    // const htmlLang = document.documentElement.lang;
+
+    // if (lang !== htmlLang) {
+    //   document.documentElement.lang = lang;
+    // }
+
+    // console.log("lang 🚀🚀🚀", lang);    
   }, []);
 
   return (

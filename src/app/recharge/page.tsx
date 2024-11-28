@@ -13,9 +13,9 @@ import nftAbi from "@/abi/NFTMIR";
 import "./recharge.scss";
 import { useEffect, useRef, useState } from "react";
 import UsdtApprove from "@/components/usdt-approve/usdt-approve";
-import NftCard from "@/components/nft-card/nft-card";
 import html2canvas from "html2canvas";
 import Loading from "@/components/loading/loading";
+import ConnectWalletButton from "@/components/ConnectWalletButton/ConnectWalletButton";
 
 export default function RechargePage() {
   const { address: currentAddress } = useAccount();
@@ -190,7 +190,7 @@ export default function RechargePage() {
                 onError={onApproveError}
                 amount={rechargeAmount}
               />
-            ) : (
+            ) : currentAddress ? (
               <button
                 className="btn-primary h-[56px] w-[360px]"
                 type="button"
@@ -198,6 +198,8 @@ export default function RechargePage() {
               >
                 Recharge
               </button>
+            ) : (
+              <ConnectWalletButton />
             )}
           </div>
         </div>
