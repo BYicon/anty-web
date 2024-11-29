@@ -14,7 +14,7 @@ export default function NftCard({
     alert('coming soon')
   };
   return (
-    <div className="nft-card">
+    <div className="nft-card hover:scale-105 transition-all duration-300">
       <div className="nft-card-content">
         <img className="w-full rounded-t-lg" src={data.tokenURI} alt="nft" />
       </div>

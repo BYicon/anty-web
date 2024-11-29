@@ -55,10 +55,10 @@ export default function NftsPage() {
   }, [userNfts]);
 
   return (
-    <div className="nfts-page common-page">
+    <div className="common-page nfts-page">
       {userNfts && userNfts.length > 0 && (
         <>
-          <Card className="mb-8">
+          <Card className="nfts-list mb-8">
             <CardHeader>
               <CardTitle>Owned</CardTitle>
               <CardDescription>total {userNfts.length} NFTs</CardDescription>
@@ -73,7 +73,7 @@ export default function NftsPage() {
       )}
       {waitingForRedeem && waitingForRedeem.length > 0 && (
         <>
-          <Card className="bg">
+          <Card className="nfts-list">
             <CardHeader>
               <CardTitle>Waiting For Redeem</CardTitle>
               <CardDescription>

@@ -17,12 +17,12 @@
   color: var(--colors-textSubtle);
 }
 .recharge-form-allowance {
-  @apply text-xs flex items-center justify-end gap-2 font-bold;
+  @apply text-xs flex items-center justify-end gap-2 font-bold mt-0;
   color: var(--colors-textSubtle);
 }
 
 .recharge-form-item {
-  @apply relative mt-2;
+  @apply relative mt-0;
 }
 
 .recharge-form-item-label {

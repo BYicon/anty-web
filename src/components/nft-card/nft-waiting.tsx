@@ -112,7 +112,7 @@ export default function NftCard({
   // });
 
   return (
-    <div className="nft-card">
+    <div className="nft-card hover:scale-105 transition-all duration-300">
       <div className="nft-card-content">
         <div className="card-title">VIP</div>
         <div className="card-number" id="cardNumber">
@@ -124,7 +124,7 @@ export default function NftCard({
       </div>
       <div className="mt-4 px-4">
         <div className="flex items-center">
-          <Button onClick={handleRedeem} className="w-full h-10">
+          <Button onClick={handleRedeem} className="w-full h-10" disabled={isRedeemLoading}>
           {isRedeemLoading ? <Loader2 className="animate-spin" /> : ""}
             {isRedeemLoading ? "Redeeming..." : "Redeem"}
           </Button>

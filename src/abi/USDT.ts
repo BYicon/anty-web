@@ -1,6 +1,7 @@
 export default {
   contractName: "USDT",
   contractAddress: "0x03B9e5973E2c099D08D3fC61Cf1532B39dB0c770",
+  contractDecimals: 6,
   abi: [
     {
       "inputs": [

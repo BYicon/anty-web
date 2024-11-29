@@ -1,12 +1,9 @@
 .nfts-page {
-  @apply px-4 py-8 min-h-screen;
-  background-color: var(--colors-backgroundAlt);
+  background: var(--colors-background);
 }
 
-.nft-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
+.nfts-list {
+  background: var(--colors-gradientBubblegum);
 }
 
 .nft-list-title {

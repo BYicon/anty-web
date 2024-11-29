@@ -24,7 +24,7 @@ export default function UsdtApprove(props: {
     address: usdtAbi.contractAddress,
     abi: usdtAbi.abi,
     functionName: "approve",
-    args: [nftAbi.contractAddress, BigInt(+props.amount * 10 ** 18)],
+    args: [nftAbi.contractAddress, BigInt(+props.amount * 10 ** usdtAbi.contractDecimals)],
   });
 
   const { data: hash, writeContract } = useWriteContract();
