@@ -12,7 +12,7 @@ import { createIcon } from "@/shared/blockies";
 import { generateHash, padTokenId } from "@/shared/utils";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
 export default function NftCard({

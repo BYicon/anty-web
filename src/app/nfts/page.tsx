@@ -56,6 +56,13 @@ export default function NftsPage() {
 
   return (
     <div className="common-page nfts-page">
+      {userNfts && userNfts.length === 0 && waitingForRedeem && waitingForRedeem.length === 0 && (
+        <div className="no-data">
+          <div className="flex justify-center items-center h-full text-[100px] mt-8 font-bold">
+            No data
+          </div>
+        </div>
+      )}
       {userNfts && userNfts.length > 0 && (
         <>
           <Card className="nfts-list mb-8">

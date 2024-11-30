@@ -16,7 +16,8 @@ import UsdtApprove from "@/components/usdt-approve/usdt-approve";
 import ConnectWalletButton from "@/components/ConnectWalletButton/ConnectWalletButton";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
+
 
 export default function RechargePage() {
   const { address: currentAddress } = useAccount();
@@ -24,6 +25,7 @@ export default function RechargePage() {
   const [rechargeAmount, setRechargeAmount] = useState<string>("");
   const [referral, setReferral] = useState<string>("");
   const { toast } = useToast();
+
   const {
     data: hash,
     isPending: writeIsPending,
@@ -34,23 +36,21 @@ export default function RechargePage() {
 
   // 获取当前用户授权USDT的额度
   const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
-    address: usdtAbi.contractAddress as `0x${string}`,
+    address: usdtAbi.contractAddress,
     abi: usdtAbi.abi,
     functionName: "allowance",
     args: [
       currentAddress as `0x${string}`,
-      nftAbi.contractAddress as `0x${string}`,
+      nftAbi.contractAddress,
     ],
   });
 
   const { data: usdtBalance, refetch: refetchUsdtBalance } = useBalance({
     address: currentAddress,
-    token: usdtAbi.contractAddress as `0x${string}`,
+    token: usdtAbi.contractAddress,
   });
 
   const onApproveHandler = () => {};
-
-  // 授权成功
   const onApproveSuccess = () => {
     refetchAllowance();
   };
@@ -69,11 +69,17 @@ export default function RechargePage() {
     address: nftAbi.contractAddress as `0x${string}`,
     abi: nftAbi.abi,
     functionName: "recharge",
-    args: [BigInt(userid), BigInt(rechargeAmount) * BigInt(10 ** 18)],
+    args: [
+      BigInt(userid),
+      BigInt(rechargeAmount) * BigInt(10 ** usdtAbi.contractDecimals),
+    ],
   });
 
   const onRecharge = async () => {
-    if (Number(allowanceData) < Number(rechargeAmount) * 10 ** 18) {
+    if (
+      Number(allowanceData) <
+      Number(rechargeAmount) * 10 ** usdtAbi.contractDecimals
+    ) {
       alert("授权额度不足");
       return;
     }
@@ -120,7 +126,10 @@ export default function RechargePage() {
 
   const [needApprove, setNeedApprove] = useState(false);
   useEffect(() => {
-    setNeedApprove(Number(allowanceData) < Number(rechargeAmount) * 10 ** 18); // TODO: 精度问题
+    setNeedApprove(
+      Number(allowanceData) <
+        Number(rechargeAmount) * 10 ** usdtAbi.contractDecimals
+    ); // TODO: 精度问题
   }, [allowanceData, rechargeAmount]);
 
   return (
@@ -130,7 +139,7 @@ export default function RechargePage() {
           <div className="recharge-form-title">
             <h1 className="recharge-form-title-text">Buy G coins</h1>
             <p className="recharge-form-title-desc">
-              Buy G coins for your WECHAT MINI PROGRAM
+              Buy G coins for your WECHAT MINI PROGRAM {allowanceData}
             </p>
           </div>
           <div className="recharge-form-allowance">
@@ -152,7 +161,7 @@ export default function RechargePage() {
             <input
               className="recharge-form-item-input"
               type="text"
-              placeholder="USDT"
+              placeholder="Tether USDT"
               value={rechargeAmount}
               onChange={(e) => setRechargeAmount(e.target.value)}
             />
