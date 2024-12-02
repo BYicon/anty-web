@@ -7,27 +7,27 @@ const HeaderSection = () => {
 
   const features = [
     {
-      name: 'Push to deploy',
+      name: 'Push',
       description:
-        'Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi. Odio urna massa nunc massa.',
+        'Anyone has the right to step up and be part of the solution to growing the Ethereum community, anywhere in the world..',
       icon: '',
     },
     {
-      name: 'SSL certificates',
+      name: 'VitalikButerin',
       description:
-        'Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget. Sem sodales gravida quam turpis enim lacus amet.',
+        'One part of L2 scaling is Ethereum increasing its blob capacity. The other part is rollups becoming more data-efficient. Good to see @Starknet rising to the challenge.',
       icon: 'LockClosedIcon',
     },
     {
-      name: 'Simple queues',
+      name: 'Solana',
       description:
-        'Quisque est vel vulputate cursus. Risus proin diam nunc commodo. Lobortis auctor congue commodo diam neque.',
+        'Solana is a blockchain built for mass adoption ◎ Fast, composable, green, and globally distributed. X by @SolanaFndn.',
       icon: 'ArrowPathIcon',
     },
     {
-      name: 'Advanced security',
+      name: 'V',
       description:
-        'Arcu egestas dolor vel iaculis in ipsum mauris. Tincidunt mattis aliquet hac quis. Id hac maecenas ac donec pharetra eget.',
+        'Argot, a collective of developers who have been working on important Ethereum dev tools we know and love for many years, is in the process of becoming an independent org..',
       icon: 'FingerPrintIcon',
     },
   ]
@@ -36,13 +36,12 @@ const HeaderSection = () => {
     <div className={`py-24 sm:py-32 ${theme === EnumTheme.Dark ? 'bg-black' : 'bg-white'}`}>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base/7 font-semibold text-indigo-600">Deploy faster</h2>
+          <h2 className="text-base/7 font-semibold text-indigo-600">An important step.</h2>
           <p className={`mt-2 text-pretty text-4xl font-semibold tracking-tight ${theme === EnumTheme.Dark ? 'text-white' : 'text-gray-900'} sm:text-5xl lg:text-balance`}>
-            Everything you need to deploy your app
+          Once those three are done, we get universal L1 and L2 light client verification!
           </p>
           <p className={`mt-6 text-lg/8 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-600'}`}>
-            Quis tellus eget adipiscing convallis sit sit eget aliquet quis. Suspendisse eget egestas a elementum
-            pulvinar et feugiat blandit at. In mi viverra elit nunc.
+          Helios (or alternatives) being integrated into user wallets, on mobile and desktop
           </p>
         </div>
         <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">

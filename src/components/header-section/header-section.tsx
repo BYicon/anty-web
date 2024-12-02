@@ -51,52 +51,50 @@ const HeaderSection = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h2 className="text-5xl font-semibold tracking-tight sm:text-7xl">
-            Work with us
+            Mirror NFT
           </h2>
           <p
             className={`mt-8 text-pretty text-lg font-medium ${
               theme === EnumTheme.Dark ? "text-gray-600" : "text-gray-900"
             }`}
           >
-            Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui
-            lorem cupidatat commodo. Elit sunt amet fugiat veniam occaecat
-            fugiat.
+            Built with Next.js, wagmi, shadcn/ui, and RainbowKit, integrates wallet interactions, token and NFT functionalities, and a random pixel art generator. The generated images are uploaded to IPFS and used as TokenURIs, combining Web3 technologies with creative and decentralized solutions.
           </p>
         </div>
         <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base/7 font-semibold sm:grid-cols-2 md:flex lg:gap-x-10">
             <a href="#">
-              Open roles <span aria-hidden="true">&rarr;</span>
+              NextJs <span aria-hidden="true">&rarr;</span>
             </a>
             <a href="#">
-              Internship program <span aria-hidden="true">&rarr;</span>
+              Wagmi <span aria-hidden="true">&rarr;</span>
             </a>
             <a href="#">
-              Our values <span aria-hidden="true">&rarr;</span>
+              RainbowKit <span aria-hidden="true">&rarr;</span>
             </a>
             <a href="#">
-              Meet our leadership <span aria-hidden="true">&rarr;</span>
+              Shadcn <span aria-hidden="true">&rarr;</span>
             </a>
           </div>
           <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Offices worldwide</dt>
-              <dd className="text-4xl font-semibold tracking-tight">12</dd>
+              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Viem</dt>
+              <dd className="text-4xl font-semibold tracking-tight">Wagmi</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
               <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>
-                Full-time colleagues
+                IPFS
               </dt>
-              <dd className="text-4xl font-semibold tracking-tight">300+</dd>
+              <dd className="text-4xl font-semibold tracking-tight">Pinata</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Hours per week</dt>
-              <dd className="text-4xl font-semibold tracking-tight">40</dd>
+              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Ethereum</dt>
+              <dd className="text-4xl font-semibold tracking-tight">Etherscan</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Paid time off</dt>
+              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Shadcn-UI</dt>
               <dd className="text-4xl font-semibold tracking-tight">
-                Unlimited
+                Shadcn
               </dd>
             </div>
           </dl>
