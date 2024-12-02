@@ -5,6 +5,7 @@ import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { parseUnits } from "viem";
 
 export default function UsdtApprove(props: {
   className?: string;
@@ -24,7 +25,10 @@ export default function UsdtApprove(props: {
     address: usdtAbi.contractAddress,
     abi: usdtAbi.abi,
     functionName: "approve",
-    args: [nftAbi.contractAddress, BigInt(+props.amount * 10 ** usdtAbi.contractDecimals)],
+    args: [
+      nftAbi.contractAddress,
+      parseUnits(props.amount.toString(), usdtAbi.contractDecimals),
+    ],
   });
 
   const { data: hash, writeContract } = useWriteContract();
@@ -41,13 +45,16 @@ export default function UsdtApprove(props: {
     }
   };
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed, error: isConfirmError } =
-    useWaitForTransactionReceipt({
-      hash,
-    });
+  const {
+    isLoading: isConfirming,
+    isSuccess: isConfirmed,
+    error: isConfirmError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   useEffect(() => {
-    if (isConfirmed) {  
+    if (isConfirmed) {
       console.log("isConfirmed 🟢🟢🟢", isConfirmed);
       props.onSuccess && props.onSuccess();
     }
@@ -67,11 +74,15 @@ export default function UsdtApprove(props: {
   // })
 
   return (
-    <div>
-      <Button className={`${props.className}`} variant="secondary" disabled={isConfirming} onClick={onApproveHandler}>
-        {isConfirming ? <Loader2 className="animate-spin" /> : ""}
-        Approve
-      </Button>
-    </div>
+    <Button
+      className={`${props.className}`}
+      type="button"
+      variant="secondary"
+      disabled={isConfirming}
+      onClick={onApproveHandler}
+    >
+      {isConfirming ? <Loader2 className="animate-spin" /> : ""}
+      Approve
+    </Button>
   );
 }

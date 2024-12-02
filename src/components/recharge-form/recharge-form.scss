@@ -1,0 +1,38 @@
+$recharge-input-height: 60px;
+.recharge-form-title {
+  @apply text-2xl font-bold;
+  color: var(--colors-text);
+}
+
+.recharge-form-allowance {
+  @apply text-xs flex items-center justify-end gap-2 font-bold mt-0;
+  color: var(--colors-textSubtle);
+}
+
+.recharge-form-title-desc {
+  @apply text-sm text-gray-500 font-normal;
+  color: var(--colors-textSubtle);
+}
+.recharge-label {
+  @apply absolute left-4 font-bold text-sm font-bold;
+  top: calc($recharge-input-height / 2);
+  width: 100px;
+  color: var(--colors-text);
+  transform: translateY(-50%);
+}
+.recharge-input {
+  @apply bg-input w-full text-sm rounded-xl;
+  color: var(--colors-text);
+  height: $recharge-input-height;
+  margin: 0 auto;
+  padding-left: 20px;
+  background: var(--colors-input);
+  text-align: right;
+  &:focus {
+    border-color: var(--colors-destructive);
+    box-shadow: 0 0 0 3px var(--colors-destructive20);
+  }
+}
+.recharge-actions-btn {
+  @apply w-full h-[56px] rounded-xl;
+}
