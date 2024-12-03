@@ -5,7 +5,7 @@
 ![LICENSE](https://img.shields.io/badge/license-MIT-green)
 
 ### Preview
-[https://ioby.cn](https://ioby.cn/)
+[ioby.cn](https://ioby.cn/)
 
 `目前部署在sepolia测试网，合约地址在abi文件中，更多功能开发中`
 `欢迎一起探索Web3～～ 🐶 `
