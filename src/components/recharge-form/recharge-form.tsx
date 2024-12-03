@@ -107,7 +107,7 @@ function RechargeForm() {
       abi: nftAbi.abi,
       functionName: "recharge",
       args: [
-        BigInt(values.userid || 0), // TODO: 更改合约数字类型
+        values.userid || 0,
         parseUnits(values.amount.toString() || "0", usdtAbi.contractDecimals),
       ],
     });

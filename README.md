@@ -1,38 +1,43 @@
-# MIR
-
-预览地址：[DEMO](https://ioby.cn/)
-## 主要功能
-使用USDT充值小程序积分，每充值一定积分，可以获取NFT，NFT后续可用于其他小程序（类似于会员卡）
 
 
+<img src="https://raw.githubusercontent.com/BYicon/mirc-web/refs/heads/main/public/images/logo.png" alt="Description" width="280"/>
+
+![LICENSE](https://img.shields.io/badge/license-MIT-green)
+
+### Preview
+[https://ioby.cn](https://ioby.cn/)
+
+`目前部署在sepolia测试网，合约地址在abi文件中，更多功能开发中`
+`欢迎一起探索Web3～～ 🐶 `
+
+ [![Next.js](https://img.shields.io/badge/Next.js-blue)](https://nextjs.org) [![Shadcn UI](https://img.shields.io/badge/Shadcn%20UI-blue)](https://ui.shadcn.com) [![Typescript](https://img.shields.io/badge/Typescript-blue)](https://www.typescriptlang.org)  [![Wagmi](https://img.shields.io/badge/Wagmi-red)](https://wagmi.sh)  [![RainbowKit](https://img.shields.io/badge/RainbowKit-orange)](https://www.rainbowkit.com) [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-green)](https://tailwindcss.com)
+
+## Features
+- 连接钱包
+- 充值USDT，每充值10U，可获得一个NFT的铸造资格
+- 铸造NFT时，生成随机图片并上传文件至IPFS
 
 
-
-// 开发中。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。。
-
-
-
-### [Shadcn UI](https://ui.shadcn.com/docs)
-
-
-
-
+## Start project
 ```bash
-yarn ui:init
+yarn dev
 ```
 
-添加组件（例如button）
+## Deploy project
+
 ```bash
-yarn ui:add button
+yarn build
 ```
 
-会自动生成组件代码，引入使用
 ```bash
-import { Button } from "@/components/ui/button"
+pm2 start npm --name "mirc" -- start
 ```
-```html
-<Button>Click me</Button>
-``` 
 
- 页面配色使用的是 [🐰 pancakeswap](https://pancakeswap.finance/colors) 的配色
-
+## reference
+- [wagmi](https://wagmi.sh)
+- [rainbowkit](https://www.rainbowkit.com)
+- [shadcn-ui](https://ui.shadcn.com)
+- [pinata](https://pinata.cloud/)
+- [next.js](https://nextjs.org)
+- [blockies](https://github.com/download13/blockies)
+- [html2canvas](https://html2canvas.hertzen.com/)
