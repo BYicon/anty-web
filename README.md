@@ -4,11 +4,14 @@
 
 ![LICENSE](https://img.shields.io/badge/license-MIT-green)
 
-### Preview
-[ioby.cn](https://ioby.cn/)
+## Preview
+[DEMO](https://ioby.cn/)
 
-`目前部署在sepolia测试网，合约地址在abi文件中，更多功能开发中`
-`欢迎一起探索Web3～～ 🐶 `
+[合约仓库](https://github.com/BYicon/mirror-coin)
+`目前部署在sepolia测试网，合约部署address在abi文件中`
+
+`开发中,欢迎一起探索Web3～～ 🐶 `
+<hr />
 
  [![Next.js](https://img.shields.io/badge/Next.js-blue)](https://nextjs.org) [![Shadcn UI](https://img.shields.io/badge/Shadcn%20UI-blue)](https://ui.shadcn.com) [![Typescript](https://img.shields.io/badge/Typescript-blue)](https://www.typescriptlang.org)  [![Wagmi](https://img.shields.io/badge/Wagmi-red)](https://wagmi.sh)  [![RainbowKit](https://img.shields.io/badge/RainbowKit-orange)](https://www.rainbowkit.com) [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-green)](https://tailwindcss.com)
 
