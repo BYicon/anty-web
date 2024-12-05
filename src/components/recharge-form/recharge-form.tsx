@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,15 +23,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import "./recharge-form.scss";
-import UsdtApprove from "@/components/usdt-approve/usdt-approve";
+import TokenApprove from "@/components/token-approve/token-approve";
 import { useEffect, useState } from "react";
-import usdtAbi from "@/abi/USDT";
+import mirAbi from "@/abi/MIR";
 import nftAbi from "@/abi/NFTMIR";
 import {
   useAccount,
   useBalance,
   useReadContract,
-  useSimulateContract,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
@@ -72,18 +70,18 @@ function RechargeForm() {
     writeContract,
   } = useWriteContract();
 
-  // 获取当前用户授权USDT的额度
+  // 获取当前用户ERC20的授权额度
   const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
-    address: usdtAbi.contractAddress,
-    abi: usdtAbi.abi,
+    address: mirAbi.contractAddress,
+    abi: mirAbi.abi,
     functionName: "allowance",
     args: [currentAddress as `0x${string}`, nftAbi.contractAddress],
   });
 
-  const { data: usdtBalance, refetch: refetchUsdtBalance } = useBalance({
+  const { data: mirBalance, refetch: refetchMirBalance, isError: isMirBalanceError, error: mirBalanceMessage } = useBalance({
     address: currentAddress,
-    token: usdtAbi.contractAddress,
-  });
+    token: mirAbi.contractAddress,
+    });
 
   const onApproveHandler = () => {};
   const onApproveSuccess = () => {
@@ -97,18 +95,19 @@ function RechargeForm() {
     if (needApprove) {
       toast({
         title: "Error",
-        description: "Please approve USDT first.",
+        description: "Please approve ERC20 first.",
         variant: "destructive",
       });
       return;
     };
+    const amount = parseUnits(values.amount.toString() || "0", mirAbi.contractDecimals);
     await writeContract({
       address: nftAbi.contractAddress,
       abi: nftAbi.abi,
       functionName: "recharge",
       args: [
         values.userid || 0,
-        parseUnits(values.amount.toString() || "0", usdtAbi.contractDecimals),
+        amount,
       ],
     });
   };
@@ -123,7 +122,7 @@ function RechargeForm() {
   useEffect(() => {
     if (isRechargeSuccess) {
       console.log("isRechargeSuccess 🟢🟢🟢", isRechargeSuccess);
-      refetchUsdtBalance();
+      refetchMirBalance();
       refetchAllowance();
       toast({
         title: "Success",
@@ -155,7 +154,7 @@ function RechargeForm() {
   useEffect(() => {
     const allowance = formatUnits(
       allowanceData || BigInt(0),
-      usdtAbi.contractDecimals
+      mirAbi.contractDecimals
     );
     setNeedApprove(Number(allowance) < Number(amount));
   }, [allowanceData, amount]);
@@ -176,7 +175,7 @@ function RechargeForm() {
             </CardDescription>
             <div className="recharge-form-allowance">
             <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>
-              ${usdtBalance?.formatted || "0"}
+              MIR {mirBalance?.formatted || "0"}
             </div>
           </CardHeader>
           <CardContent className="px-8">
@@ -207,7 +206,7 @@ function RechargeForm() {
                   <FormControl>
                     <Input
                       className="recharge-input"
-                      placeholder="USDT Amount"
+                      placeholder="MIR Amount"
                       {...field}
                       onChange={(e) =>
                         onAmountChange(field, Number(e.target.value))
@@ -238,7 +237,7 @@ function RechargeForm() {
           </CardContent>
           <CardFooter className="flex justify-between">
             {needApprove ? (
-              <UsdtApprove
+              <TokenApprove
                 className="recharge-actions-btn"
                 onApprove={() => onApproveHandler()}
                 onSuccess={onApproveSuccess}

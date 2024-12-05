@@ -1,5 +1,5 @@
 import { useWaitForTransactionReceipt } from "wagmi";
-import usdtAbi from "@/abi/USDT";
+import mirAbi from "@/abi/MIR";
 import nftAbi from "@/abi/NFTMIR";
 import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { parseUnits } from "viem";
 
-export default function UsdtApprove(props: {
+export default function TokenApprove(props: {
   className?: string;
   amount: string | number;
   onApprove?: () => void;
@@ -15,33 +15,21 @@ export default function UsdtApprove(props: {
   onError?: (error: any) => void;
 }) {
   const { address: currentAddress } = useAccount();
-  const {
-    data: approveData,
-    error: simulateError,
-    isSuccess: approveIsSuccess,
-    isLoading: approveIsLoading,
-    isPending: approveIsPending,
-  } = useSimulateContract({
-    address: usdtAbi.contractAddress,
-    abi: usdtAbi.abi,
-    functionName: "approve",
-    args: [
-      nftAbi.contractAddress,
-      parseUnits(props.amount.toString(), usdtAbi.contractDecimals),
-    ],
-  });
 
   const { data: hash, writeContract } = useWriteContract();
   const onApproveHandler = async () => {
     props.onApprove && props.onApprove();
     if (currentAddress) {
-      const result = await writeContract(approveData!.request);
+      const result = await writeContract({
+        address: mirAbi.contractAddress,
+        abi: mirAbi.abi,
+        functionName: "approve",
+        args: [
+          nftAbi.contractAddress,
+          parseUnits(props.amount.toString(), mirAbi.contractDecimals),
+        ],
+      });
       console.log("result 🚀🚀🚀", result);
-      if (approveIsSuccess) {
-        console.log("approveIsSuccess 🚀🚀🚀", approveIsSuccess);
-      } else {
-        console.log("error 🔴🔴🔴", simulateError);
-      }
     }
   };
 
@@ -65,8 +53,8 @@ export default function UsdtApprove(props: {
   }, [isConfirmed, isConfirmError]);
 
   // useWatchContractEvent({
-  //   address: usdtAbi.contractAddress as `0x${string}`,
-  //   abi: usdtAbi.abi,
+  //   address: mirAbi.contractAddress as `0x${string}`,
+  //   abi: mirAbi.abi,
   //   eventName: "Approval",
   //   onLogs(logs) {
   //     console.log("Approval event logs 🔵🔵🔵", logs);

@@ -1,7 +1,9 @@
 export default {
-  contractName: "USDT",
-  contractAddress: "0x2107536b0EcAF91b1a0e5425B30b0BA7Ae172178",
+  contractName: "MIR",
+  contractAddress: "0x808803967413092fE0b5048Af296d57F4a274253",
   contractDecimals: 6,
+  _format: "hh-sol-artifact-1",
+  sourceName: "contracts/MIR.sol",
   abi: [
     {
       inputs: [
@@ -153,6 +155,25 @@ export default {
         {
           indexed: true,
           internalType: "address",
+          name: "user",
+          type: "address",
+        },
+        {
+          indexed: true,
+          internalType: "uint256",
+          name: "amount",
+          type: "uint256",
+        },
+      ],
+      name: "DailyCheck",
+      type: "event",
+    },
+    {
+      anonymous: false,
+      inputs: [
+        {
+          indexed: true,
+          internalType: "address",
           name: "previousOwner",
           type: "address",
         },
@@ -260,6 +281,13 @@ export default {
     },
     {
       inputs: [],
+      name: "dailyCheck",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [],
       name: "decimals",
       outputs: [
         {
@@ -275,12 +303,31 @@ export default {
       inputs: [
         {
           internalType: "address",
-          name: "to",
+          name: "",
+          type: "address",
+        },
+      ],
+      name: "lastDailyCheck",
+      outputs: [
+        {
+          internalType: "uint32",
+          name: "",
+          type: "uint32",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_to",
           type: "address",
         },
         {
           internalType: "uint256",
-          name: "amount",
+          name: "_amount",
           type: "uint256",
         },
       ],
@@ -318,6 +365,19 @@ export default {
     {
       inputs: [],
       name: "renounceOwnership",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "uint256",
+          name: "_newRewardMir",
+          type: "uint256",
+        },
+      ],
+      name: "setRewardRate",
       outputs: [],
       stateMutability: "nonpayable",
       type: "function",

@@ -1,12 +1,12 @@
 export default {
   contractName: "NFTMIR",
-  contractAddress: "0x98094fB5780CB245Bed787B859E96E450a0195cE",
+  contractAddress: "0x7b71AE5c7F583388B1CbC4e5A76a07B91651Ba19",
   abi: [
     {
       inputs: [
         {
           internalType: "address",
-          name: "usdtAddress",
+          name: "mirAddress",
           type: "address",
         },
       ],
@@ -531,6 +531,19 @@ export default {
     },
     {
       inputs: [],
+      name: "mir",
+      outputs: [
+        {
+          internalType: "contract IERC20",
+          name: "",
+          type: "address",
+        },
+      ],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [],
       name: "name",
       outputs: [
         {
@@ -914,19 +927,6 @@ export default {
       name: "transferOwnership",
       outputs: [],
       stateMutability: "nonpayable",
-      type: "function",
-    },
-    {
-      inputs: [],
-      name: "usdt",
-      outputs: [
-        {
-          internalType: "contract IERC20",
-          name: "",
-          type: "address",
-        },
-      ],
-      stateMutability: "view",
       type: "function",
     },
     {

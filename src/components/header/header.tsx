@@ -57,9 +57,14 @@ const Header = () => {
             Recharge
           </Link>
           {address && (
-            <Link href="/nfts" className="hover:text-blue-500">
-            NFTs
-            </Link>
+            <>
+              <Link href="/tasks" className="hover:text-blue-500">
+                Tasks
+              </Link>
+              <Link href="/nfts" className="hover:text-blue-500">
+                NFTs
+              </Link>
+            </>
           )}
         </nav>
         <ThemeToggle />

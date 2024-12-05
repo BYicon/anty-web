@@ -14,8 +14,10 @@
 
 ## Features
 - 连接钱包
-- 充值USDT，每充值10U，可获得一个NFT的铸造资格
+- 每日签到，可获得MIR代币，并且可以获得Sepolia ETH哦，数量有限
+- 使用MIR代币兑换积分，每使用10个MIR代币，可获得一个NFT的铸造资格
 - 铸造NFT时，生成随机图片并上传文件至IPFS
+
 
 
 ## Start project
