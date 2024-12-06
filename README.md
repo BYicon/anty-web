@@ -22,6 +22,11 @@
 - 铸造NFT时，生成随机图片并上传文件至IPFS
 - NFT类似于会员卡，可以用于其他小程序
 
+## TODO
+- Air Drop
+- 推荐奖励
+- 管理员界面
+
 
 
 ## Start project
