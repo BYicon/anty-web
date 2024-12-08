@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { keccak256 } from "viem/utils";
 
 export function safeLocalStorage(): {
   getItem: (key: string) => string | null;
@@ -68,9 +69,16 @@ export function generateHash(input: string) {
   return hash.digest("hex").slice(0, 16);
 }
 
+
+export function generateHashV2(input: string) {
+  return keccak256(`0x${input}`);
+}
+
 export function padTokenId(tokenId: number, length: number = 8) {
   return tokenId.toString().padStart(length, "0");
 }
+
+
 
 export function merge(target: any, source: any) {
   Object.keys(source).forEach(function (key) {
