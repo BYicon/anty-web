@@ -9,6 +9,7 @@ import {
 } from "wagmi";
 import mirAbi from "@/abi/MIR";
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function TaskPage() {
   const { address: currentAddress } = useAccount();
@@ -19,9 +20,16 @@ export default function TaskPage() {
     functionName: "lastDailyCheck",
     args: [currentAddress as `0x${string}`],
   });
-
   const { data: hash, writeContract, error: checkInError } = useWriteContract();
+
+  const {toast} = useToast();
   const checkInHandler = async () => {
+    toast({
+      title: "Coming Soon",
+      description: "Check In is coming soon.",
+      variant: "default",
+    });
+    return;
     console.log("checkInError 🚀🚀🚀", checkInError);
     console.log("checkInTime 🚀🚀🚀", checkInTime);
     await writeContract({

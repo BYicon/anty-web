@@ -17,6 +17,7 @@ export function getConfig() {
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),
+      // [sepolia.id]: http(RPC_URL),
     },
   })
 }
