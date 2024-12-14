@@ -5,11 +5,7 @@ import "./welcome.scss";
 const Welcome = () => {
   return (
     <div className="welcome">
-      <span id="splash-overlay" className="splash">
-        <div className="flex justify-center items-center h-full translate-y-64">   
-            <SlideText style={{ fontSize: "2.8rem", fontWeight: "600", background: "var(--colors-background)" }} />
-        </div>
-      </span>
+      <span id="splash-overlay" className="splash"></span>
       <Image
         id="welcome"
         className="z-depth-4"
@@ -19,6 +15,14 @@ const Welcome = () => {
         width={600}
         height={600}
       />
+      <div className="flex justify-center items-center h-full translate-y-64">
+        <SlideText
+          style={{
+            fontSize: "2.8rem",
+            fontWeight: "600",
+          }}
+        />
+      </div>
     </div>
   );
 };

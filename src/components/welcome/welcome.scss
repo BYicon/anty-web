@@ -6,7 +6,8 @@
     height: 100%;
     z-index: 100;
     min-height: 100vh;
-    background: var(--colors-background) url('/images/bg-star.png') repeat center center;
+    background: var(--colors-background) url('/images/bg-star.png') no-repeat center center;
+    background-size: cover;
     -webkit-font-smoothing: antialiased;
     animation: hideWelcome 0.5s 3.5s ease forwards; // Add this line
   }

@@ -44,7 +44,7 @@ yarn build
 ```
 
 ```bash
-pm2 start npm --name "mirc" -- start
+pm2 start npm --name "mirc-web" -- start
 ```
 
 ## reference

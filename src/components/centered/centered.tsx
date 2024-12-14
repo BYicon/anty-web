@@ -28,7 +28,7 @@ const Centered = () => {
   ]
 
   return (
-    <div className={`main-centered py-24 sm:py-32`}>
+    <div className="min-h-screen py-24 sm:py-32 bg-gray-300 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:text-center">
           <h2 className="text-base/7 font-semibold text-indigo-600">An important step.</h2>

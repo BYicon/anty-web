@@ -99,6 +99,20 @@ html,body {
   }
 }
 
+.common-bg {
+  background: var(--colors-background);
+  background-size: cover;
+}
+
+.header-section-bg {
+  background: rgba(245, 245, 245, 0.6) repeat center center;
+  background-size: cover;
+}
+.dark .header-section-bg {
+  background: rgba(0, 0, 0, 0.6) repeat center center;
+  background-size: cover;
+}
+
 
 @layer base {
   * {
