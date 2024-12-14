@@ -46,7 +46,7 @@ const Header = () => {
           alt="logo"
           className={`w-10 h-10 border rounded-full ${theme === EnumTheme.Light ? "" : "filter invert"}`}
         />
-        <span className="text-sm ml-2">Anty｜MirrorCoin</span>
+        <span className="text-sm ml-2">ANTY｜MIR</span>
       </div>
       <div className="flex items-center gap-4">
         <nav className="main-nav">

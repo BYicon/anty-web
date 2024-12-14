@@ -1,12 +1,7 @@
-"use client";
-import { useCommonStore } from "@/stores/useStore";
-import { EnumTheme } from "@/shared/enums";
-import Widget from "@/components/widget/widget";
-import Image from "next/image";
+import XLink from "@/components/x-link/x-link";
+import "./header-section.scss";
 
 const HeaderSection = () => {
-  const { theme } = useCommonStore();
-
   const xLinks = [
     "https://x.com/elonmusk",
     "https://x.com/VitalikButerin",
@@ -20,9 +15,7 @@ const HeaderSection = () => {
 
   return (
     <div
-      className={`relative isolate overflow-hidden py-24 sm:py-32 ${
-        theme === EnumTheme.Dark ? "bg-gray-900" : "bg-gray-300"
-      }`}
+      className='relative isolate overflow-hidden py-24 sm:py-32 bg-gray-300 bg-gray-300 dark:bg-gray-900'
     >
       <div
         className="hidden pointer-events-none sm:absolute sm:-top-10 sm:right-1/2 sm:-z-10 sm:mr-10 sm:block sm:transform-gpu sm:blur-3xl"
@@ -50,19 +43,20 @@ const HeaderSection = () => {
       </div>
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
-          <h2 className="text-5xl font-semibold tracking-tight sm:text-7xl">
-            Mirror NFT
-          </h2>
+          <h1> Mirror NFT</h1>
+        <h3 className="desc-text loader">
+          {['E', 'M', 'B', 'R', 'A', 'C', 'E', '\u00A0', 'T', 'H', 'E', '\u00A0', 'D', 'E', 'C', 'E', 'N', 'T', 'R', 'A', 'L', 'I', 'Z', 'E', 'D', '\u00A0', 'F', 'U', 'T', 'U', 'R', 'E'].map((char, index) => (
+            <span key={index} className="m-text">{char}</span>
+          ))}
+        </h3>
           <p
-            className={`mt-8 text-pretty text-lg font-medium ${
-              theme === EnumTheme.Dark ? "text-gray-600" : "text-gray-900"
-            }`}
+            className={`mt-8 text-pretty text-lg font-medium text-gray-900 dark:text-gray-400`}
           >
             Built with Next.js, wagmi, shadcn/ui, and RainbowKit, integrates wallet interactions, token and NFT functionalities, and a random pixel art generator. The generated images are uploaded to IPFS and used as TokenURIs, combining Web3 technologies with creative and decentralized solutions.
           </p>
         </div>
         <div className="mx-auto mt-10 max-w-2xl lg:mx-0 lg:max-w-none">
-          <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base/7 font-semibold sm:grid-cols-2 md:flex lg:gap-x-10">
+          {/* <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base/7 font-semibold sm:grid-cols-2 md:flex lg:gap-x-10">
             <a href="#">
               NextJs <span aria-hidden="true">&rarr;</span>
             </a>
@@ -75,24 +69,24 @@ const HeaderSection = () => {
             <a href="#">
               Shadcn <span aria-hidden="true">&rarr;</span>
             </a>
-          </div>
+          </div> */}
           <dl className="mt-16 grid grid-cols-1 gap-8 sm:mt-20 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Viem</dt>
+              <dt className="text-base/7 text-gray-900 dark:text-gray-400">Viem</dt>
               <dd className="text-4xl font-semibold tracking-tight">Wagmi</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>
+              <dt className="text-base/7 text-gray-900 dark:text-gray-400">
                 IPFS
               </dt>
               <dd className="text-4xl font-semibold tracking-tight">Pinata</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Ethereum</dt>
+              <dt className="text-base/7 text-gray-900 dark:text-gray-400">Ethereum</dt>
               <dd className="text-4xl font-semibold tracking-tight">Etherscan</dd>
             </div>
             <div className="flex flex-col-reverse gap-1">
-              <dt className={`text-base/7 ${theme === EnumTheme.Dark ? 'text-gray-400' : 'text-gray-900'}`}>Shadcn-UI</dt>
+              <dt className="text-base/7 text-gray-900 dark:text-gray-400">Shadcn-UI</dt>
               <dd className="text-4xl font-semibold tracking-tight">
                 Shadcn
               </dd>
@@ -100,9 +94,7 @@ const HeaderSection = () => {
           </dl>
         </div>
       </div>
-      <Widget right={100} top={60} className="floating cursor-pointer">
-        <Image className="x-icon" src="/images/X.png" alt="logo" width={100} height={100} onClick={onWidgetClick} priority />
-      </Widget>
+      <XLink />
     </div>
   );
 };

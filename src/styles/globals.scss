@@ -8,9 +8,13 @@
 
 
 html,body {
-  background-color: var(--background-color);
   color: var(--colors-text);
   min-width: 1280px;
+}
+
+.home-page {
+  background: var(--colors-background) url('/images/bg-star.png') no-repeat center center;
+  background-size: cover;
 }
 
 .x-icon {

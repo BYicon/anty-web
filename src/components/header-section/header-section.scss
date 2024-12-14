@@ -1,0 +1,52 @@
+h1 {
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 5rem;
+  white-space: nowrap;
+  margin: 0;
+  padding-bottom: 0.5rem;
+  letter-spacing: 0.5rem;
+  color: var(--colors-text);
+  transition: all 0.3s ease;
+  z-index: 3;
+  cursor: default;
+}
+h1:hover {
+  transform: translate3d(0, -10px, 22px);
+  color: var(--colors-text);
+}
+
+h3.desc-text {
+  box-sizing: border-box;
+  font-size: 1.8rem;
+  font-weight: 600;
+  letter-spacing: 0.4em;
+  font-family: "ROBOTO", sans-serif;
+  font-weight: 300;
+  color: #faebd7;
+  z-index: 4;
+}
+.m-text:hover {
+  color: var(--colors-text);
+  font-weight: 500;
+  transform: scale(1.05);
+}
+
+.loader .m-text {
+  color: var(--colors-text);
+  text-shadow: 0 0 0 var(--colors-textSubtle) ;
+  -webkit-animation: loading 1s ease-in-out infinite alternate;
+}
+
+@-webkit-keyframes loading {
+  to {
+    text-shadow: 20px 0 70px var(--colors-text);
+    color: var(--colors-text);
+  }
+}
+.loader {
+  @for $i from 2 through 40 {
+    span:nth-child(#{$i}) {
+      -webkit-animation-delay: #{($i - 1) * 0.1}s;
+    }
+  }
+}

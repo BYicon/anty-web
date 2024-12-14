@@ -169,7 +169,7 @@
     // --shadows-tooltip: 0px 0px 2px rgba(0,0,0,.2),0px 4px 12px -8px rgba(14,14,44,.1);
   }
   
-  [data-theme=light] {
+  [data-theme=light], .light {
     --colors-white: #fff;
     --colors-failure: #ed4b9e;
     --colors-failure33: #ed4b9e33;
@@ -233,7 +233,7 @@
     --colors-gradientBold: linear-gradient(#53dee9,#7645d9);
   }
   
-  [data-theme=dark] {
+  [data-theme=dark], .dark {
     --colors-white: #fff;
     --colors-failure: #ed4b9e;
     --colors-failure33: #ed4b9e33;

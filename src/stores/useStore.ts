@@ -12,13 +12,17 @@ export const useCommonStore = create<ICommonStoreState>((set, get) => ({
   setTheme: () => {
     const theme = get().theme === EnumTheme.Light ? EnumTheme.Dark : EnumTheme.Light;
     set({ theme });
-    document.documentElement.setAttribute('data-theme', theme);
+    // document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
+    document.documentElement.classList.add(theme);
+    document.documentElement.classList.remove(theme === EnumTheme.Dark ? EnumTheme.Light : EnumTheme.Dark);
   },
   initTheme: () => {
     const theme = localStorage.getItem('theme') as EnumTheme || EnumTheme.Light;
     set({ theme });
-    document.documentElement.setAttribute('data-theme', theme);
+    // document.documentElement.setAttribute('data-theme', theme);
+    document.documentElement.classList.add(theme);
+    document.documentElement.classList.remove(theme === EnumTheme.Dark ? EnumTheme.Light : EnumTheme.Dark);
   }
 }));
 

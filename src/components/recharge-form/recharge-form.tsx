@@ -35,7 +35,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { useToast } from "@/components/ui/use-toast";
-import ConnectWalletButton from "@/components/ConnectWalletButton/ConnectWalletButton";
+import ConnectWalletButton from "@/components/connect-wallet-button/connect-wallet-button";
 import { Loader2 } from "lucide-react";
 import { formatUnits, parseUnits } from "viem";
 
