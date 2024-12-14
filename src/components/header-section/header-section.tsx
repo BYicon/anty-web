@@ -1,4 +1,5 @@
 import XLink from "@/components/x-link/x-link";
+import SlideText from "@/components/slide-text/slide-text";
 import "./header-section.scss";
 
 const HeaderSection = () => {
@@ -44,11 +45,7 @@ const HeaderSection = () => {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h1> Mirror NFT</h1>
-        <h3 className="desc-text loader">
-          {['E', 'M', 'B', 'R', 'A', 'C', 'E', '\u00A0', 'T', 'H', 'E', '\u00A0', 'D', 'E', 'C', 'E', 'N', 'T', 'R', 'A', 'L', 'I', 'Z', 'E', 'D', '\u00A0', 'F', 'U', 'T', 'U', 'R', 'E'].map((char, index) => (
-            <span key={index} className="m-text">{char}</span>
-          ))}
-        </h3>
+          <SlideText />
           <p
             className={`mt-8 text-pretty text-lg font-medium text-gray-900 dark:text-gray-400`}
           >

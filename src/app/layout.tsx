@@ -35,8 +35,8 @@ export default function RootLayout({
   return (
     <html>
       <body className={`${inter.className} min-h-screen`}>
+        <Welcome />
         <Providers initialState={initialState}>
-          <Welcome />
           <Header />
           {children}
           <Footer />
