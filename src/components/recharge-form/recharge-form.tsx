@@ -165,7 +165,7 @@ function RechargeForm() {
   };
 
   return (
-    <Card className="w-[520px] px-8">
+    <Card className="w-[520px] px-8 common-bg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardHeader className="px-8 pb-0">
