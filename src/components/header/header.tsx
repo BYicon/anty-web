@@ -5,15 +5,26 @@ import { useCommonStore } from "@/stores/useStore";
 import "./header.scss";
 import { EnumTheme } from "@/shared/enums";
 import Link from "next/link";
-import { useAccount } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import nftAbi from "@/abi/NFTMIR";
 
 const Header = () => {
   const { theme, initTheme } = useCommonStore();
   const { address } = useAccount();
   const router = useRouter();
+
+  const {
+    data: waitingForRedeem,
+    refetch: refetchWaitingForRedeem,
+  } = useReadContract({
+    address: nftAbi.contractAddress,
+    abi: nftAbi.abi,
+    functionName: "getWaitingForRedeem",
+    args: [address as `0x${string}`],
+  });
 
   const goHome = () => {
     router.push("/");
@@ -58,11 +69,19 @@ const Header = () => {
           </Link>
           {address && (
             <>
-              <Link href="/tasks" className="hover:text-blue-500">
+              {/* <Link href="/tasks" className="hover:text-blue-500">
                 Tasks
-              </Link>
-              <Link href="/nfts" className="hover:text-blue-500">
+              </Link> */}
+              {/* 新的nft数量提示 */}
+              <Link href="/nfts" className="relative hover:text-blue-500">
                 NFTs
+                {
+                  waitingForRedeem && waitingForRedeem?.length > 0 && (
+                    <span className="waiting-nft-count">
+                      {waitingForRedeem?.length}
+                    </span>
+                  )
+                }
               </Link>
             </>
           )}

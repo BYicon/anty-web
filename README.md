@@ -47,6 +47,11 @@ yarn build
 pm2 start npm --name "mirc-web" -- start
 ```
 
+
+```bash
+pm2 restart mirc-web
+```
+
 ## reference
 - [wagmi](https://wagmi.sh)
 - [rainbowkit](https://www.rainbowkit.com)

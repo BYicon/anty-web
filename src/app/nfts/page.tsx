@@ -48,11 +48,6 @@ export default function NftsPage() {
   const onRedeemError = () => {
   };
 
-  useEffect(() => {
-    if (userNfts) {
-      console.log("userNfts", userNfts);
-    }
-  }, [userNfts]);
 
   return (
     <div className="common-page nfts-page">

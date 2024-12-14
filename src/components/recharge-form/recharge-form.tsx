@@ -1,5 +1,4 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,14 +49,15 @@ const formSchema = z.object({
 });
 
 function RechargeForm() {
+
   const { address: currentAddress } = useAccount();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userid: "",
-      amount: 10, // 默认为0
+      userid: "10086",
+      amount: undefined,
       referral: "",
     },
   });
@@ -69,6 +69,16 @@ function RechargeForm() {
     isError: writeIsError,
     writeContract,
   } = useWriteContract();
+
+  const {
+    data: waitingForRedeem,
+    refetch: refetchWaitingForRedeem,
+  } = useReadContract({
+    address: nftAbi.contractAddress,
+    abi: nftAbi.abi,
+    functionName: "getWaitingForRedeem",
+    args: [currentAddress as `0x${string}`],
+  });
 
   // 获取当前用户ERC20的授权额度
   const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
@@ -124,6 +134,7 @@ function RechargeForm() {
       console.log("isRechargeSuccess 🟢🟢🟢", isRechargeSuccess);
       refetchMirBalance();
       refetchAllowance();
+      refetchWaitingForRedeem();
       toast({
         title: "Success",
         description: "You have successfully recharged.",
@@ -150,6 +161,7 @@ function RechargeForm() {
     field.onChange(value);
     setAmount(value);
   };
+
   const [needApprove, setNeedApprove] = useState(false);
   useEffect(() => {
     const allowance = formatUnits(
@@ -170,12 +182,12 @@ function RechargeForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardHeader className="px-8 pb-0">
             <CardTitle className="recharge-form-title">Buy G coins</CardTitle>
-            <CardDescription className="recharge-form-title-desc">
+            <CardDescription className="recharge-form-title-des11c">
               Buy G coins for your WECHAT MINI PROGRAM.
             </CardDescription>
             <div className="recharge-form-allowance">
             <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>
-              MIR {mirBalance?.formatted || "0"}
+              MIR {formatUnits(mirBalance?.value || BigInt(0), mirAbi.contractDecimals)}
             </div>
           </CardHeader>
           <CardContent className="px-8">
@@ -208,6 +220,7 @@ function RechargeForm() {
                       className="recharge-input"
                       placeholder="MIR Amount"
                       {...field}
+                      value={field.value || ''}
                       onChange={(e) =>
                         onAmountChange(field, Number(e.target.value))
                       }
@@ -222,7 +235,7 @@ function RechargeForm() {
               name="referral"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">Referral</FormLabel>
+                  <FormLabel className="recharge-label">Referral(optional)</FormLabel>
                   <FormControl>
                     <Input
                       className="recharge-input"

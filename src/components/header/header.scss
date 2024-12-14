@@ -14,3 +14,33 @@
   @apply text-sm font-bold text-sm;
   color: var(--colors-textSubtle);
 }
+
+.waiting-nft-count {
+  @apply absolute top-[-5px] right-[-30px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs px-4;
+  animation: shake-lr 1.6s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite;
+}
+
+@keyframes shake-lr {
+  0%,
+  80% {
+    transform: rotate(0deg);
+    transform-origin: 50% 50%;
+  }
+  10% {
+    transform: rotate(8deg);
+  }
+  20%,
+  40%,
+  60% {
+    transform: rotate(-10deg);
+  }
+  30%,
+  50%,
+  70% {
+    transform: rotate(10deg);
+  }
+  90%,
+  100% {
+    transform: rotate(0deg);
+  }
+}

@@ -1,6 +1,6 @@
 export default {
   contractName: "NFTMIR",
-  contractAddress: "0xEa8734E6d93427e3A841927E76bC4dD51B2BD47F",
+  contractAddress: "0x00C5CA3efccd902A21A4bbbC0d6d65150513f183",
   abi: [
     {
       inputs: [
