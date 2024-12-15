@@ -1,3 +1,7 @@
+.header-section-container {
+  @apply flex flex-col justify-between items-center box-border relative isolate;
+  height: calc(100vh - var(--nav-height));
+}
 .page-title {
   position: relative;
   font-family: "Josefin Sans", sans-serif;
@@ -36,4 +40,9 @@
   background: var(--colors-light-gradientPrimary);
   z-index: -1;
   transition: transform .3s ease;
+}
+.living-words-container  {
+  overflow: hidden;
+  max-height: 35vh;
+
 }

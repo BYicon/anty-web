@@ -2,38 +2,39 @@
 import { useEffect, useCallback, useRef } from "react";
 import "./living-words.scss";
 
-const kiplingPoem = `<p>If you can <span>keep</span> your head when all about you    
-Are <span>losing</span> theirs and <span>blaming</span> it on you; 
-If you can <span>trust</span> yourself when all men <span>doubt</span> you,    
-But make <span>allowance</span> for their doubting too; 
-If you can <span>wait</span> and not be tired by waiting,    
-Or, being <span>lied</span> about, don't deal in <span>lies</span>, 
-Or, being <span>hated</span>, don't give way to <span>hating</span>,    
-And yet don't look too good, nor talk too wise;
-If you can <span>dream</span>—and not make dreams your <span>master</span>; 
-If you can <span>think</span>—and not make thoughts your <span>aim</span>; 
-If you can meet with <span>triumph</span> and <span>disaster</span>    
+const kiplingPoem = `<p>If you can <span>embrace</span> the decentralized world when all about you    
+Are <span>skeptical</span> and <span>questioning</span> its value; 
+If you can <span>trust</span> in blockchain when others <span>doubt</span> its security,    
+But make <span>allowance</span> for their concerns too; 
+If you can <span>wait</span> for the network to confirm,    
+Or, being <span>misled</span> by FUD, don't spread <span>fears</span>, 
+Or, being <span>criticized</span>, don't give way to <span>negativity</span>,    
+And yet don't look too arrogant, nor talk too wise;
+If you can <span>dream</span> of a decentralized future—and not make dreams your <span>master</span>; 
+If you can <span>think</span> of smart contracts—and not make them your <span>aim</span>; 
+If you can meet with <span>success</span> and <span>failure</span>    
 And treat those two <span>impostors</span> just the same; 
-If you can bear to hear the <span>truth</span> you've spoken    
-<span>Twisted</span> by knaves to make a <span>trap</span> for fools, 
-Or watch the things you gave your life to <span>broken</span>,    
-And <span>stoop</span> and build 'em up with wornout tools;
-If you can make one <span>heap</span> of all your <span>winnings</span>    
-And <span>risk</span> it on one turn of pitch-and-toss, 
+If you can bear to hear the <span>truth</span> about crypto    
+<span>Twisted</span> by skeptics to make a <span>trap</span> for fools, 
+Or watch the projects you invested in <span>broken</span>,    
+And <span>rebuild</span> them with new tools;
+If you can make one <span>portfolio</span> of all your <span>assets</span>    
+And <span>risk</span> it on one turn of market trends, 
 And <span>lose</span>, and start again at your beginnings    
 And never breathe a word about your <span>loss</span>; 
-If you can <span>force</span> your heart and nerve and <span>sinew</span>    
-To <span>serve</span> your turn long after they are gone, 
+If you can <span>force</span> your mind and spirit and <span>energy</span>    
+To <span>serve</span> your vision long after others have gone, 
 And so <span>hold on</span> when there is nothing in you    
 Except the <span>Will</span> which says to them: "Hold on";
-If you can <span>talk</span> with crowds and keep your <span>virtue</span>,    
-Or <span>walk</span> with kings—nor lose the common <span>touch</span>; 
-If neither <span>foes</span> nor loving friends can hurt you;    
-If all men <span>count</span> with you, but none too much; 
-If you can fill the unforgiving <span>minute</span> 
-With sixty seconds' worth of distance <span>run</span>—    
-Yours is the <span>Earth</span> and everything that's in it, 
-And—which is more—you'll be a <span>Man</span>, my son!     -Rudyard Kipling</p>`;
+If you can <span>engage</span> with communities and keep your <span>integrity</span>,    
+Or <span>collaborate</span> with leaders—nor lose the common <span>touch</span>; 
+If neither <span>critics</span> nor supporters can sway you;    
+If all people <span>count</span> with you, but none too much; 
+If you can fill the unforgiving <span>block</span> 
+With sixty seconds' worth of decentralized <span>transactions</span>—    
+Yours is the <span>Blockchain</span> and everything that's in it, 
+And—which is more—you'll be a <span>Pioneer</span>, my friend!</p>`;
+
 
 const LivingWords = () => {
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -74,13 +75,13 @@ const LivingWords = () => {
           <div className="animated hue"></div>
           <img
             className="backgroundImage"
-            src="https://drive.google.com/thumbnail?id=1_ZMV_LcmUXLsRokuz6WXGyN9zVCGfAHp&sz=w1920"
+            src="/images/empty-room.jpg"
             alt="Background"
             onLoad={adjustContentSize}
           />
           <img
             className="boyImage"
-            src="https://drive.google.com/thumbnail?id=1eGqJskQQgBJ67myGekmo4YfIVI3lfDTm&sz=w1920"
+            src="/images/boy.png"
             alt="Boy"
             onLoad={adjustContentSize}
           />
