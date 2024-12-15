@@ -18,7 +18,7 @@ const Welcome = () => {
       <div className="flex justify-center items-center h-full translate-y-64">
         <SlideText
           style={{
-            fontSize: "2.8rem",
+            fontSize: "2.3rem",
             fontWeight: "600",
           }}
         />

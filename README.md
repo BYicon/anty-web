@@ -52,6 +52,14 @@ pm2 start npm --name "mirc-web" -- start
 pm2 restart mirc-web
 ```
 
+
+⚠️ 注意：
+- node版本 需要 18+
+- 环境中需要安装sass
+- 不要忘记上传 .env.production
+- 安装 [pm2](https://pm2.keymetrics.io/)
+
+
 ## reference
 - [wagmi](https://wagmi.sh)
 - [rainbowkit](https://www.rainbowkit.com)
