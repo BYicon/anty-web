@@ -14,9 +14,9 @@ $card-label-bg: rgba(40, 13, 95, 0.2);
   @apply text-lg mb-2;
 }
 .nft-card-content-user {
-  @apply w-64 fixed bg-white min-h-40 shadow-md flex flex-col items-center;
+  @apply w-64 absolute bg-white min-h-40 shadow-md flex flex-col items-center;
   top: -500px;
-  left: -999px;
+  left: -9999px;
   .card-logo {
     @apply absolute top-2 left-2 w-10 h-10;
     border-radius: 50%;

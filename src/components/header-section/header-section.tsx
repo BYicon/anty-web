@@ -39,7 +39,7 @@ const HeaderSection = () => {
       </div> */}
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
-          <h1> Mirror NFT</h1>
+          <h1 className="page-title"> Mirror NFT</h1>
           <SlideText />
           <p
             className={`mt-8 text-pretty text-lg font-medium text-gray-900 dark:text-gray-400`}

@@ -1,4 +1,5 @@
-h1 {
+.page-title {
+  position: relative;
   font-family: "Josefin Sans", sans-serif;
   font-size: 5rem;
   white-space: nowrap;
@@ -10,7 +11,29 @@ h1 {
   z-index: 3;
   cursor: default;
 }
-h1:hover {
-  transform: translate3d(0, -10px, 22px);
+.page-title:hover {
   color: var(--colors-text);
+  // transform: translate3d(0, -10px, 22px);
+  // color: var(--colors-text);
+}
+
+.page-title::before {  
+  transform: scaleX(0);
+  transform-origin: bottom right;
+}
+
+.page-title:hover::before {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.page-title::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  inset: 0 0 0 0;
+  background: var(--colors-light-gradientPrimary);
+  z-index: -1;
+  transition: transform .3s ease;
 }
