@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -226,6 +227,7 @@ function RechargeForm() {
                       }
                     />
                   </FormControl>
+                  <FormDescription>You can mint 1 NFT by consuming 10 MIR Tokens.</FormDescription> 
                   <FormMessage />
                 </FormItem>
               )}

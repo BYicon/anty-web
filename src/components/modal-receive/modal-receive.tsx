@@ -80,7 +80,7 @@ const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button  type="button" onClick={onClaim}>
+          <Button  type="button" disabled={isClaimLoading} onClick={onClaim}>
             {isClaimLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             {isClaimLoading ? "Claiming..." : "Claim"}
           </Button>
