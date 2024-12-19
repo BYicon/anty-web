@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import confetti from "canvas-confetti";
 import "./nfts.scss";
 
 export default function NftsPage() {
@@ -44,6 +45,11 @@ export default function NftsPage() {
   const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
+    confetti({
+      particleCount: 100,
+      spread: 100,
+      origin: { y: 0.7 },
+    });
   };
   const onRedeemError = () => {
   };
