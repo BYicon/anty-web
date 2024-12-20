@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import * as dotenv from "dotenv";
-import "../../public/iconfont/iconfont.css";
 import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 import { cookieToInitialState } from "wagmi";
 import { headers } from "next/headers";
-
 import { getConfig } from "@/config/wagmi";
 import { Providers } from "@/app/providers";
 import "@rainbow-me/rainbowkit/styles.css";
