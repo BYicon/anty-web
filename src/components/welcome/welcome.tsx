@@ -1,14 +1,30 @@
+"use client"
 import Image from "next/image";
 import SlideText from "../slide-text/slide-text";
 import "./welcome.scss";
+import { useEffect } from "react";
 
-const Welcome = () => {
+const Welcome = ({ onMount }: { onMount: () => void }) => {
+
+  useEffect(() => {
+    // 监听welcomeIcon几个动画全部结束
+    const welcomeIcon = document.getElementById("welcomeContainer");
+    if (welcomeIcon) {
+      welcomeIcon.addEventListener("animationend", (event) => {
+        console.log('event 🚀🚀🚀', event.animationName);
+        if (event.animationName === 'hide') { 
+          onMount();
+        }
+      });
+    }
+  }, [onMount]);
+
   return (
-    <div className="welcome">
-      <span id="splash-overlay" className="splash"></span>
+    <div className="welcome-container" id="welcomeContainer">
+      <span className="splash"></span>
       <Image
-        id="welcome"
-        className="z-depth-4"
+        id="welcomeIcon"
+        className="z-depth-4 welcome-icon"
         src="/images/logo.png"
         objectFit="contain"
         alt="logo"

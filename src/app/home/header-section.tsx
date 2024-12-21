@@ -1,7 +1,6 @@
-import XLink from "../x-link/x-link";
-import SlideText from "../slide-text/slide-text";
-import LivingWords from "../living-words/living-words";
-import "./header-section.scss";
+import XLink from "@/components/x-link/x-link";
+import SlideText from "@/components/slide-text/slide-text";
+import LivingWords from "@/components/living-words/living-words";
 
 const HeaderSection = () => {
   const xLinks = [

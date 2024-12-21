@@ -1,4 +1,4 @@
-.welcome {
+.welcome-container {
     position: fixed;
     left: 0;
     top: 0;
@@ -12,7 +12,7 @@
     animation: hideWelcome 0.5s 3.5s ease forwards; // Add this line
   }
 
-  .welcome .splash {
+  .welcome-container .splash {
     height: 0px;
     padding: 0px;
     border: 130em solid var(--colors-background);
@@ -30,7 +30,7 @@
       borderRadius 0.2s 2.3s linear forwards;
   }
 
-  .welcome #welcome {
+  .welcome-container .welcome-icon {
     background: #311b92;
     width: 20rem;
     height: 20rem;

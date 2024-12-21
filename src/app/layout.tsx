@@ -10,7 +10,6 @@ import { Providers } from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
 import { Toaster } from "@/components/ui/toaster";
-import Welcome from "@/components/welcome/welcome";
 
 dotenv.config();
   
@@ -33,7 +32,6 @@ export default function RootLayout({
   return (
     <html>
       <body className={`${inter.className} min-h-screen`}>
-        <Welcome />
         <Providers initialState={initialState}>
           <Header />
           {children}

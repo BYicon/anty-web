@@ -1,4 +1,4 @@
-import RechargeForm from "@/components/recharge-form/recharge-form";
+import RechargeForm from "./recharge-form";
 import ModalReceive from "@/components/modal-receive/modal-receive";
 import "./recharge.scss";
 

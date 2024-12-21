@@ -1,9 +1,5 @@
-import HeaderSection from "@/components/header-section/header-section";
+import Home from "./home/home";
 
-export default function Home() {
-  return (
-    <main className="home-page">
-      <HeaderSection />
-    </main>
-  );
+export default function Page() {
+  return <Home />;
 }
