@@ -1,5 +1,5 @@
 "use client"
-import Widget from "@/components/widget/widget";
+import Widget from "../widget/widget";
 import Image from "next/image";
 
 const XLink = () => {

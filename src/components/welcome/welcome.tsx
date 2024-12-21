@@ -1,5 +1,5 @@
 import Image from "next/image";
-import SlideText from "@/components/slide-text/slide-text";
+import SlideText from "../slide-text/slide-text";
 import "./welcome.scss";
 
 const Welcome = () => {

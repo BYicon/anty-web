@@ -10,9 +10,9 @@ import { uploadToIPFS } from "@/http/api";
 import html2canvas from "html2canvas";
 import { createIcon } from "@/shared/blockies";
 import { generateHash, padTokenId } from "@/shared/utils";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import { ToastAction } from "@radix-ui/react-toast";
 
 export default function NftCard({

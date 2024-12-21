@@ -3,7 +3,7 @@ import mirAbi from "@/abi/MIR";
 import nftAbi from "@/abi/NFTMIR";
 import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { parseUnits } from "viem";
 

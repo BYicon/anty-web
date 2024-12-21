@@ -7,12 +7,12 @@ import {
   DialogTitle,
   DialogFooter,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+} from "../ui/dialog";
+import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { useBalance, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import mirAbi from '@/abi/MIR';
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "../ui/use-toast";
 import { Loader2 } from "lucide-react";
 
 const ModalReceive = ({ children }: { children?: React.ReactNode }) => {

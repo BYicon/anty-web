@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 import {
   Form,
   FormControl,
@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+} from "../ui/form";
+import { Input } from "../ui/input";
 import {
   Card,
   CardContent,
@@ -21,9 +21,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../ui/card";
 import "./recharge-form.scss";
-import TokenApprove from "@/components/token-approve/token-approve";
+import TokenApprove from "../token-approve/token-approve";
 import { useEffect, useState } from "react";
 import mirAbi from "@/abi/MIR";
 import nftAbi from "@/abi/NFTMIR";
@@ -34,8 +34,8 @@ import {
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
-import { useToast } from "@/components/ui/use-toast";
-import ConnectWalletButton from "@/components/connect-wallet-button/connect-wallet-button";
+import { useToast } from "../ui/use-toast";
+import ConnectWalletButton from "../connect-wallet-button/connect-wallet-button";
 import { Loader2 } from "lucide-react";
 import { formatUnits, parseUnits } from "viem";
 

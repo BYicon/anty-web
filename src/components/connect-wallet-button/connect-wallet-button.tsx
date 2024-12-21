@@ -1,5 +1,5 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui//button";
 
 const ConnectWalletButton = (props: { className?: string }) => {
   return (

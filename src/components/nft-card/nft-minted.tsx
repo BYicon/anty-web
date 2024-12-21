@@ -1,5 +1,5 @@
 import "./nft-card.scss";
-import { Button } from "@/components/ui/button";
+import { Button } from "../ui/button";
 interface INftCard {
   tokenId: number;
   tokenURI: string;

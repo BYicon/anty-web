@@ -6,7 +6,7 @@ import Header from "@/components/header/header";
 import { cookieToInitialState } from "wagmi";
 import { headers } from "next/headers";
 import { getConfig } from "@/config/wagmi";
-import { Providers } from "@/app/providers";
+import { Providers } from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
 import { Toaster } from "@/components/ui/toaster";
