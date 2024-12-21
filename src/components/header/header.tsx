@@ -9,7 +9,7 @@ import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
-import nftAbi from "@/abi/NFTMIR";
+import nftAbi from "@/abis/NFTMIR";
 
 const Header = () => {
   const { theme, initTheme } = useCommonStore();
@@ -98,8 +98,9 @@ const Header = () => {
             {({ openConnectModal, authenticationStatus, mounted }) => {
               return (
                 <Button
-                  className="text-xs h-8 text-gray-500 border border-gray-500 rounded-md px-4 py-2 bg-white"
-                  variant="default"
+                  size="sm"
+                  // className="text-xs h-8 text-gray-500 border border-gray-500 rounded-md px-4 py-2 bg-white"
+                  // variant="secondary"
                   onClick={openConnectModal}
                 >
                   Connect Wallet

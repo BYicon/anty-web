@@ -1,6 +1,6 @@
 import { useWaitForTransactionReceipt } from "wagmi";
-import mirAbi from "@/abi/MIR";
-import nftAbi from "@/abi/NFTMIR";
+import mirAbi from "@/abis/MIR";
+import nftAbi from "@/abis/NFTMIR";
 import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
 import { Button } from "../ui/button";

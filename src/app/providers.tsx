@@ -11,7 +11,7 @@ import {
   RainbowKitProvider,
 } from '@rainbow-me/rainbowkit';
 
-import { getConfig } from '@/config/wagmi'
+import { getConfig } from '@/lib/wagmi'
 import { EnumTheme } from '@/shared/enums';
 
 export function Providers(props: {

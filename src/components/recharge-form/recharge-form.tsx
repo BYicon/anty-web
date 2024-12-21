@@ -25,8 +25,8 @@ import {
 import "./recharge-form.scss";
 import TokenApprove from "../token-approve/token-approve";
 import { useEffect, useState } from "react";
-import mirAbi from "@/abi/MIR";
-import nftAbi from "@/abi/NFTMIR";
+import mirAbi from "@/abis/MIR";
+import nftAbi from "@/abis/NFTMIR";
 import {
   useAccount,
   useBalance,

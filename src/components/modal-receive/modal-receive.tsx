@@ -11,7 +11,7 @@ import {
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { useBalance, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
-import mirAbi from '@/abi/MIR';
+import mirAbi from '@/abis/MIR';
 import { useToast } from "../ui/use-toast";
 import { Loader2 } from "lucide-react";
 

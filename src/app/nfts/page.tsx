@@ -1,6 +1,6 @@
 "use client";
 import { useAccount, useReadContract } from "wagmi";
-import nftAbi from "@/abi/NFTMIR";
+import nftAbi from "@/abis/NFTMIR";
 import { useEffect, useState } from "react";
 import NftCardWaiting from "@/components/nft-card/nft-waiting";
 import NftCardMinted from "@/components/nft-card/nft-minted";

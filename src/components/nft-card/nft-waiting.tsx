@@ -4,7 +4,7 @@ import {
   useWriteContract,
 } from "wagmi";
 import "./nft-card.scss";
-import nftAbi from "@/abi/NFTMIR";
+import nftAbi from "@/abis/NFTMIR";
 import { useEffect, useState } from "react";
 import { uploadToIPFS } from "@/http/api";
 import html2canvas from "html2canvas";

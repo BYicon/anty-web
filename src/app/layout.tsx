@@ -5,7 +5,7 @@ import Footer from "@/components/footer/footer";
 import Header from "@/components/header/header";
 import { cookieToInitialState } from "wagmi";
 import { headers } from "next/headers";
-import { getConfig } from "@/config/wagmi";
+import { getConfig } from "@/lib/wagmi";
 import { Providers } from "./providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import "@/styles/globals.scss";
