@@ -27,6 +27,7 @@ export function Providers(props: {
   const [isShowWelcome, setIsShowWelcome] = useState(true);
   // 只有第一次加载是Home的时候，才显示Welcome组件
   useEffect(() => {
+    console.log('pathname', pathname);
     if (pathname !== '/') {
       setIsShowWelcome(false);
     }

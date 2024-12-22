@@ -7,11 +7,9 @@ import { useEffect } from "react";
 const Welcome = ({ onMount }: { onMount: () => void }) => {
 
   useEffect(() => {
-    // 监听welcomeIcon几个动画全部结束
     const welcomeIcon = document.getElementById("welcomeContainer");
     if (welcomeIcon) {
       welcomeIcon.addEventListener("animationend", (event) => {
-        console.log('event 🚀🚀🚀', event.animationName);
         if (event.animationName === 'hide') { 
           onMount();
         }
