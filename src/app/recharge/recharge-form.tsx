@@ -63,14 +63,10 @@ function RechargeForm() {
 
   const {
     data: hash,
-    isPending: writeIsPending,
-    isSuccess: writeIsSuccess,
-    isError: writeIsError,
     writeContract,
   } = useWriteContract();
 
   const {
-    data: waitingForRedeem,
     refetch: refetchWaitingForRedeem,
   } = useReadContract({
     address: nftAbi.contractAddress,
@@ -130,7 +126,6 @@ function RechargeForm() {
 
   useEffect(() => {
     if (isRechargeSuccess) {
-      console.log("isRechargeSuccess 🟢🟢🟢", isRechargeSuccess);
       refetchMirBalance();
       refetchAllowance();
       refetchWaitingForRedeem();

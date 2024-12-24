@@ -8,7 +8,7 @@ interface ICommonStoreState {
 }
 
 export const useCommonStore = create<ICommonStoreState>((set, get) => ({
-  theme: EnumTheme.Light,
+  theme: EnumTheme.Dark,
   setTheme: () => {
     const theme = get().theme === EnumTheme.Light ? EnumTheme.Dark : EnumTheme.Light;
     set({ theme });
