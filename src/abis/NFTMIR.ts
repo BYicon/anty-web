@@ -1,6 +1,6 @@
 export default {
   contractName: "NFTMIR",
-  contractAddress: "0x00C5CA3efccd902A21A4bbbC0d6d65150513f183",
+  contractAddress: "0x497df8eB88cb96AF331588fb02E6ac7f4695Ae5F",
   abi: [
     {
       inputs: [
@@ -463,7 +463,7 @@ export default {
           type: "address",
         },
       ],
-      name: "getTokensWithURI",
+      name: "getNFTsByUser",
       outputs: [
         {
           components: [
@@ -726,6 +726,19 @@ export default {
         },
       ],
       name: "setBlacklist",
+      outputs: [],
+      stateMutability: "nonpayable",
+      type: "function",
+    },
+    {
+      inputs: [
+        {
+          internalType: "address",
+          name: "_erc20",
+          type: "address",
+        },
+      ],
+      name: "setERC20",
       outputs: [],
       stateMutability: "nonpayable",
       type: "function",

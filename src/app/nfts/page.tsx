@@ -14,23 +14,24 @@ import {
 } from "@/components/ui/card";
 import confetti from "canvas-confetti";
 import "./nfts.scss";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NftsPage() {
   const { address: currentAddress } = useAccount();
-  const [isLoading, setIsLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState("loading...");
 
   const {
+    isPending: isUserNftsPending,
     data: userNfts,
     refetch: refetchUserNfts,
   } = useReadContract({
     address: nftAbi.contractAddress,
     abi: nftAbi.abi,
-    functionName: "getTokensWithURI",
+    functionName: "getNFTsByUser",
     args: [currentAddress as `0x${string}`],
   });
 
   const {
+    isPending: isWaitingForRedeemPending,
     data: waitingForRedeem,
     refetch: refetchWaitingForRedeem,
   } = useReadContract({
@@ -40,8 +41,7 @@ export default function NftsPage() {
     args: [currentAddress as `0x${string}`],
   });
 
-  const onRedeem = () => {
-  };
+  const onRedeem = () => {};
   const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
@@ -51,59 +51,67 @@ export default function NftsPage() {
       origin: { y: 0.7 },
     });
   };
-  const onRedeemError = () => {
-  };
-
+  const onRedeemError = () => {};
 
   return (
     <div className="common-page nfts-page">
-      {userNfts && userNfts.length === 0 && waitingForRedeem && waitingForRedeem.length === 0 && (
-        <div className="no-data">
-          <div className="flex justify-center items-center h-full text-[100px] mt-8 font-bold">
-            No data
-          </div>
-        </div>
-      )}
-      {userNfts && userNfts.length > 0 && (
-        <>
-          <Card className="nfts-list mb-8">
-            <CardHeader>
-              <CardTitle>Owned</CardTitle>
-              <CardDescription>total {userNfts.length} NFTs</CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-4 gap-8">
-              {userNfts.map((item: any) => (
-                <NftCardMinted key={item.tokenID} data={item} />
-              ))}
-            </CardContent>
-          </Card>
-        </>
-      )}
-      {waitingForRedeem && waitingForRedeem.length > 0 && (
-        <>
-          <Card className="nfts-list">
-            <CardHeader>
-              <CardTitle>Waiting For Redeem</CardTitle>
-              <CardDescription>
-                total {waitingForRedeem.length} waiting for redeem
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid grid-cols-4 gap-8">
-              {(waitingForRedeem as any).map((item: any) => (
-                <NftCardWaiting
-                  key={item}
-                  id={`card-${item}`}
-                  tokenId={item}
-                  onRedeem={onRedeem}
-                  onRedeemSuccess={onRedeemSuccess}
-                  onRedeemError={onRedeemError}
-                />
-              ))}
-            </CardContent>
-          </Card>
-        </>
-      )}
-      <Loading loading={isLoading} loadingText={loadingText} />
+      <Card className="nfts-list mb-8">
+        <CardHeader>
+          <CardTitle>Owned</CardTitle>
+          <CardDescription>total {userNfts?.length || 0} NFTs</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-4 gap-8 min-h-[230px]">
+          {isUserNftsPending ? (
+            <>
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+            </>
+          ) : userNfts && userNfts.length > 0 ? (
+            userNfts.map((item: any) => (
+              <NftCardMinted key={item.tokenID} data={item} />
+            ))
+          ) : (
+            <div className="flex w-full justify-center items-center h-full text-2xl font-bold text-gray-500">
+              no data
+            </div>
+          )}
+        </CardContent>
+      </Card>
+      <Card className="nfts-list">
+        <CardHeader>
+          <CardTitle>Waiting For Redeem</CardTitle>
+          <CardDescription>
+            total {waitingForRedeem?.length || 0} waiting for redeem
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-4 gap-8 min-h-[230px]">
+          {isWaitingForRedeemPending ? (
+            <>
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+              <Skeleton className="w-64 h-[230px]" />
+            </>
+          ) : waitingForRedeem && waitingForRedeem.length > 0 ? (
+            (waitingForRedeem as any).map((item: any) => (
+              <NftCardWaiting
+                key={item}
+                id={`card-${item}`}
+                tokenId={item}
+                onRedeem={onRedeem}
+                onRedeemSuccess={onRedeemSuccess}
+                onRedeemError={onRedeemError}
+              />
+            ))
+          ) : (
+            <div className="flex w-full justify-center items-center h-full text-2xl font-bold text-gray-500">
+              No data
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
