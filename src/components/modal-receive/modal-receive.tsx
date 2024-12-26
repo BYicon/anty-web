@@ -10,7 +10,7 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-import { useBalance, useAccount, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useBalance, useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import mirAbi from '@/abis/MIR';
 import { useToast } from "../ui/use-toast";
 import { Loader2 } from "lucide-react";
@@ -21,24 +21,29 @@ const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
   const { toast } = useToast();
   const {
     data: hash,
-    isPending: writeIsPending,
-    isSuccess: writeIsSuccess,
-    isError: writeIsError,
     writeContract,
   } = useWriteContract();
 
-  const { data: mirBalance, refetch: refetchMirBalance, isError: isMirBalanceError, error: mirBalanceMessage } = useBalance({
+  const { data: mirBalance, refetch: refetchMirBalance } = useBalance({
     address: currentAddress,
     token: mirAbi.contractAddress,
     });
 
 
+  const { data: hasClaimed } = useReadContract({
+    address: mirAbi.contractAddress,
+    abi: mirAbi.abi,
+    functionName: "claims",
+    args: [currentAddress as `0x${string}`],
+  });
+
+
   useEffect(() => {
-    setOpen(Number(mirBalance?.value) <= 0);
-  }, [mirBalance]);
+    console.log('hasClaimed 🚀🚀🚀', hasClaimed);
+    setOpen(Number(mirBalance?.value) <= 0 && !hasClaimed);
+  }, [mirBalance, hasClaimed]);
 
   const onClaim = async () => {
-    console.log("onClaim");
     await writeContract({
       address: mirAbi.contractAddress,
       abi: mirAbi.abi,

@@ -32,6 +32,8 @@ export default function NftCard({
   const { data: tx, writeContract } = useWriteContract();
   const { toast } = useToast();
 
+  const [loading, setLoading] = useState(false);
+
   function generateImage() {
     const cardElement = document.getElementById(id) as HTMLElement;
     const seed = generateHash(cardNumber);
@@ -59,11 +61,15 @@ export default function NftCard({
             }
           }, "image/png");
         }
+      }).catch((err) => {
+        setLoading(false);
+        reject(err);
       });
     });
   }
 
   const handleRedeem = async () => {
+    setLoading(true);
     const img = await generateImage();
     onRedeem && onRedeem();
     await writeContract({
@@ -72,6 +78,7 @@ export default function NftCard({
       functionName: "redeem",
       args: [BigInt(tokenId), img as string],
     });
+    setLoading(false);
   };
 
   const {
@@ -124,9 +131,9 @@ export default function NftCard({
       </div>
       <div className="mt-4 px-4">
         <div className="flex items-center">
-          <Button onClick={handleRedeem} className="w-full h-10" disabled={isRedeemLoading}>
-          {isRedeemLoading ? <Loader2 className="animate-spin" /> : ""}
-            {isRedeemLoading ? "Redeeming..." : "Redeem"}
+          <Button onClick={handleRedeem} className="w-full h-10" disabled={isRedeemLoading || loading}>
+            {isRedeemLoading || loading ? <Loader2 className="animate-spin" /> : ""}
+            {isRedeemLoading || loading ? "Redeeming..." : "Redeem"}
           </Button>
         </div>
       </div>

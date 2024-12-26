@@ -20,7 +20,7 @@ export default function NftCard({
       </div>
       <div className="mt-4 px-4">
         <div className="flex items-center justify-center">
-          <Button onClick={handleTransfer} className="w-full h-10">Transfer</Button>
+          <Button onClick={handleTransfer} className="w-full h-10">List</Button>
         </div>
       </div>
     </div>
