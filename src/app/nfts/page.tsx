@@ -15,6 +15,7 @@ import {
 import confetti from "canvas-confetti";
 import "./nfts.scss";
 import { Skeleton } from "@/components/ui/skeleton";
+import { get } from "@/shared/request";
 
 export default function NftsPage() {
   const { address: currentAddress } = useAccount();
@@ -52,6 +53,16 @@ export default function NftsPage() {
     });
   };
   const onRedeemError = () => {};
+
+  useEffect(() => {
+    get('/airdrop/sign', {
+      params: {
+        recipient: currentAddress,
+      },
+    }).then((res) => {
+      console.log('signature 🚀🚀🚀', res);
+    });
+  }, []);
 
   return (
     <div className="common-page nfts-page">
