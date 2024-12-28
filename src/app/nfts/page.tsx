@@ -1,10 +1,10 @@
 "use client";
-import { useAccount, useReadContract } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import nftAbi from "@/abis/NFTMIR";
+import signatureDropAbi from "@/abis/SignatureDrop";
 import { useEffect, useState } from "react";
 import NftCardWaiting from "@/components/nft-card/nft-waiting";
 import NftCardMinted from "@/components/nft-card/nft-minted";
-import Loading from "@/components/loading/loading";
 import {
   Card,
   CardContent,
@@ -16,10 +16,12 @@ import confetti from "canvas-confetti";
 import "./nfts.scss";
 import { Skeleton } from "@/components/ui/skeleton";
 import { get } from "@/shared/request";
+import { useToast } from "@/components/ui/use-toast";
+
 
 export default function NftsPage() {
+  const { toast } = useToast();
   const { address: currentAddress } = useAccount();
-
   const {
     isPending: isUserNftsPending,
     data: userNfts,
@@ -42,7 +44,11 @@ export default function NftsPage() {
     args: [currentAddress as `0x${string}`],
   });
 
-  const onRedeem = () => {};
+  const {
+    data: hash,
+    writeContract,
+  } = useWriteContract();
+  
   const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
@@ -54,15 +60,63 @@ export default function NftsPage() {
   };
   const onRedeemError = () => {};
 
+  const {
+    isLoading: isClaiming,
+    isSuccess: isClaimingSuccess,
+    error: claimError,
+  } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+
   useEffect(() => {
-    get('/airdrop/sign', {
+    get("/airdrop/sign", {
       params: {
         recipient: currentAddress,
       },
-    }).then((res) => {
-      console.log('signature 🚀🚀🚀', res);
-    });
+    })
+      .then(async ({data}) => {
+        console.log("signature 🚀🚀🚀", data);
+        
+        await writeContract({
+          address: signatureDropAbi.contractAddress,
+          abi: signatureDropAbi.abi,
+          functionName: "claim",
+          args: [
+            currentAddress as `0x${string}`,
+            BigInt(data.amount),
+            BigInt(data.nonce),
+            BigInt(data.deadline),
+            data.signature,
+          ],
+        });
+      })
+      .catch((err) => {
+        toast({
+          title: "Error",
+          description: err.message,
+          variant: "destructive",
+        });
+      });
   }, []);
+
+  useEffect(() => {
+    if (isClaimingSuccess) {
+      console.log("isClaimingSuccess 🚀🚀🚀", isClaimingSuccess);
+      toast({
+        title: "Success",
+        description: "You have successfully claimed.",
+      });
+    }
+    if (claimError) {
+      console.log("claimError 🔴🔴🔴", claimError);
+      toast({
+        title: "Error",
+        description: "There was a problem with your request.",
+        variant: "destructive",
+      });
+    }
+  }, [isClaimingSuccess, claimError]);
 
   return (
     <div className="common-page nfts-page">
