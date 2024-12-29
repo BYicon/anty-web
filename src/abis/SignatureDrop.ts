@@ -1,6 +1,7 @@
+// Airdrop
 export default {
   contractName: "SignatureDrop",
-  contractAddress: "0x40b6cf80BE348a856D8b0D82Fce1627321C468bf",
+  contractAddress: "0x8Ef9588e7FD022b41f05147CF797B9e77c8424da",
   abi: [
     {
       "inputs": [

@@ -1,8 +1,13 @@
 "use client";
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useReadContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import nftAbi from "@/abis/NFTMIR";
 import signatureDropAbi from "@/abis/SignatureDrop";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import NftCardWaiting from "@/components/nft-card/nft-waiting";
 import NftCardMinted from "@/components/nft-card/nft-minted";
 import {
@@ -15,9 +20,10 @@ import {
 import confetti from "canvas-confetti";
 import "./nfts.scss";
 import { Skeleton } from "@/components/ui/skeleton";
-import { get } from "@/shared/request";
 import { useToast } from "@/components/ui/use-toast";
-
+// import { get } from "@/shared/request";
+// import { formatUnits } from "viem";
+// import { Button } from "@/components/ui/button";
 
 export default function NftsPage() {
   const { toast } = useToast();
@@ -44,11 +50,22 @@ export default function NftsPage() {
     args: [currentAddress as `0x${string}`],
   });
 
-  const {
-    data: hash,
-    writeContract,
-  } = useWriteContract();
-  
+  // const signatureInfo = useRef<{
+  //   amount: bigint;
+  //   nonce: bigint;
+  //   deadline: bigint;
+  //   signature: string;
+  // }>({
+  //   amount: BigInt(0),
+  //   nonce: BigInt(0),
+  //   deadline: BigInt(0),
+  //   signature: "",
+  // });
+
+  const { data: hash, writeContract, error: claimError } = useWriteContract();
+
+  const onRedeem = () => {};
+
   const onRedeemSuccess = () => {
     refetchWaitingForRedeem();
     refetchUserNfts();
@@ -60,44 +77,52 @@ export default function NftsPage() {
   };
   const onRedeemError = () => {};
 
-  const {
-    isLoading: isClaiming,
-    isSuccess: isClaimingSuccess,
-    error: claimError,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
+  // const claim = async () => {
+  //   console.log("signatureInfo.current 🚀🚀🚀", signatureInfo.current);
+  //   await writeContract({
+  //     address: signatureDropAbi.contractAddress,
+  //     abi: signatureDropAbi.abi,
+  //     functionName: "claim",
+  //     args: [
+  //       currentAddress as `0x${string}`,
+  //       signatureInfo.current.amount,
+  //       signatureInfo.current.nonce,
+  //       signatureInfo.current.deadline,
+  //       signatureInfo.current.signature as `0x${string}`,
+  //     ],
+  //   });
+  // };
 
+  // const {
+  //   isLoading: isClaiming,
+  //   isSuccess: isClaimingSuccess,
+  //   error: writeContractError,
+  // } = useWaitForTransactionReceipt({
+  //   hash,
+  // });
 
+  // ethereum,request({method: "personal_sign", params:[account, hash]})
   useEffect(() => {
-    get("/airdrop/sign", {
-      params: {
-        recipient: currentAddress,
-      },
-    })
-      .then(async ({data}) => {
-        console.log("signature 🚀🚀🚀", data);
-        
-        await writeContract({
-          address: signatureDropAbi.contractAddress,
-          abi: signatureDropAbi.abi,
-          functionName: "claim",
-          args: [
-            currentAddress as `0x${string}`,
-            BigInt(data.amount),
-            BigInt(data.nonce),
-            BigInt(data.deadline),
-            data.signature,
-          ],
-        });
-      })
-      .catch((err) => {
-        toast({
-          title: "Error",
-          description: err.message,
-          variant: "destructive",
-        });
-      });
+    // console.log("currentAddress 🚀🚀🚀", currentAddress);
+    // window.ethereum.request({method: "personal_sign", params:[currentAddress, '0x62d62cb541e9ca76f26bb313f7b101b849e270d4608195b47c66474d9c97ef3c']}).then((res: any) => {
+    //   console.log("signature wallet 🚀🚀🚀", res);
+    // });
+    // console.log("hash 🚀🚀🚀", hash);
+    // get("/airdrop/sign", {
+    //   params: {
+    //     recipient: currentAddress,
+    //   },
+    // })
+    //   .then(async ({data}) => {
+    //     signatureInfo.current = data;
+    //   })
+    //   .catch((err) => {
+    //     toast({
+    //       title: "Error",
+    //       description: err.message,
+    //       variant: "destructive",
+    //     });
+    //   });
   }, []);
 
   useEffect(() => {
@@ -108,15 +133,15 @@ export default function NftsPage() {
         description: "You have successfully claimed.",
       });
     }
-    if (claimError) {
-      console.log("claimError 🔴🔴🔴", claimError);
+    if (writeContractError) {
+      console.log("writeContractError 🔴🔴🔴", writeContractError);
       toast({
         title: "Error",
         description: "There was a problem with your request.",
         variant: "destructive",
       });
     }
-  }, [isClaimingSuccess, claimError]);
+  }, [isClaimingSuccess, writeContractError, hash]);
 
   return (
     <div className="common-page nfts-page">

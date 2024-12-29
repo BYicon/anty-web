@@ -1,3 +1,4 @@
+// ERC20
 export default {
   contractName: "MIR",
   contractAddress: "0x019Fe2F8dc8723C2E169F2e39d918E65D2468f90",

@@ -1,3 +1,4 @@
+// NFT
 export default {
   contractName: "NFTMIR",
   contractAddress: "0x497df8eB88cb96AF331588fb02E6ac7f4695Ae5F",
