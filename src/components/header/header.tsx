@@ -10,6 +10,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import nftAbi from "@/abis/NFTMIR";
+import { isWhiteRoute } from "@/shared/config";
 
 const Header = () => {
   const { theme, initTheme } = useCommonStore();
@@ -27,7 +28,7 @@ const Header = () => {
   });
 
   const goHome = () => {
-    router.push("/");
+    // router.push("/");
   };
 
   useEffect(() => {
@@ -42,7 +43,9 @@ const Header = () => {
 
     // console.log("lang 🚀🚀🚀", lang);
     if (!address) {
-      router.push("/");
+      if (!isWhiteRoute(window.location.pathname)) {
+        router.push("/");
+      }
     }
   }, []);
 
