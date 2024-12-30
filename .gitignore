@@ -37,3 +37,6 @@ next-env.d.ts
 .env.production
 .env
 introduce.md
+
+
+yarn.lock
