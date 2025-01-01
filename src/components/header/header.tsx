@@ -70,6 +70,9 @@ const Header = () => {
           <Link href="/recharge" className="hover:text-blue-500">
             Recharge
           </Link>
+          <Link href="/etf" className="hover:text-blue-500">
+            ETF
+          </Link>
           {address && (
             <>
               {/* <Link href="/tasks" className="hover:text-blue-500">
