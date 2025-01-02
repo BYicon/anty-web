@@ -1,6 +1,6 @@
 .main-header {
   @apply sticky top-0 z-50 flex w-full items-center justify-between px-4 border-b border-gray-300; 
-  background-color: var(--colors-backgroundAlt);
+  background-color: hsl(var(--card));
   color: hsl(var(--foreground));
   height: var(--nav-height);
   border-bottom: 1px solid rgb(209 213 219 / var(--tw-border-opacity));
