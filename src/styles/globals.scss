@@ -1,4 +1,3 @@
-@import "./variable.scss";
 @import "./animation.scss";
 @import "./mixin.scss";
 @import "../../public/iconfont/iconfont.css";
@@ -44,7 +43,6 @@ html,body {
 
 @layer base {
   :root {
-    --min-section-height: calc(100vh - var(--nav-height));
     --background: 184 74% 48%; // Default background color of <body />...etc
     --foreground: 260 76% 21%;
     --card: 0 0% 100%; // Background color for <Card />
@@ -72,11 +70,15 @@ html,body {
     --radius: 0.5rem; // Border radius for card, input and buttons
 
     // 自定义颜色
+    --nav-height: 64px;
+    --min-section-height: calc(100vh - var(--nav-height));
     --colors-background: #faf9fa;
     --colors-gradientBubblegum: linear-gradient(139.73deg,#e5fdff,#f3efff);
+    --colors-textSubtle: #7a6eaa;
+    
   }
   
-  [data-theme="dark"],.dark {
+  .dark {
     --background: 184 74% 48%;
     --foreground: 261 100% 97%;
     --card: 250 7% 16%;
@@ -105,6 +107,7 @@ html,body {
     // 自定义颜色
     --colors-background: #08060b;
     --colors-gradientBubblegum: linear-gradient(139.73deg,#313d5c,#3d2a54);
+    --colors-textSubtle: #b8add2;
   }
 }
 

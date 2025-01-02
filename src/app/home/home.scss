@@ -10,15 +10,15 @@
   margin: 0;
   padding-bottom: 0.5rem;
   letter-spacing: 0.5rem;
-  color: var(--colors-text);
+  color: hsl(var(--foreground));
   transition: all 0.3s ease;
   z-index: 3;
   cursor: default;
 }
 .page-title:hover {
-  color: var(--colors-text);
+  color: hsl(var(--foreground));
   // transform: translate3d(0, -10px, 22px);
-  // color: var(--colors-text);
+  // color: hsl(var(--foreground));
 }
 
 .page-title::before {  

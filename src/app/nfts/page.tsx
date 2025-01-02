@@ -16,10 +16,8 @@ import {
 import confetti from "canvas-confetti";
 import "./nfts.scss";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
 
 export default function NftsPage() {
-  const { toast } = useToast();
   const { address: currentAddress } = useAccount();
   const {
     isPending: isUserNftsPending,
@@ -55,8 +53,6 @@ export default function NftsPage() {
     });
   };
   const onRedeemError = () => {};
-
-
   return (
     <div className="common-page nfts-page">
       <Card className="nfts-list mb-8">
