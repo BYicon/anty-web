@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ThemeToggle from "../theme-toggle/theme-toggle";
-import { useCommonStore } from "@/stores/useStore";
 import "./header.scss";
-import { EnumTheme } from "@/shared/enums";
 import Link from "next/link";
 import { useAccount, useReadContract } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
@@ -13,7 +11,6 @@ import nftAbi from "@/abis/NFTMIR";
 import { isWhiteRoute } from "@/shared/config";
 
 const Header = () => {
-  const { theme, initTheme } = useCommonStore();
   const { address } = useAccount();
   const router = useRouter();
 
@@ -32,7 +29,6 @@ const Header = () => {
   };
 
   useEffect(() => {
-    initTheme();
 
     // const lang = getISOLang();
     // const htmlLang = document.documentElement.lang;
@@ -58,7 +54,7 @@ const Header = () => {
         <img
           src="/images/logo.png"
           alt="logo"
-          className={`w-10 h-10 border rounded-full ${theme === EnumTheme.Light ? "" : "filter invert"}`}
+          className="w-10 h-10 border rounded-full"
         />
         <span className="text-sm ml-2">ANTY｜MIR</span>
       </div>

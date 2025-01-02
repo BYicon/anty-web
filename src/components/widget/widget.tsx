@@ -1,5 +1,3 @@
-import { EnumTheme } from "@/shared/enums";
-import { useCommonStore } from "@/stores/useStore";
 import clsx from "clsx";
 
 export default function Widget({
