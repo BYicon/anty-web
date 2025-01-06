@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import Portfolio from "./portfolio";
 import Info from "./info";
-import Operate from "./operate";
+import Trading from "./trading";
 
 export default function ETFPage() {
   const { address: currentAddress } = useAccount();
@@ -28,7 +28,7 @@ export default function ETFPage() {
           </CardContent>
         </Card>
         <div className="w-[500px]">
-          <Operate />
+          <Trading />
         </div>
       </div>
     </div>
