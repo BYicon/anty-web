@@ -43,7 +43,7 @@ html,body {
 
 @layer base {
   :root {
-    --background: 184 74% 48%; // Default background color of <body />...etc
+    --background: 0 0% 100%; // Default background color of <body />...etc
     --foreground: 260 76% 21%;
     --card: 0 0% 100%; // Background color for <Card />
     --card-foreground: 260 76% 21%;
@@ -79,7 +79,7 @@ html,body {
   }
   
   .dark {
-    --background: 184 74% 48%;
+    --background: 250 7% 16%;
     --foreground: 261 100% 97%;
     --card: 250 7% 16%;
     --card-foreground: 261 100% 97%;

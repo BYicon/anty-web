@@ -17,8 +17,8 @@ dotenv.config();
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Mirror",
-  description: "mirror coin",
+  title: "ANTY Products",
+  description: "explore web3",
 };
 
 export default function RootLayout({

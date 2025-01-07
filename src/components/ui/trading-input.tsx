@@ -22,7 +22,7 @@ const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
         </div>
         <Input
           className={cn(
-            "bg-muted font-bold peer ps-16 pe-6 h-14 !text-lg text-right rounded-full focus-visible:ring-2 focus-visible:ring-secondary focus-visible:shadow-[0_0_0_2px_rgba(147,51,234,0.3)]",
+            "bg-muted font-bold peer ps-16 pe-6 h-14 !text-lg text-right rounded-xl focus-visible:ring-2 focus-visible:ring-secondary focus-visible:shadow-[0_0_0_2px_rgba(147,51,234,0.3)]",
             valueLength > 10 && "!text-md"
           )}
           type={type}

@@ -99,3 +99,26 @@
     transform: translateY(0px);
   }
 }
+
+
+// snowfall
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  
+  50% {
+    transform: translateY(45vh) translateX(var(--sway-amount)) rotate(180deg);
+    opacity: 0.7;
+  }
+  
+  100% {
+    transform: translateY(100vh) translateX(0) rotate(360deg);
+    opacity: 0.3;
+  }
+}
+
+.animate-snowfall {
+  animation: snowfall linear infinite;
+}
