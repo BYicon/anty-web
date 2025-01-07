@@ -7,7 +7,7 @@
 ## Preview
 [DEMO](https://ioby.cn/)
 
-[合约仓库](https://github.com/BYicon/mirror-coin)
+[合约仓库](https://github.com/BYicon/anty-coin)
 `目前部署在sepolia测试网，合约部署address在abi文件中`
 
 `开发中,欢迎一起探索Web3～～ 🐶 `

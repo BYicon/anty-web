@@ -11,12 +11,12 @@ import {
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
 import { useBalance, useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt } from "wagmi";
-import mirAbi from '@/abis/MIR';
+import erc20Abi from '@/abis/MIR';
 import { useToast } from "../ui/use-toast";
 import { Loader2 } from "lucide-react";
 
 const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const { address: currentAddress } = useAccount();
   const { toast } = useToast();
   const {
@@ -24,29 +24,30 @@ const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
     writeContract,
   } = useWriteContract();
 
-  const { data: mirBalance, refetch: refetchMirBalance } = useBalance({
+  const { data: erc20Balance, refetch: refetcherc20Balance } = useBalance({
     address: currentAddress,
-    token: mirAbi.contractAddress,
+    token: erc20Abi.contractAddress,
     });
 
 
   const { data: hasClaimed } = useReadContract({
-    address: mirAbi.contractAddress,
-    abi: mirAbi.abi,
+    address: erc20Abi.contractAddress,
+    abi: erc20Abi.abi,
     functionName: "claims",
     args: [currentAddress as `0x${string}`],
   });
 
 
   useEffect(() => {
-    console.log('hasClaimed 🚀🚀🚀', hasClaimed);
-    setOpen(Number(mirBalance?.value) <= 0 && !hasClaimed);
-  }, [mirBalance, hasClaimed]);
+    if(hasClaimed === false) {
+      setOpen(true);
+    };
+  }, [hasClaimed]);
 
   const onClaim = async () => {
     await writeContract({
-      address: mirAbi.contractAddress,
-      abi: mirAbi.abi,
+      address: erc20Abi.contractAddress,
+      abi: erc20Abi.abi,
       functionName: "registerClaim",
     });
     console.log(hash);
@@ -62,7 +63,7 @@ const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
 
   useEffect(() => {
     if (isClaimSuccess) {
-      refetchMirBalance();
+      refetcherc20Balance();
       toast({
         title: "Success",
         description: "You have successfully claimed your tokens.",

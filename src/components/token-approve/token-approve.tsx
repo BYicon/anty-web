@@ -1,5 +1,5 @@
 import { useWaitForTransactionReceipt } from "wagmi";
-import mirAbi from "@/abis/MIR";
+import erc20Abi from "@/abis/MIR";
 import nftAbi from "@/abis/NFTMIR";
 import { useAccount, useWriteContract, useSimulateContract } from "wagmi";
 import { useEffect } from "react";
@@ -21,12 +21,12 @@ export default function TokenApprove(props: {
     props.onApprove && props.onApprove();
     if (currentAddress) {
       const result = await writeContract({
-        address: mirAbi.contractAddress,
-        abi: mirAbi.abi,
+        address: erc20Abi.contractAddress,
+        abi: erc20Abi.abi,
         functionName: "approve",
         args: [
           nftAbi.contractAddress,
-          parseUnits(props.amount.toString(), mirAbi.contractDecimals),
+          parseUnits(props.amount.toString(), erc20Abi.contractDecimals),
         ],
       });
       console.log("result 🚀🚀🚀", result);
@@ -53,8 +53,8 @@ export default function TokenApprove(props: {
   }, [isConfirmed, isConfirmError]);
 
   // useWatchContractEvent({
-  //   address: mirAbi.contractAddress as `0x${string}`,
-  //   abi: mirAbi.abi,
+  //   address: erc20Abi.contractAddress as `0x${string}`,
+  //   abi: erc20Abi.abi,
   //   eventName: "Approval",
   //   onLogs(logs) {
   //     console.log("Approval event logs 🔵🔵🔵", logs);

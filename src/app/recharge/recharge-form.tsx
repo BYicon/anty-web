@@ -12,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
@@ -23,7 +22,7 @@ import {
 } from "@/components/ui/card";
 import TokenApprove from "@/components/token-approve/token-approve";
 import { useEffect, useState } from "react";
-import mirAbi from "@/abis/MIR";
+import erc20Abi from "@/abis/MIR";
 import nftAbi from "@/abis/NFTMIR";
 import {
   useAccount,
@@ -34,21 +33,24 @@ import {
 } from "wagmi";
 import { useToast } from "@/components/ui/use-toast";
 import ConnectWalletButton from "@/components/connect-wallet-button/connect-wallet-button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Wallet } from "lucide-react";
 import { formatUnits, parseUnits } from "viem";
+import { TradingInput } from "@/components/ui/trading-input";
 
 const formSchema = z.object({
   userid: z.string().min(2, {
     message: "userid must be at least 2 characters.",
   }),
-  amount: z.number().min(1, {
-    message: "Amount must be at least 1.",
-  }),
+  amount: z
+    .string()
+    .transform((val) => Number(val))
+    .refine((val) => val >= 1, {
+      message: "Amount must be at least 1.",
+    }),
   referral: z.string().optional(),
 });
 
 function RechargeForm() {
-
   const { address: currentAddress } = useAccount();
   const { toast } = useToast();
 
@@ -56,19 +58,14 @@ function RechargeForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       userid: "10086",
-      amount: undefined,
+      amount: 0.0,
       referral: "",
     },
   });
 
-  const {
-    data: hash,
-    writeContract,
-  } = useWriteContract();
+  const { data: hash, writeContract } = useWriteContract();
 
-  const {
-    refetch: refetchWaitingForRedeem,
-  } = useReadContract({
+  const { refetch: refetchWaitingForRedeem } = useReadContract({
     address: nftAbi.contractAddress,
     abi: nftAbi.abi,
     functionName: "getWaitingForRedeem",
@@ -77,16 +74,16 @@ function RechargeForm() {
 
   // 获取当前用户ERC20的授权额度
   const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
-    address: mirAbi.contractAddress,
-    abi: mirAbi.abi,
+    address: erc20Abi.contractAddress,
+    abi: erc20Abi.abi,
     functionName: "allowance",
     args: [currentAddress as `0x${string}`, nftAbi.contractAddress],
   });
 
-  const { data: mirBalance, refetch: refetchMirBalance, isError: isMirBalanceError, error: mirBalanceMessage } = useBalance({
+  const { data: erc20Balance, refetch: refetchTokenBalance } = useBalance({
     address: currentAddress,
-    token: mirAbi.contractAddress,
-    });
+    token: erc20Abi.contractAddress,
+  });
 
   const onApproveHandler = () => {};
   const onApproveSuccess = () => {
@@ -97,23 +94,16 @@ function RechargeForm() {
   };
 
   const onRecharge = async (values: any) => {
-    if (needApprove) {
-      toast({
-        title: "Error",
-        description: "Please approve ERC20 first.",
-        variant: "destructive",
-      });
-      return;
-    };
-    const amount = parseUnits(values.amount.toString() || "0", mirAbi.contractDecimals);
+    const amount = parseUnits(
+      values.amount.toString() || "0",
+      erc20Abi.contractDecimals
+    );
+    console.log("amount", amount);
     await writeContract({
       address: nftAbi.contractAddress,
       abi: nftAbi.abi,
       functionName: "recharge",
-      args: [
-        values.userid || 0,
-        amount,
-      ],
+      args: [values.userid || 0, amount],
     });
   };
   const {
@@ -126,7 +116,7 @@ function RechargeForm() {
 
   useEffect(() => {
     if (isRechargeSuccess) {
-      refetchMirBalance();
+      refetchTokenBalance();
       refetchAllowance();
       refetchWaitingForRedeem();
       toast({
@@ -142,28 +132,15 @@ function RechargeForm() {
       });
     }
   }, [isRechargeSuccess, isRechargeError]);
-  const [amount, setAmount] = useState(0);
-
-  const onAmountChange = (field: any, value: number) => {
-    if (isNaN(value)) {
-      value = 0;
-    }
-    value = parseFloat(value.toString());
-    if (value < 0) {
-      value = 0;
-    };
-    field.onChange(value);
-    setAmount(value);
-  };
 
   const [needApprove, setNeedApprove] = useState(false);
   useEffect(() => {
     const allowance = formatUnits(
       allowanceData || BigInt(0),
-      mirAbi.contractDecimals
+      erc20Abi.contractDecimals
     );
-    setNeedApprove(Number(allowance) < Number(amount));
-  }, [allowanceData, amount]);
+    setNeedApprove(Number(allowance) < Number(form.getValues("amount")));
+  }, [allowanceData, form.getValues("amount")]);
 
   // 2. Define a submit handler.
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -176,12 +153,17 @@ function RechargeForm() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardHeader className="px-8 pb-0">
             <CardTitle className="recharge-form-title">Buy G coins</CardTitle>
-            <CardDescription className="recharge-form-title-des11c">
+            <CardDescription className="text-xs">
               Buy G coins for your WECHAT MINI PROGRAM.
             </CardDescription>
             <div className="recharge-form-allowance">
-            <span className="iconfont icon-balance icon-licai relative top-[-2px]"></span>
-              MIR {formatUnits(mirBalance?.value || BigInt(0), mirAbi.contractDecimals)}
+              <Wallet className="w-4 h-4" />
+              <span>
+                {formatUnits(
+                  erc20Balance?.value || BigInt(0),
+                  erc20Abi.contractDecimals
+                )}
+              </span>
             </div>
           </CardHeader>
           <CardContent className="px-8">
@@ -189,16 +171,13 @@ function RechargeForm() {
               control={form.control}
               name="userid"
               render={({ field }) => (
-                <FormItem className="relative">
-                  <FormLabel className="recharge-label">User ID</FormLabel>
+                <FormItem className="relative mt-8">
+                  <FormLabel className="recharge-label">
+                    Referral(optional)
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      className="recharge-input"
-                      placeholder="User ID"
-                      {...field}
-                    />
+                    <TradingInput label="User ID" {...field} />
                   </FormControl>
-                  {/* <FormDescription>This is your user ID.</FormDescription> */}
                   <FormMessage />
                 </FormItem>
               )}
@@ -208,19 +187,16 @@ function RechargeForm() {
               name="amount"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">Amount</FormLabel>
+                  <FormLabel className="recharge-label">
+                    Referral(optional)
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      className="recharge-input"
-                      placeholder="MIR Amount"
+                    <TradingInput
+                      type="number"
+                      label="ANTY"
                       {...field}
-                      value={field.value || ''}
-                      onChange={(e) =>
-                        onAmountChange(field, Number(e.target.value))
-                      }
                     />
                   </FormControl>
-                  <FormDescription>You can mint 1 NFT by consuming 10 MIR Tokens.</FormDescription> 
                   <FormMessage />
                 </FormItem>
               )}
@@ -230,13 +206,11 @@ function RechargeForm() {
               name="referral"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">Referral(optional)</FormLabel>
+                  <FormLabel className="recharge-label">
+                    Referral(optional)
+                  </FormLabel>
                   <FormControl>
-                    <Input
-                      className="recharge-input"
-                      placeholder="Referral"
-                      {...field}
-                    />
+                    <TradingInput label="Referral" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
