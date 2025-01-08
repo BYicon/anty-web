@@ -14,7 +14,7 @@ const HeaderSection = () => {
     <div className="header-section-container common-bg header-section-bg">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-2xl lg:mx-0">
-          <h1 className="page-title">ANTY</h1>
+          <h1 className="page-title"> Products</h1>
           <SlideText />
           <p
             className={`mt-8 text-pretty text-lg font-medium text-gray-900 dark:text-gray-400 min-h-[160px]`}

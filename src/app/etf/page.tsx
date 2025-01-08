@@ -25,7 +25,7 @@ export default function ETFPage() {
       <div className="flex gap-4 w-[1400px] mx-auto relative z-10">
         <Card className="flex-1 relative z-10">
           <CardHeader>
-            <CardTitle>ANTY ETF</CardTitle>
+            <CardTitle>Anty ETF</CardTitle>
             <CardDescription>Make crypto simple</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">

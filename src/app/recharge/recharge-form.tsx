@@ -193,7 +193,7 @@ function RechargeForm() {
                   <FormControl>
                     <TradingInput
                       type="number"
-                      label="ANTY"
+                      label="Anty"
                       {...field}
                     />
                   </FormControl>

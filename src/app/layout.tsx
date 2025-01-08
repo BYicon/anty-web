@@ -17,7 +17,7 @@ dotenv.config();
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "ANTY Products",
+  title: "Anty",
   description: "explore web3",
 };
 
@@ -33,10 +33,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-        >
+        <ThemeProvider attribute="class" defaultTheme="light">
           <Providers initialState={initialState}>
             <Header />
             {children}
@@ -44,6 +41,11 @@ export default function RootLayout({
             <Toaster />
           </Providers>
         </ThemeProvider>
+        <script
+          data-goatcounter="https://anty.goatcounter.com/count"
+          async
+          src="//gc.zgo.at/count.js"
+        ></script>
       </body>
     </html>
   );

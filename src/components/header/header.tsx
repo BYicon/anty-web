@@ -25,7 +25,7 @@ const Header = () => {
   });
 
   const goHome = () => {
-    // router.push("/");
+    router.push("/");
   };
 
   useEffect(() => {
@@ -56,7 +56,7 @@ const Header = () => {
           alt="logo"
           className="w-10 h-10 border rounded-full"
         />
-        <span className="text-sm ml-2">ANTY</span>
+        <span className="text-sm ml-2">Anty</span>
       </div>
       <div className="flex items-center gap-4">
         <nav className="main-nav">
