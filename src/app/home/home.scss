@@ -21,7 +21,7 @@
   // color: hsl(var(--foreground));
 }
 
-.page-title::before {  
+.page-title::before {
   transform: scaleX(0);
   transform-origin: bottom right;
 }
@@ -35,14 +35,16 @@
   content: " ";
   display: block;
   position: absolute;
-  top: 0; right: 0; bottom: 0; left: 0;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
   inset: 0 0 0 0;
-  background: var(--colors-light-gradientPrimary);
+  background: var(--colors-gradientPrimary);
   z-index: -1;
-  transition: transform .3s ease;
+  transition: transform 0.3s ease;
 }
-.living-words-container  {
+.living-words-container {
   overflow: hidden;
   max-height: 35vh;
-
 }

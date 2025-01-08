@@ -46,6 +46,9 @@ const formSchema = z.object({
     .transform((val) => Number(val))
     .refine((val) => val >= 1, {
       message: "Amount must be at least 1.",
+    })
+    .refine((val) => val <= 100000000, {
+      message: "Amount must be at most 100000000.",
     }),
   referral: z.string().optional(),
 });
@@ -62,6 +65,8 @@ function RechargeForm() {
       referral: "",
     },
   });
+
+  const amount = form.watch("amount");
 
   const { data: hash, writeContract } = useWriteContract();
 
@@ -94,16 +99,15 @@ function RechargeForm() {
   };
 
   const onRecharge = async (values: any) => {
-    const amount = parseUnits(
+    const _amount = parseUnits(
       values.amount.toString() || "0",
       erc20Abi.contractDecimals
     );
-    console.log("amount", amount);
     await writeContract({
       address: nftAbi.contractAddress,
       abi: nftAbi.abi,
       functionName: "recharge",
-      args: [values.userid || 0, amount],
+      args: [values.userid || 0, _amount],
     });
   };
   const {
@@ -139,8 +143,8 @@ function RechargeForm() {
       allowanceData || BigInt(0),
       erc20Abi.contractDecimals
     );
-    setNeedApprove(Number(allowance) < Number(form.getValues("amount")));
-  }, [allowanceData, form.getValues("amount")]);
+    setNeedApprove(Number(allowance) < Number(amount));
+  }, [allowanceData, amount]);
 
   // 2. Define a submit handler.
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -172,9 +176,6 @@ function RechargeForm() {
               name="userid"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">
-                    Referral(optional)
-                  </FormLabel>
                   <FormControl>
                     <TradingInput label="User ID" {...field} />
                   </FormControl>
@@ -187,9 +188,6 @@ function RechargeForm() {
               name="amount"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">
-                    Referral(optional)
-                  </FormLabel>
                   <FormControl>
                     <TradingInput
                       type="number"
@@ -206,9 +204,6 @@ function RechargeForm() {
               name="referral"
               render={({ field }) => (
                 <FormItem className="relative mt-8">
-                  <FormLabel className="recharge-label">
-                    Referral(optional)
-                  </FormLabel>
                   <FormControl>
                     <TradingInput label="Referral" {...field} />
                   </FormControl>
@@ -224,7 +219,6 @@ function RechargeForm() {
                 onApprove={() => onApproveHandler()}
                 onSuccess={onApproveSuccess}
                 onError={onApproveError}
-                amount={form.getValues("amount")}
               />
             ) : currentAddress ? (
               <Button

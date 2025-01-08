@@ -9,7 +9,6 @@ import { parseUnits } from "viem";
 
 export default function TokenApprove(props: {
   className?: string;
-  amount: string | number;
   onApprove?: () => void;
   onSuccess?: () => void;
   onError?: (error: any) => void;
@@ -26,7 +25,7 @@ export default function TokenApprove(props: {
         functionName: "approve",
         args: [
           nftAbi.contractAddress,
-          parseUnits(props.amount.toString(), erc20Abi.contractDecimals),
+          parseUnits("100000000", erc20Abi.contractDecimals),
         ],
       });
       console.log("result 🚀🚀🚀", result);
