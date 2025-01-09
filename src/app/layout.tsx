@@ -41,11 +41,11 @@ export default function RootLayout({
             <Toaster />
           </Providers>
         </ThemeProvider>
-        <script
+        {/* <script
           data-goatcounter="https://anty.goatcounter.com/count"
           async
           src="//gc.zgo.at/count.js"
-        ></script>
+        ></script> */}
       </body>
     </html>
   );

@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -66,7 +66,7 @@ function RechargeForm() {
     },
   });
 
-  const amount = form.watch("amount");
+  const watchAllFields = form.watch();
 
   const { data: hash, writeContract } = useWriteContract();
 
@@ -143,8 +143,8 @@ function RechargeForm() {
       allowanceData || BigInt(0),
       erc20Abi.contractDecimals
     );
-    setNeedApprove(Number(allowance) < Number(amount));
-  }, [allowanceData, amount]);
+    setNeedApprove(Number(allowance) < Number(watchAllFields.amount));
+  }, [allowanceData, watchAllFields.amount]);
 
   // 2. Define a submit handler.
   const onSubmit = (values: z.infer<typeof formSchema>) => {
@@ -152,7 +152,7 @@ function RechargeForm() {
   };
 
   return (
-    <Card className="w-[520px] px-8 common-bg">
+    <Card className="w-[520px] px-6 common-bg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <CardHeader className="px-8 pb-0">
@@ -215,14 +215,14 @@ function RechargeForm() {
           <CardFooter className="flex justify-between">
             {needApprove ? (
               <TokenApprove
-                className="recharge-actions-btn"
+                className="w-full h-12 rounded-xl"
                 onApprove={() => onApproveHandler()}
                 onSuccess={onApproveSuccess}
                 onError={onApproveError}
               />
             ) : currentAddress ? (
               <Button
-                className="recharge-actions-btn"
+                className="w-full h-12 rounded-xl"
                 size="lg"
                 disabled={isRechargeLoading}
               >
