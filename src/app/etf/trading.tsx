@@ -5,11 +5,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowDownIcon } from "lucide-react";
+import { ChevronDownIcon, ArrowDownIcon } from "lucide-react";
 import { TradingInput } from "@/components/ui/trading-input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { EnumTradingType } from "@/shared/enums";
+import Image from "next/image";
+import { COIN_LIST } from "@/shared/config";
+import CoinLabel from "@/components/coin-select/coin-label";
 
 export default function Trading() {
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
@@ -17,6 +20,8 @@ export default function Trading() {
   const [eth, setEth] = useState(0);
   const [btc, setBtc] = useState(0);
   const [link, setLink] = useState(0);
+
+  const [selectedCoin, setSelectedCoin] = useState<typeof COIN_LIST[0]>(COIN_LIST[0]);
 
   // 处理切换函数
   const handleToggle = () => {
@@ -26,6 +31,14 @@ export default function Trading() {
         : EnumTradingType.INVEST;
     setTradingType(newType);
   };
+
+  const [showCoinList, setShowCoinList] = useState(false);
+
+  const handleCoinList = (coin: typeof COIN_LIST[0]) => {
+    setSelectedCoin(coin);
+    setShowCoinList(false);
+  };
+
   return (
     <Card>
       <CardContent>
@@ -52,7 +65,7 @@ export default function Trading() {
                 </div>
                 <div className="space-y-2">
                   <div className="text-sm font-bold select-none">
-                    You receive
+                    {tradingType === EnumTradingType.INVEST ? "You receive" : "You pay"}
                   </div>
                   <TradingInput label="SETF" />
                 </div>
@@ -68,11 +81,15 @@ export default function Trading() {
                   />
                 </div>
                 <div className="space-y-4">
-                  <div className="text-sm font-bold select-none">You pay</div>
+                  <div className="text-sm font-bold select-none">
+                    {tradingType === EnumTradingType.INVEST ? "You pay" : "You receive"}
+                  </div>
                   {withUnderlyingTokens ? (
                     <TradingInput
                       type="number"
-                      label="BTC"
+                      label={
+                        <CoinLabel selectedCoin={selectedCoin} setShowCoinList={setShowCoinList} />
+                      }
                       onChange={(e) => setBtc(Number(e.target.value))}
                     />
                   ) : (
@@ -90,6 +107,11 @@ export default function Trading() {
                       <TradingInput
                         type="number"
                         label="LINK"
+                        onChange={(e) => setLink(Number(e.target.value))}
+                      />
+                       <TradingInput
+                        type="number"
+                        label="DOGE"
                         onChange={(e) => setLink(Number(e.target.value))}
                       />
                     </React.Fragment>

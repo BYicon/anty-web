@@ -4,7 +4,7 @@ import { Input } from "./input";
 
 // 定义接口扩展原有的 input 属性
 interface TradingInputProps extends React.ComponentProps<"input"> {
-  label?: string; // 添加可选的 label 属性
+  label?: string | React.ReactNode; // 添加可选的 label 属性
 }
 
 const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
@@ -14,7 +14,7 @@ const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
       <div className="relative">
         <div
           className={cn(
-            "text-muted-foreground pointer-events-none absolute inset-y-0 start-2 flex items-center justify-center ps-3 peer-disabled:opacity-50 font-bold",
+            "text-foreground absolute inset-y-0 flex items-center justify-center ps-3 font-bold",
             className
           )}
         >
