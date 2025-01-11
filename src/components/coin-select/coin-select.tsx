@@ -1,30 +1,56 @@
-import Image, { StaticImageData } from "next/image";
-import { ChevronDownIcon } from "lucide-react";
+import { StaticImageData } from "next/image";
+import CoinLabel from "./coin-label";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { CoinSelector } from "./coin-selector";
 
-export default function CoinLabel({
+export default function CoinSelect({
   selectedCoin,
+  setSelectedCoin,
   setShowCoinList,
+  showCoinList,
 }: {
   selectedCoin: {
     name: string;
     icon: StaticImageData;
     code: string;
   };
-  setShowCoinList?: (show: boolean) => void;
+  setSelectedCoin: (coin: {
+    name: string;
+    icon: StaticImageData;
+    code: string;
+  }) => void;
+  setShowCoinList: (show: boolean) => void;
+  showCoinList: boolean;
 }) {
   return (
-    <div
-      className="flex items-center cursor-pointer hover:bg-gray-100 rounded-xl p-2"
-      onClick={() => setShowCoinList?.(true)}
-    >
-      <Image
-        src={selectedCoin.icon}
-        alt={selectedCoin.name}
-        width={28}
-        height={28}
-      />
-      <span className="ml-2">{selectedCoin.name}</span>
-      <ChevronDownIcon size={18} />
+    <div>
+      <Dialog open={showCoinList} onOpenChange={setShowCoinList}>
+        <DialogTrigger>
+          <CoinLabel
+            selectedCoin={selectedCoin}
+          />
+        </DialogTrigger>
+        <DialogContent className="w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Select Token</DialogTitle>
+            {/* <DialogDescription>Select token</DialogDescription> */}
+          </DialogHeader>
+          <CoinSelector selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin} setShowCoinList={setShowCoinList} />
+          <DialogFooter></DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
+
+
+
+

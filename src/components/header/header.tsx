@@ -8,7 +8,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import nftAbi from "@/abis/NFTMIR";
-import { isWhiteRoute } from "@/shared/config";
+import { isWhiteRoute } from "@/shared/helper";
 
 const Header = () => {
   const { address } = useAccount();

@@ -4,15 +4,14 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronDownIcon, ArrowDownIcon } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowDownIcon } from "lucide-react";
 import { TradingInput } from "@/components/ui/trading-input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { EnumTradingType } from "@/shared/enums";
-import Image from "next/image";
-import { COIN_LIST } from "@/shared/config";
-import CoinLabel from "@/components/coin-select/coin-label";
+import { COIN_LIST } from "@/shared/constants";
+import CoinSelect from "@/components/coin-select/coin-select";
 
 export default function Trading() {
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
@@ -33,11 +32,6 @@ export default function Trading() {
   };
 
   const [showCoinList, setShowCoinList] = useState(false);
-
-  const handleCoinList = (coin: typeof COIN_LIST[0]) => {
-    setSelectedCoin(coin);
-    setShowCoinList(false);
-  };
 
   return (
     <Card>
@@ -88,7 +82,7 @@ export default function Trading() {
                     <TradingInput
                       type="number"
                       label={
-                        <CoinLabel selectedCoin={selectedCoin} setShowCoinList={setShowCoinList} />
+                        <CoinSelect selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin} showCoinList={showCoinList} setShowCoinList={setShowCoinList} />
                       }
                       onChange={(e) => setBtc(Number(e.target.value))}
                     />
