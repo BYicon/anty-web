@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,12 @@ export default function Trading() {
 
   const [selectedCoin, setSelectedCoin] = useState<typeof COIN_LIST[0]>(COIN_LIST[0]);
 
-  // 处理切换函数
+
+  const isFlipped = useMemo(() => {
+    return tradingType === EnumTradingType.INVEST ? true : false;
+  }, [tradingType]);
+
+  // 修改切换函数
   const handleToggle = () => {
     const newType =
       tradingType === EnumTradingType.INVEST
@@ -57,60 +62,77 @@ export default function Trading() {
                   />
                   <Label className="ml-2">with underlying tokens</Label>
                 </div>
-                <div className="space-y-2">
-                  <div className="text-sm font-bold select-none">
-                    {tradingType === EnumTradingType.INVEST ? "You receive" : "You pay"}
-                  </div>
-                  <TradingInput label="SETF" />
-                </div>
-                <div className="flex items-center justify-center h-px w-full bg-gray-200 my-16">
-                  <ArrowDownIcon
+                {/* 添加动画容器 */}
+                <div className="relative">
+                  <div
                     className={cn(
-                      "w-8 h-8 cursor-pointer bg-white text-primary rounded-full border border-gray-200 transition-transform duration-300 ease-in-out dark:bg-gray-800",
-                      tradingType === EnumTradingType.INVEST
-                        ? "-rotate-180"
-                        : "rotate-0"
+                      "space-y-4 transition-transform duration-300 ease-in-out",
+                      isFlipped ? "translate-y-[400px]" : "translate-y-0"
                     )}
-                    onClick={handleToggle}
-                  />
-                </div>
-                <div className="space-y-4">
-                  <div className="text-sm font-bold select-none">
-                    {tradingType === EnumTradingType.INVEST ? "You pay" : "You receive"}
+                  >
+                    <div className="space-y-2">
+                      <div className="text-sm font-bold select-none">
+                        {tradingType === EnumTradingType.INVEST ? "You receive" : "You pay"}
+                      </div>
+                      <TradingInput label="SETF" />
+                    </div>
                   </div>
-                  {withUnderlyingTokens ? (
-                    <TradingInput
-                      type="number"
-                      label={
-                        <CoinSelect selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin} showCoinList={showCoinList} setShowCoinList={setShowCoinList} />
-                      }
-                      onChange={(e) => setBtc(Number(e.target.value))}
+
+                  <div className={cn("flex items-center justify-center h-px w-full bg-gray-200 my-14", isFlipped ? "translate-y-[230px]" : "translate-y-0")}>
+                    <ArrowDownIcon
+                      className={cn(
+                        "w-8 h-8 cursor-pointer bg-white text-primary rounded-full border border-gray-200 transition-transform duration-300 ease-in-out dark:bg-gray-800"
+                      )}
+                      onClick={handleToggle}
                     />
-                  ) : (
-                    <React.Fragment>
-                      <TradingInput
-                        type="number"
-                        label="BTC"
-                        onChange={(e) => setBtc(Number(e.target.value))}
-                      />
-                      <TradingInput
-                        type="number"
-                        label="ETH"
-                        onChange={(e) => setEth(Number(e.target.value))}
-                      />
-                      <TradingInput
-                        type="number"
-                        label="LINK"
-                        onChange={(e) => setLink(Number(e.target.value))}
-                      />
-                       <TradingInput
-                        type="number"
-                        label="DOGE"
-                        onChange={(e) => setLink(Number(e.target.value))}
-                      />
-                    </React.Fragment>
-                  )}
+                  </div>
+
+                  <div
+                    className={cn(
+                      "space-y-4 transition-transform duration-300 ease-in-out",
+                      isFlipped ? "translate-y-[-200px]" : "translate-y-0"
+                    )}
+                  >
+                    <div className="space-y-4">
+                      <div className="text-sm font-bold select-none">
+                        {tradingType === EnumTradingType.INVEST ? "You pay" : "You receive"}
+                      </div>
+                      {withUnderlyingTokens ? (
+                        <TradingInput
+                          type="number"
+                          label={
+                            <CoinSelect selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin} showCoinList={showCoinList} setShowCoinList={setShowCoinList} />
+                          }
+                          onChange={(e) => setBtc(Number(e.target.value))}
+                        />
+                      ) : (
+                        <React.Fragment>
+                          <TradingInput
+                            type="number"
+                            label="BTC"
+                            onChange={(e) => setBtc(Number(e.target.value))}
+                          />
+                          <TradingInput
+                            type="number"
+                            label="ETH"
+                            onChange={(e) => setEth(Number(e.target.value))}
+                          />
+                          <TradingInput
+                            type="number"
+                            label="LINK"
+                            onChange={(e) => setLink(Number(e.target.value))}
+                          />
+                           <TradingInput
+                            type="number"
+                            label="DOGE"
+                            onChange={(e) => setLink(Number(e.target.value))}
+                          />
+                        </React.Fragment>
+                      )}
+                    </div>
+                  </div>
                 </div>
+
                 {
                   tradingType === EnumTradingType.REDEEM ? (
                     <Button size="lg" className="w-full h-12 rounded-xl">
