@@ -111,9 +111,17 @@ export default function Trading() {
                     </React.Fragment>
                   )}
                 </div>
-                <Button size="lg" className="w-full h-12 rounded-xl">
-                  Redeem
-                </Button>
+                {
+                  tradingType === EnumTradingType.REDEEM ? (
+                    <Button size="lg" className="w-full h-12 rounded-xl">
+                      Redeem
+                    </Button>
+                  ) : (
+                    <Button size="lg" className="w-full h-12 rounded-xl">
+                      Invest
+                    </Button>
+                  )
+                }
               </CardContent>
             </Card>
           </Tabs>

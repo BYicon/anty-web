@@ -162,6 +162,7 @@ function RechargeForm() {
             </CardDescription>
             <div className="recharge-form-allowance">
               <Wallet className="w-4 h-4" />
+              Anty
               <span>
                 {formatUnits(
                   erc20Balance?.value || BigInt(0),
