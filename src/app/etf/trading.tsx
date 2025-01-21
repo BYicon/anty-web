@@ -64,10 +64,11 @@ export default function Trading() {
                 </div>
                 {/* 添加动画容器 */}
                 <div className="relative">
+                  {/* SETF */}
                   <div
                     className={cn(
                       "space-y-4 transition-transform duration-300 ease-in-out",
-                      isFlipped ? "translate-y-[400px]" : "translate-y-0"
+                      isFlipped ? !withUnderlyingTokens ? "translate-y-[400px]" : "translate-y-[200px]" : "translate-y-0",
                     )}
                   >
                     <div className="space-y-2">
@@ -77,8 +78,10 @@ export default function Trading() {
                       <TradingInput label="SETF" />
                     </div>
                   </div>
-
-                  <div className={cn("flex items-center justify-center h-px w-full bg-gray-200 my-14", isFlipped ? "translate-y-[230px]" : "translate-y-0")}>
+                  {/* 箭头 */}
+                  <div className={cn("flex items-center justify-center h-px w-full bg-gray-200 my-14", 
+                    isFlipped && !withUnderlyingTokens ? "translate-y-[230px]" : "translate-y-0",
+                  )}>
                     <ArrowDownIcon
                       className={cn(
                         "w-8 h-8 cursor-pointer bg-white text-primary rounded-full border border-gray-200 transition-transform duration-300 ease-in-out dark:bg-gray-800"
@@ -86,7 +89,7 @@ export default function Trading() {
                       onClick={handleToggle}
                     />
                   </div>
-
+                  {/* coins  */}
                   <div
                     className={cn(
                       "space-y-4 transition-transform duration-300 ease-in-out",
