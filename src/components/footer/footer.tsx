@@ -29,7 +29,7 @@ const Footer = () => {
   text-center pt-2 text-gray-400 text-sm pb-8"
       >
         <span>© {new Date().getFullYear()}. Public Domain.</span>
-        <span>京ICP备17044463号</span>
+        <span>Abracadabra</span>
         {/* <SocialIcons Icons={Icons} /> */}
       </div>
     </footer>
