@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,31 +12,96 @@ import { cn } from "@/lib/utils";
 import { EnumTradingType } from "@/shared/enums";
 import { COIN_LIST } from "@/shared/constants";
 import CoinSelect from "@/components/coin-select/coin-select";
+import ETFAbi from "@/abis/ETF";
+import erc20Abi from "@/abis/ERC20";
+import {
+  useAccount,
+  useBalance,
+  useReadContract,
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useReadContracts,
+} from "wagmi";
 
 export default function Trading() {
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
   const [withUnderlyingTokens, setWithUnderlyingTokens] = useState(false);
-  const [eth, setEth] = useState(0);
-  const [btc, setBtc] = useState(0);
-  const [link, setLink] = useState(0);
+  const [etf, setEtf] = useState("");
+  const [eth, setEth] = useState("");
+  const [btc, setBtc] = useState("");
+  const [link, setLink] = useState("");
+  const [aud, setAud] = useState("");
 
-  const [selectedCoin, setSelectedCoin] = useState<typeof COIN_LIST[0]>(COIN_LIST[0]);
+  // 读取 ETF 合约中的 tokens
+  const { data: tokensData } = useReadContract({
+    abi: ETFAbi.abi,
+    address: ETFAbi.contractAddress,
+    functionName: "getTokens",
+  });
 
+  // 构建获取 symbol 和 decimals 的读取请求
+  const symbolDecimalsReads = useMemo(() => {
+    if (!tokensData || !Array.isArray(tokensData)) {
+      return [];
+    }
 
-  const isFlipped = useMemo(() => {
-    return tradingType === EnumTradingType.INVEST ? true : false;
+    const symbolCalls = tokensData.map((tokenAddress: string) => ({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "symbol",
+    }));
+
+    const decimalsCalls = tokensData.map((tokenAddress: string) => ({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "decimals",
+    }));
+
+    return [...symbolCalls, ...decimalsCalls];
+  }, [tokensData]);
+
+  // 使用 useReadContracts 获取 symbol 和 decimals
+  const { data: symbolDecimalsData, refetch: refetchSymbolDecimals } = useReadContracts({
+    contracts: symbolDecimalsReads as any,
+  });
+
+  useEffect(() => {
+    refetchSymbolDecimals();
+  }, [symbolDecimalsReads]);
+
+  const { writeContract } = useWriteContract();
+
+  const [selectedCoin, setSelectedCoin] = useState<(typeof COIN_LIST)[0]>(
+    COIN_LIST[0]
+  );
+
+  const isInvest = useMemo(() => {
+    const _isInvest = tradingType === EnumTradingType.INVEST ? true : false;
+    // const focusInputId = _isInvest ? "etf" : "btc";
+    // const focusInput = document.getElementById(focusInputId);
+    // if(focusInput) {
+    //   console.log('focusInput 🚀🚀🚀', focusInput);
+    //   focusInput.focus();
+    // }
+    return _isInvest;
   }, [tradingType]);
 
   // 修改切换函数
   const handleToggle = () => {
-    const newType =
-      tradingType === EnumTradingType.INVEST
-        ? EnumTradingType.REDEEM
-        : EnumTradingType.INVEST;
+    const newType = isInvest ? EnumTradingType.REDEEM : EnumTradingType.INVEST;
     setTradingType(newType);
   };
 
   const [showCoinList, setShowCoinList] = useState(false);
+
+  const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEtf(e.target.value);
+  };
+
+  useEffect(() => {
+    console.log("symbolDecimalsData 🚀🚀🚀", symbolDecimalsData);
+    console.log("tokensData 🚀🚀🚀", tokensData);
+  }, [symbolDecimalsData, tokensData]);
 
   return (
     <Card>
@@ -68,20 +133,36 @@ export default function Trading() {
                   <div
                     className={cn(
                       "space-y-4 transition-transform duration-300 ease-in-out",
-                      isFlipped ? !withUnderlyingTokens ? "translate-y-[400px]" : "translate-y-[200px]" : "translate-y-0",
+                      isInvest
+                        ? !withUnderlyingTokens
+                          ? "translate-y-[400px]"
+                          : "translate-y-[200px]"
+                        : "translate-y-0"
                     )}
                   >
                     <div className="space-y-2">
                       <div className="text-sm font-bold select-none">
-                        {tradingType === EnumTradingType.INVEST ? "You receive" : "You pay"}
+                        {tradingType === EnumTradingType.INVEST
+                          ? "You receive"
+                          : "You pay"}
                       </div>
-                      <TradingInput label="SETF" />
+                      <TradingInput
+                        id="etf"
+                        label="AntyETF"
+                        value={etf}
+                        onChange={onEtfValueChange}
+                      />
                     </div>
                   </div>
                   {/* 箭头 */}
-                  <div className={cn("flex items-center justify-center h-px w-full bg-gray-200 my-14", 
-                    isFlipped && !withUnderlyingTokens ? "translate-y-[230px]" : "translate-y-0",
-                  )}>
+                  <div
+                    className={cn(
+                      "flex items-center justify-center h-px w-full bg-gray-200 my-14",
+                      isInvest && !withUnderlyingTokens
+                        ? "translate-y-[230px]"
+                        : "translate-y-0"
+                    )}
+                  >
                     <ArrowDownIcon
                       className={cn(
                         "w-8 h-8 cursor-pointer bg-white text-primary rounded-full border border-gray-200 transition-transform duration-300 ease-in-out dark:bg-gray-800"
@@ -93,42 +174,58 @@ export default function Trading() {
                   <div
                     className={cn(
                       "space-y-4 transition-transform duration-300 ease-in-out",
-                      isFlipped ? "translate-y-[-200px]" : "translate-y-0"
+                      isInvest ? "translate-y-[-200px]" : "translate-y-0"
                     )}
                   >
                     <div className="space-y-4">
                       <div className="text-sm font-bold select-none">
-                        {tradingType === EnumTradingType.INVEST ? "You pay" : "You receive"}
+                        {tradingType === EnumTradingType.INVEST
+                          ? "You pay"
+                          : "You receive"}
                       </div>
                       {withUnderlyingTokens ? (
                         <TradingInput
                           type="number"
                           label={
-                            <CoinSelect selectedCoin={selectedCoin} setSelectedCoin={setSelectedCoin} showCoinList={showCoinList} setShowCoinList={setShowCoinList} />
+                            <CoinSelect
+                              selectedCoin={selectedCoin}
+                              setSelectedCoin={setSelectedCoin}
+                              showCoinList={showCoinList}
+                              setShowCoinList={setShowCoinList}
+                            />
                           }
-                          onChange={(e) => setBtc(Number(e.target.value))}
+                          onChange={(e) => setBtc(e.target.value)}
                         />
                       ) : (
                         <React.Fragment>
                           <TradingInput
+                            id="btc"
                             type="number"
                             label="BTC"
-                            onChange={(e) => setBtc(Number(e.target.value))}
+                            value={btc}
+                            disabled={isInvest}
+                            onChange={(e) => setBtc(e.target.value)}
                           />
                           <TradingInput
                             type="number"
                             label="ETH"
-                            onChange={(e) => setEth(Number(e.target.value))}
+                            value={eth}
+                            disabled={isInvest}
+                            onChange={(e) => setEth(e.target.value)}
                           />
                           <TradingInput
                             type="number"
                             label="LINK"
-                            onChange={(e) => setLink(Number(e.target.value))}
+                            value={link}
+                            disabled={isInvest}
+                            onChange={(e) => setLink(e.target.value)}
                           />
-                           <TradingInput
+                          <TradingInput
                             type="number"
-                            label="DOGE"
-                            onChange={(e) => setLink(Number(e.target.value))}
+                            label="AUD"
+                            value={aud}
+                            disabled={isInvest}
+                            onChange={(e) => setAud(e.target.value)}
                           />
                         </React.Fragment>
                       )}
@@ -136,17 +233,15 @@ export default function Trading() {
                   </div>
                 </div>
 
-                {
-                  tradingType === EnumTradingType.REDEEM ? (
-                    <Button size="lg" className="w-full h-12 rounded-xl">
-                      Redeem
-                    </Button>
-                  ) : (
-                    <Button size="lg" className="w-full h-12 rounded-xl">
-                      Invest
-                    </Button>
-                  )
-                }
+                {!isInvest ? (
+                  <Button size="lg" className="w-full h-12 rounded-xl">
+                    Redeem
+                  </Button>
+                ) : (
+                  <Button size="lg" className="w-full h-12 rounded-xl">
+                    Invest
+                  </Button>
+                )}
               </CardContent>
             </Card>
           </Tabs>

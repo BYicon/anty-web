@@ -8,7 +8,7 @@ interface TradingInputProps extends React.ComponentProps<"input"> {
 }
 
 const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, id, ...props }, ref) => {
     const [valueLength, setValueLength] = React.useState(0);
     return (
       <div className="relative">
@@ -26,6 +26,7 @@ const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
             valueLength > 10 && "!text-md"
           )}
           type={type}
+          id={id}
           ref={ref}
           maxLength={15}
           {...props}
