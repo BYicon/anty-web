@@ -23,14 +23,21 @@ import {
   useReadContracts,
 } from "wagmi";
 
+// 定义 TokenDetail 类型
+export interface TokenDetail {
+  address: string;
+  symbol: string;
+  decimals: number;
+  available?: string; // 用户的代币余额
+  payAmount?: string; // 投资所需的代币数量
+  allowance?: bigint; // 用户对 ETF 合约的授权额度
+}
+
 export default function Trading() {
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
   const [withUnderlyingTokens, setWithUnderlyingTokens] = useState(false);
   const [etf, setEtf] = useState("");
-  const [eth, setEth] = useState("");
-  const [btc, setBtc] = useState("");
-  const [link, setLink] = useState("");
-  const [aud, setAud] = useState("");
+  const [tokens, setTokens] = useState<TokenDetail[]>([]);
 
   // 读取 ETF 合约中的 tokens
   const { data: tokensData } = useReadContract({
@@ -71,6 +78,33 @@ export default function Trading() {
 
   const { writeContract } = useWriteContract();
 
+  useEffect(() => {
+    console.log("symbolDecimalsData 🚀🚀🚀", symbolDecimalsData);
+    console.log("tokensData 🚀🚀🚀", tokensData);
+    if (
+      symbolDecimalsData &&
+      Array.isArray(symbolDecimalsData) &&
+      tokensData &&
+      Array.isArray(tokensData)
+    ) {
+      const tokensWithDetails: TokenDetail[] = tokensData.map(
+        (tokenAddress, index) => {
+          const symbol = symbolDecimalsData[index]?.result as string;
+          const decimals = symbolDecimalsData[index + tokensData.length]
+            ?.result as number;
+
+          return {
+            address: tokenAddress,
+            symbol,
+            decimals,
+          };
+        }
+      );
+      console.log("tokensWithDetails 🚀🚀🚀", tokensWithDetails);
+      setTokens(tokensWithDetails);
+    }
+  }, [symbolDecimalsData, tokensData]);
+
   const [selectedCoin, setSelectedCoin] = useState<(typeof COIN_LIST)[0]>(
     COIN_LIST[0]
   );
@@ -97,11 +131,6 @@ export default function Trading() {
   const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEtf(e.target.value);
   };
-
-  useEffect(() => {
-    console.log("symbolDecimalsData 🚀🚀🚀", symbolDecimalsData);
-    console.log("tokensData 🚀🚀🚀", tokensData);
-  }, [symbolDecimalsData, tokensData]);
 
   return (
     <Card>
@@ -194,39 +223,20 @@ export default function Trading() {
                               setShowCoinList={setShowCoinList}
                             />
                           }
-                          onChange={(e) => setBtc(e.target.value)}
+                          onChange={(e) => {}}
                         />
                       ) : (
                         <React.Fragment>
-                          <TradingInput
-                            id="btc"
-                            type="number"
-                            label="BTC"
-                            value={btc}
-                            disabled={isInvest}
-                            onChange={(e) => setBtc(e.target.value)}
-                          />
-                          <TradingInput
-                            type="number"
-                            label="ETH"
-                            value={eth}
-                            disabled={isInvest}
-                            onChange={(e) => setEth(e.target.value)}
-                          />
-                          <TradingInput
-                            type="number"
-                            label="LINK"
-                            value={link}
-                            disabled={isInvest}
-                            onChange={(e) => setLink(e.target.value)}
-                          />
-                          <TradingInput
-                            type="number"
-                            label="AUD"
-                            value={aud}
-                            disabled={isInvest}
-                            onChange={(e) => setAud(e.target.value)}
-                          />
+                          {tokens?.map((item, index) => (
+                            <TradingInput
+                              id={`btc-${index}`}
+                              type="number"
+                              label={item.symbol}
+                              value={item.payAmount}
+                              disabled={isInvest}
+                              onChange={() => {}}
+                            />
+                          ))}
                         </React.Fragment>
                       )}
                     </div>
