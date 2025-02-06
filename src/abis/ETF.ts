@@ -1,6 +1,6 @@
 export default {
   contractName: "AntyETF",
-  contractAddress: "0xa2Fa667Ec81d7067462eAf5B226c5cc689278F1D",
+  contractAddress: "0xC9f85026BcD0A9dC72A3D5d8a4bDDEC5d434B729",
   abi: [
     {
       inputs: [

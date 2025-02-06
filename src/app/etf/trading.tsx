@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -111,14 +112,19 @@ export default function Trading() {
 
   const isInvest = useMemo(() => {
     const _isInvest = tradingType === EnumTradingType.INVEST ? true : false;
-    // const focusInputId = _isInvest ? "etf" : "btc";
-    // const focusInput = document.getElementById(focusInputId);
-    // if(focusInput) {
-    //   console.log('focusInput 🚀🚀🚀', focusInput);
-    //   focusInput.focus();
-    // }
     return _isInvest;
   }, [tradingType]);
+
+  // TODO: 待优化
+  useEffect(() => {
+    const focusInput = document.getElementById('etf');
+    if(focusInput) {
+      setTimeout(() => {
+        focusInput.focus();
+      });
+    }
+  }, [isInvest]);
+
 
   // 修改切换函数
   const handleToggle = () => {
@@ -229,11 +235,12 @@ export default function Trading() {
                         <React.Fragment>
                           {tokens?.map((item, index) => (
                             <TradingInput
-                              id={`btc-${index}`}
+                              id={item.symbol}
                               type="number"
                               label={item.symbol}
                               value={item.payAmount}
-                              disabled={isInvest}
+                              disabled={true}
+                              key={item.symbol}
                               onChange={() => {}}
                             />
                           ))}
