@@ -4,12 +4,14 @@ import { ChevronDownIcon } from "lucide-react";
 export default function CoinLabel({
   selectedCoin,
   setShowCoinList,
+  disabled
 }: {
   selectedCoin: {
     name: string;
     icon: StaticImageData;
     code: string;
   };
+  disabled?: boolean;
   setShowCoinList?: (show: boolean) => void;
 }) {
   return (
@@ -24,7 +26,7 @@ export default function CoinLabel({
         height={28}
       />
       <span className="ml-2">{selectedCoin.name}</span>
-      <ChevronDownIcon size={18} />
+      {disabled ? null : <ChevronDownIcon size={18} />}
     </div>
   );
 }

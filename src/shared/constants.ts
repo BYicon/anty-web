@@ -1,18 +1,18 @@
-import ETHIcon from "/public/images/eth.png";
-import LINKIcon from "/public/images/link.png";
-import BTCIcon from "/public/images/btc.png";
-import AAVEIcon from "/public/images/aave.png";
+import ETHIcon from "/public/images/WETH.png";
+import LINKIcon from "/public/images/LINK.png";
+import BTCIcon from "/public/images/WBTC.png";
+import AUDIcon from "/public/images/AUD.png";
 
 export const COIN_LIST = [
     {
-      name: "BTC",
+      name: "WBTC",
       icon: BTCIcon,
-      code: "BTC",
+      code: "WBTC",
     },
     {
-      name: "ETH",
+      name: "WETH",
       icon: ETHIcon,
-      code: "ETH",
+      code: "WETH",
     },
     {
       name: "LINK",
@@ -20,9 +20,9 @@ export const COIN_LIST = [
       code: "LINK",
     },
     {
-      name: "AAVE",
-      icon: AAVEIcon,
-      code: "AAVE",
+      name: "AUD",
+      icon: AUDIcon,
+      code: "AUD",
     },
   ];
   

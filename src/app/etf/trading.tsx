@@ -23,6 +23,8 @@ import {
   useWaitForTransactionReceipt,
   useReadContracts,
 } from "wagmi";
+import CoinLabel from "@/components/coin-select/coin-label";
+import { StaticImageData } from "next/image";
 
 // 定义 TokenDetail 类型
 export interface TokenDetail {
@@ -237,11 +239,15 @@ export default function Trading() {
                             <TradingInput
                               id={item.symbol}
                               type="number"
-                              label={item.symbol}
                               value={item.payAmount}
                               disabled={true}
                               key={item.symbol}
                               onChange={() => {}}
+                              label={
+                                <CoinLabel
+                                  disabled={true}
+                                  selectedCoin={COIN_LIST.find(coin => coin.code === item.symbol) as { name: string; icon: StaticImageData; code: string }}
+                                />}
                             />
                           ))}
                         </React.Fragment>
