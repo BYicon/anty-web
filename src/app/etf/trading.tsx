@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowDownIcon } from "lucide-react";
+import { ArrowDownIcon, Loader2 } from "lucide-react";
 import { TradingInput } from "@/components/ui/trading-input";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -43,7 +43,7 @@ export default function Trading() {
   const [tokens, setTokens] = useState<TokenDetail[]>([]);
 
   // 读取 ETF 合约中的 tokens
-  const { data: tokensData } = useReadContract({
+  const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
     address: ETFAbi.contractAddress,
     functionName: "getTokens",
@@ -71,9 +71,10 @@ export default function Trading() {
   }, [tokensData]);
 
   // 使用 useReadContracts 获取 symbol 和 decimals
-  const { data: symbolDecimalsData, refetch: refetchSymbolDecimals } = useReadContracts({
-    contracts: symbolDecimalsReads as any,
-  });
+  const { data: symbolDecimalsData, refetch: refetchSymbolDecimals } =
+    useReadContracts({
+      contracts: symbolDecimalsReads as any,
+    });
 
   useEffect(() => {
     refetchSymbolDecimals();
@@ -119,14 +120,13 @@ export default function Trading() {
 
   // TODO: 待优化
   useEffect(() => {
-    const focusInput = document.getElementById('etf');
-    if(focusInput) {
+    const focusInput = document.getElementById("etf");
+    if (focusInput) {
       setTimeout(() => {
         focusInput.focus();
       });
     }
   }, [isInvest]);
-
 
   // 修改切换函数
   const handleToggle = () => {
@@ -210,7 +210,7 @@ export default function Trading() {
                   {/* coins  */}
                   <div
                     className={cn(
-                      "space-y-4 transition-transform duration-300 ease-in-out",
+                      "space-y-4 transition-transform duration-300 ease-in-out min-h-[308px]",
                       isInvest ? "translate-y-[-200px]" : "translate-y-0"
                     )}
                   >
@@ -235,21 +235,36 @@ export default function Trading() {
                         />
                       ) : (
                         <React.Fragment>
-                          {tokens?.map((item, index) => (
-                            <TradingInput
-                              id={item.symbol}
-                              type="number"
-                              value={item.payAmount}
-                              disabled={true}
-                              key={item.symbol}
-                              onChange={() => {}}
-                              label={
-                                <CoinLabel
-                                  disabled={true}
-                                  selectedCoin={COIN_LIST.find(coin => coin.code === item.symbol) as { name: string; icon: StaticImageData; code: string }}
-                                />}
-                            />
-                          ))}
+                          {isTokensLoading ? (
+                            <div className="flex items-center justify-center h-full">
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            </div>
+                          ) : (
+                            tokens?.map((item, index) => (
+                              <TradingInput
+                                id={item.symbol}
+                                type="number"
+                                value={item.payAmount}
+                                disabled={true}
+                                key={item.symbol}
+                                onChange={() => {}}
+                                label={
+                                  <CoinLabel
+                                    disabled={true}
+                                    selectedCoin={
+                                      COIN_LIST.find(
+                                        (coin) => coin.code === item.symbol
+                                      ) as {
+                                        name: string;
+                                        icon: StaticImageData;
+                                        code: string;
+                                      }
+                                    }
+                                  />
+                                }
+                              />
+                            ))
+                          )}
                         </React.Fragment>
                       )}
                     </div>
