@@ -15,6 +15,7 @@ import { COIN_LIST } from "@/shared/constants";
 import CoinSelect from "@/components/coin-select/coin-select";
 import ETFAbi from "@/abis/ETF";
 import erc20Abi from "@/abis/ERC20";
+
 import {
   useAccount,
   useBalance,
@@ -25,6 +26,7 @@ import {
 } from "wagmi";
 import CoinLabel from "@/components/coin-select/coin-label";
 import { StaticImageData } from "next/image";
+import { formatUnits, parseUnits } from "viem";
 
 // 定义 TokenDetail 类型
 export interface TokenDetail {
@@ -42,103 +44,95 @@ export default function Trading() {
   const [etf, setEtf] = useState("");
   const [tokens, setTokens] = useState<TokenDetail[]>([]);
 
-  // 读取 ETF 合约中的 tokens
+  const isInvest = useMemo(() => tradingType === EnumTradingType.INVEST, [tradingType]);
+
+  // 1. 合并 tokens 相关的数据获取和处理
   const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
     address: ETFAbi.contractAddress,
     functionName: "getTokens",
   });
 
-  // 构建获取 symbol 和 decimals 的读取请求
   const symbolDecimalsReads = useMemo(() => {
-    if (!tokensData || !Array.isArray(tokensData)) {
-      return [];
-    }
-
-    const symbolCalls = tokensData.map((tokenAddress: string) => ({
-      address: tokenAddress as `0x${string}`,
-      abi: erc20Abi.abi,
-      functionName: "symbol",
-    }));
-
-    const decimalsCalls = tokensData.map((tokenAddress: string) => ({
-      address: tokenAddress as `0x${string}`,
-      abi: erc20Abi.abi,
-      functionName: "decimals",
-    }));
-
-    return [...symbolCalls, ...decimalsCalls];
+    if (!tokensData?.length) return [];
+    
+    return tokensData.flatMap((tokenAddress: string) => [
+      {
+        address: tokenAddress as `0x${string}`,
+        abi: erc20Abi.abi,
+        functionName: "symbol",
+      },
+      {
+        address: tokenAddress as `0x${string}`,
+        abi: erc20Abi.abi,
+        functionName: "decimals",
+      },
+    ]);
   }, [tokensData]);
 
-  // 使用 useReadContracts 获取 symbol 和 decimals
-  const { data: symbolDecimalsData, refetch: refetchSymbolDecimals } =
-    useReadContracts({
-      contracts: symbolDecimalsReads as any,
-    });
+  const { data: symbolDecimalsData } = useReadContracts({
+    contracts: symbolDecimalsReads as any,
+  });
 
-  useEffect(() => {
-    refetchSymbolDecimals();
-  }, [symbolDecimalsReads]);
+  // 2. 使用 useMemo 处理 tokens 数据转换
+  const processedTokens = useMemo(() => {
+    if (!symbolDecimalsData?.length || !tokensData?.length) return [];
 
-  const { writeContract } = useWriteContract();
-
-  useEffect(() => {
-    console.log("symbolDecimalsData 🚀🚀🚀", symbolDecimalsData);
-    console.log("tokensData 🚀🚀🚀", tokensData);
-    if (
-      symbolDecimalsData &&
-      Array.isArray(symbolDecimalsData) &&
-      tokensData &&
-      Array.isArray(tokensData)
-    ) {
-      const tokensWithDetails: TokenDetail[] = tokensData.map(
-        (tokenAddress, index) => {
-          const symbol = symbolDecimalsData[index]?.result as string;
-          const decimals = symbolDecimalsData[index + tokensData.length]
-            ?.result as number;
-
-          return {
-            address: tokenAddress,
-            symbol,
-            decimals,
-          };
-        }
-      );
-      console.log("tokensWithDetails 🚀🚀🚀", tokensWithDetails);
-      setTokens(tokensWithDetails);
-    }
+    return tokensData.map((tokenAddress, index) => ({
+      address: tokenAddress,
+      symbol: symbolDecimalsData[index * 2]?.result as string,
+      decimals: symbolDecimalsData[index * 2 + 1]?.result as number,
+    }));
   }, [symbolDecimalsData, tokensData]);
 
-  const [selectedCoin, setSelectedCoin] = useState<(typeof COIN_LIST)[0]>(
-    COIN_LIST[0]
-  );
-
-  const isInvest = useMemo(() => {
-    const _isInvest = tradingType === EnumTradingType.INVEST ? true : false;
-    return _isInvest;
-  }, [tradingType]);
-
-  // TODO: 待优化
   useEffect(() => {
-    const focusInput = document.getElementById("etf");
-    if (focusInput) {
-      setTimeout(() => {
-        focusInput.focus();
-      });
+    if (processedTokens.length) setTokens(processedTokens);
+  }, [processedTokens]);
+
+  // 3. 合并投资金额相关的逻辑
+  const {
+    data: investTokenAmounts,
+    refetch: refetchInvestTokenAmounts,
+  } = useReadContract({
+    abi: ETFAbi.abi,
+    address: ETFAbi.contractAddress,
+    functionName: "getInvestTokenAmounts",
+    args: [parseUnits(etf || "0", 18)],
+  });
+
+  useEffect(() => {
+    refetchInvestTokenAmounts();
+  }, [etf]);
+
+  useEffect(() => {
+    if (investTokenAmounts) {
+      setTokens(prevTokens => 
+        prevTokens.map((token, index) => ({
+          ...token,
+          payAmount: formatUnits(investTokenAmounts[index], token.decimals),
+        }))
+      );
     }
+  }, [investTokenAmounts]);
+
+  // 4. 简化输入框自动聚焦逻辑
+  useEffect(() => {
+    document.getElementById("etf")?.focus();
   }, [isInvest]);
 
-  // 修改切换函数
   const handleToggle = () => {
-    const newType = isInvest ? EnumTradingType.REDEEM : EnumTradingType.INVEST;
-    setTradingType(newType);
+    setTradingType(isInvest ? EnumTradingType.REDEEM : EnumTradingType.INVEST);
   };
-
-  const [showCoinList, setShowCoinList] = useState(false);
 
   const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEtf(e.target.value);
   };
+
+  const [showCoinList, setShowCoinList] = useState(false);
+
+  const [selectedCoin, setSelectedCoin] = useState<(typeof COIN_LIST)[0]>(
+    COIN_LIST[0]
+  );
 
   return (
     <Card>
@@ -186,7 +180,7 @@ export default function Trading() {
                       <TradingInput
                         id="etf"
                         label="AntyETF"
-                        value={etf}
+                        value={etf || ""}
                         onChange={onEtfValueChange}
                       />
                     </div>
@@ -244,8 +238,8 @@ export default function Trading() {
                               <TradingInput
                                 id={item.symbol}
                                 type="number"
-                                value={item.payAmount}
-                                disabled={true}
+                                value={item.payAmount || ""}
+                                readOnly={true}
                                 key={item.symbol}
                                 onChange={() => {}}
                                 label={
@@ -277,7 +271,7 @@ export default function Trading() {
                   </Button>
                 ) : (
                   <Button size="lg" className="w-full h-12 rounded-xl">
-                    Invest
+                    Invest{investTokenAmounts}1
                   </Button>
                 )}
               </CardContent>
