@@ -33,7 +33,7 @@ export default function ETFPage() {
             <Portfolio />
           </CardContent>
         </Card>
-        <div className="w-[500px] relative z-10">
+        <div className="w-[640px] relative z-10">
           <Trading />
         </div>
       </div>

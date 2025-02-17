@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,11 +16,7 @@ import ETFAbi from "@/abis/ETF";
 import erc20Abi from "@/abis/ERC20";
 
 import {
-  useAccount,
-  useBalance,
   useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt,
   useReadContracts,
 } from "wagmi";
 import CoinLabel from "@/components/coin-select/coin-label";
@@ -46,7 +41,6 @@ export default function Trading() {
 
   const isInvest = useMemo(() => tradingType === EnumTradingType.INVEST, [tradingType]);
 
-  // 1. 合并 tokens 相关的数据获取和处理
   const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
     address: ETFAbi.contractAddress,
@@ -74,7 +68,6 @@ export default function Trading() {
     contracts: symbolDecimalsReads as any,
   });
 
-  // 2. 使用 useMemo 处理 tokens 数据转换
   const processedTokens = useMemo(() => {
     if (!symbolDecimalsData?.length || !tokensData?.length) return [];
 
@@ -89,7 +82,6 @@ export default function Trading() {
     if (processedTokens.length) setTokens(processedTokens);
   }, [processedTokens]);
 
-  // 3. 合并投资金额相关的逻辑
   const {
     data: investTokenAmounts,
     refetch: refetchInvestTokenAmounts,
@@ -100,11 +92,20 @@ export default function Trading() {
     args: [parseUnits(etf || "0", 18)],
   });
 
+  const timer = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
-    refetchInvestTokenAmounts();
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    timer.current = setTimeout(() => {
+      refetchInvestTokenAmounts();
+      console.log("refetchInvestTokenAmounts");
+    }, 1000);
   }, [etf]);
 
   useEffect(() => {
+    console.log("investTokenAmounts", investTokenAmounts);
     if (investTokenAmounts) {
       setTokens(prevTokens => 
         prevTokens.map((token, index) => ({
@@ -271,7 +272,7 @@ export default function Trading() {
                   </Button>
                 ) : (
                   <Button size="lg" className="w-full h-12 rounded-xl">
-                    Invest{investTokenAmounts}1
+                    Invest
                   </Button>
                 )}
               </CardContent>
