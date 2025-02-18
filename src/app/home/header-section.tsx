@@ -22,7 +22,10 @@ const HeaderSection = () => {
             <ReactTyped
               startWhenVisible
               strings={[
-                " Built with Next.js,  Shadcn-ui, Wagmi, RainbowKit<br />Integrates wallet interactions, ERC20 and ERC721 based functionalities<br />Random pixel art generator and uploaded to IPFS<br />More features will be added soon...",
+                `🚀 Introducing AntyETF: Your Gateway to Smart Web3 Investing <br />
+                A revolutionary DeFi protocol for simple crypto investing.  <br />
+                With one click, invest in a curated basket of top cryptocurrencies through secure Ethereum smart contracts. Perfect for both new and experienced investors, AntyETF makes portfolio management easy while you keep full control of your assets.  
+                <br />`,
               ]}
               typeSpeed={40}
             />
