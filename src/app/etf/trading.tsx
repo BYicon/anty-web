@@ -16,12 +16,15 @@ import ETFAbi from "@/abis/ETF";
 import erc20Abi from "@/abis/ERC20";
 
 import {
+  useAccount,
   useReadContract,
   useReadContracts,
+  useWriteContract,
 } from "wagmi";
 import CoinLabel from "@/components/coin-select/coin-label";
 import { StaticImageData } from "next/image";
 import { formatUnits, parseUnits } from "viem";
+import { useToast } from "@/components/ui/use-toast";
 
 // 定义 TokenDetail 类型
 export interface TokenDetail {
@@ -34,12 +37,16 @@ export interface TokenDetail {
 }
 
 export default function Trading() {
+  const { address: currentAddress } = useAccount();
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
   const [withUnderlyingTokens, setWithUnderlyingTokens] = useState(false);
   const [etf, setEtf] = useState("");
   const [tokens, setTokens] = useState<TokenDetail[]>([]);
 
-  const isInvest = useMemo(() => tradingType === EnumTradingType.INVEST, [tradingType]);
+  const isInvest = useMemo(
+    () => tradingType === EnumTradingType.INVEST,
+    [tradingType]
+  );
 
   const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
@@ -49,7 +56,7 @@ export default function Trading() {
 
   const symbolDecimalsReads = useMemo(() => {
     if (!tokensData?.length) return [];
-    
+
     return tokensData.flatMap((tokenAddress: string) => [
       {
         address: tokenAddress as `0x${string}`,
@@ -82,15 +89,13 @@ export default function Trading() {
     if (processedTokens.length) setTokens(processedTokens);
   }, [processedTokens]);
 
-  const {
-    data: investTokenAmounts,
-    refetch: refetchInvestTokenAmounts,
-  } = useReadContract({
-    abi: ETFAbi.abi,
-    address: ETFAbi.contractAddress,
-    functionName: "getInvestTokenAmounts",
-    args: [parseUnits(etf || "0", 18)],
-  });
+  const { data: investTokenAmounts, refetch: refetchInvestTokenAmounts } =
+    useReadContract({
+      abi: ETFAbi.abi,
+      address: ETFAbi.contractAddress,
+      functionName: "getInvestTokenAmounts",
+      args: [parseUnits(etf || "0", 18)],
+    });
 
   const timer = useRef<NodeJS.Timeout | null>(null);
 
@@ -107,7 +112,7 @@ export default function Trading() {
   useEffect(() => {
     console.log("investTokenAmounts", investTokenAmounts);
     if (investTokenAmounts) {
-      setTokens(prevTokens => 
+      setTokens((prevTokens) =>
         prevTokens.map((token, index) => ({
           ...token,
           payAmount: formatUnits(investTokenAmounts[index], token.decimals),
@@ -127,6 +132,45 @@ export default function Trading() {
 
   const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEtf(e.target.value);
+  };
+
+  // 构建获取 allowance 的读取请求，仅在连接钱包时
+  const allowanceReads = useMemo(() => {
+    if (!tokensData || !Array.isArray(tokensData) || !currentAddress) {
+      return [];
+    }
+
+    return tokensData.map((tokenAddress: string) => ({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "allowance",
+      args: [currentAddress, ETFAbi.contractAddress],
+    }));
+  }, [tokensData, currentAddress]);
+
+  // 使用 useReadContracts 获取 allowances
+  const { data: allowanceData, refetch: refetchAllowanceData } =
+    useReadContracts({
+      contracts: allowanceReads as any,
+    });
+
+  const { toast } = useToast();
+  const { writeContract } = useWriteContract();
+  const handleInvest = async () => {
+    console.log("allowanceData 🚀🚀🚀", allowanceData);
+    if (etf && Number(etf) > 0) {
+      writeContract({
+        address: ETFAbi.contractAddress,
+        abi: ETFAbi.abi,
+        functionName: "invest",
+        args: [currentAddress ?? "0x", parseUnits(etf || "0", 18)],
+      });
+    } else {
+      toast({
+        title: "Please enter a valid amount",
+        description: "Please enter a valid amount",
+      });
+    }
   };
 
   const [showCoinList, setShowCoinList] = useState(false);
@@ -271,7 +315,11 @@ export default function Trading() {
                     Redeem
                   </Button>
                 ) : (
-                  <Button size="lg" className="w-full h-12 rounded-xl">
+                  <Button
+                    size="lg"
+                    className="w-full h-12 rounded-xl"
+                    onClick={handleInvest}
+                  >
                     Invest
                   </Button>
                 )}
