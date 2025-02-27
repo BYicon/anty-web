@@ -23,5 +23,5 @@ export const uploadImage= async (file: File) => {
       "Content-Type": "multipart/form-data",
     },
   });
-  return `${IPFS_FILE_PATH}${response.data.url}`;
+  return `${response.data.url}`;
 };
