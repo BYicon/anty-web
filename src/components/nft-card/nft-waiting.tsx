@@ -1,12 +1,8 @@
-import {
-  useWaitForTransactionReceipt,
-  useWatchContractEvent,
-  useWriteContract,
-} from "wagmi";
+import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import "./nft-card.scss";
-import nftAbi from "@/abis/NFTMIR";
 import { useEffect, useState } from "react";
-import { uploadToIPFS } from "@/http/api";
+import { uploadImage } from "@/http/api";
+import nftAbi from "@/abis/NFTMIR";
 import html2canvas from "html2canvas";
 import { createIcon } from "@/shared/blockies";
 import { generateHash, padTokenId } from "@/shared/utils";
@@ -50,27 +46,31 @@ export default function NftCard({
     cardElement.style.backgroundSize = "cover";
     return new Promise((resolve, reject) => {
       html2canvas(cardElement, {
-        scale: 2
-      }).then((canvas) => {
-        if (canvas) {
-          canvas.toBlob(async (blob) => {
-            if (blob) {
-              uploadToIPFS(new File([blob], "image.png", { type: "image/png" })).then((url) => {
+        scale: 2,
+      })
+        .then((canvas) => {
+          if (canvas) {
+            canvas.toBlob(async (blob) => {
+              if (blob) {
+                const url = await uploadImage(
+                  new File([blob], "image.png", { type: "image/png" })
+                );
                 resolve(url);
-              }).catch((err) => reject(err));
-            }
-          }, "image/png");
-        }
-      }).catch((err) => {
-        setLoading(false);
-        reject(err);
-      });
+              }
+            }, "image/png");
+          }
+        })
+        .catch((err) => {
+          setLoading(false);
+          reject(err);
+        });
     });
   }
 
   const handleRedeem = async () => {
     setLoading(true);
     const img = await generateImage();
+    console.log("img", img);
     onRedeem && onRedeem();
     await writeContract({
       address: nftAbi.contractAddress,
@@ -98,25 +98,15 @@ export default function NftCard({
         title: "Uh oh! Something went wrong.",
         description: "There was a problem with your request.",
         variant: "destructive",
-        action: <ToastAction altText="Try again" onClick={handleRedeem}>Try again</ToastAction>,
+        action: (
+          <ToastAction altText="Try again" onClick={handleRedeem}>
+            Try again
+          </ToastAction>
+        ),
       });
       onRedeemError && onRedeemError();
     }
   }, [isRedeemSuccess, isRedeemError]);
-
-  // TODO: 为什么会接受到多次
-  // useWatchContractEvent({
-  //   address: nftAbi.contractAddress,
-  //   abi: nftAbi.abi,
-  //   eventName: "Redeem",
-  //   onLogs(logs) {
-  //     console.log("Redeem event logs 🔵🔵🔵", logs);
-  //     onRedeem && onRedeem();
-  //   },
-  //   onError(error) {
-  //     console.log("Redeem event error 🔴🔴🔴", error);
-  //   },
-  // });
 
   return (
     <div className="nft-card hover:scale-105 transition-all duration-300">
@@ -131,8 +121,16 @@ export default function NftCard({
       </div>
       <div className="mt-4 px-4">
         <div className="flex items-center">
-          <Button onClick={handleRedeem} className="w-full h-10" disabled={isRedeemLoading || loading}>
-            {isRedeemLoading || loading ? <Loader2 className="animate-spin" /> : ""}
+          <Button
+            onClick={handleRedeem}
+            className="w-full h-10"
+            disabled={isRedeemLoading || loading}
+          >
+            {isRedeemLoading || loading ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              ""
+            )}
             {isRedeemLoading || loading ? "Redeeming..." : "Redeem"}
           </Button>
         </div>
