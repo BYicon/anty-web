@@ -11,7 +11,7 @@ const TradingInput = React.forwardRef<HTMLInputElement, TradingInputProps>(
   ({ className, type, id, ...props }, ref) => {
     const [valueLength, setValueLength] = React.useState(0);
     return (
-      <div className="relative">
+      <div className="relative w-full">
         <div
           className={cn(
             "text-foreground absolute inset-y-0 flex items-center justify-center ps-3 font-bold",

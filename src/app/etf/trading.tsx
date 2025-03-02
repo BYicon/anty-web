@@ -26,7 +26,6 @@ import { StaticImageData } from "next/image";
 import { formatUnits, parseUnits } from "viem";
 import { useToast } from "@/components/ui/use-toast";
 
-// 定义 TokenDetail 类型
 export interface TokenDetail {
   address: string;
   symbol: string;
@@ -37,26 +36,30 @@ export interface TokenDetail {
 }
 
 export default function Trading() {
+  const { toast } = useToast();
   const { address: currentAddress } = useAccount();
   const [tradingType, setTradingType] = useState(EnumTradingType.INVEST);
   const [withUnderlyingTokens, setWithUnderlyingTokens] = useState(false);
   const [etf, setEtf] = useState("");
   const [tokens, setTokens] = useState<TokenDetail[]>([]);
 
+  // 判断是否是投资
   const isInvest = useMemo(
     () => tradingType === EnumTradingType.INVEST,
     [tradingType]
   );
 
+  /** --------------- init --------------- */
+  // 获取 token 的地址
   const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
     address: ETFAbi.contractAddress,
     functionName: "getTokens",
   });
 
+  // 获取 token 的 symbol 和 decimals 的读取合约
   const symbolDecimalsReads = useMemo(() => {
     if (!tokensData?.length) return [];
-
     return tokensData.flatMap((tokenAddress: string) => [
       {
         address: tokenAddress as `0x${string}`,
@@ -77,7 +80,6 @@ export default function Trading() {
 
   const processedTokens = useMemo(() => {
     if (!symbolDecimalsData?.length || !tokensData?.length) return [];
-
     return tokensData.map((tokenAddress, index) => ({
       address: tokenAddress,
       symbol: symbolDecimalsData[index * 2]?.result as string,
@@ -85,10 +87,12 @@ export default function Trading() {
     }));
   }, [symbolDecimalsData, tokensData]);
 
+  // 设置 tokens
   useEffect(() => {
     if (processedTokens.length) setTokens(processedTokens);
   }, [processedTokens]);
 
+  // 获取投资 token 的数量
   const { data: investTokenAmounts, refetch: refetchInvestTokenAmounts } =
     useReadContract({
       abi: ETFAbi.abi,
@@ -97,20 +101,7 @@ export default function Trading() {
       args: [parseUnits(etf || "0", 18)],
     });
 
-  const timer = useRef<NodeJS.Timeout | null>(null);
-
   useEffect(() => {
-    if (timer.current) {
-      clearTimeout(timer.current);
-    }
-    timer.current = setTimeout(() => {
-      refetchInvestTokenAmounts();
-      console.log("refetchInvestTokenAmounts");
-    }, 1000);
-  }, [etf]);
-
-  useEffect(() => {
-    console.log("investTokenAmounts", investTokenAmounts);
     if (investTokenAmounts) {
       setTokens((prevTokens) =>
         prevTokens.map((token, index) => ({
@@ -121,7 +112,57 @@ export default function Trading() {
     }
   }, [investTokenAmounts]);
 
-  // 4. 简化输入框自动聚焦逻辑
+  const allowanceReads = useMemo(() => {
+    if (!tokensData || !Array.isArray(tokensData) || !currentAddress) {
+      return [];
+    }
+    return tokensData.map((tokenAddress: string) => ({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "allowance",
+      args: [currentAddress, ETFAbi.contractAddress],
+    }));
+  }, [tokensData, currentAddress]);
+
+  const { data: allowanceData, refetch: refetchAllowanceData } =
+    useReadContracts({
+      contracts: allowanceReads as any,
+    });
+
+  // 处理 allowance 数据
+  useEffect(() => {
+    if (allowanceData) {
+      console.log("allowanceData 🚀🚀��", allowanceData);
+      setTokens((prevTokens) =>
+        prevTokens.map((token, index) => {
+          const newAllowance = allowanceData[index]?.result as bigint;
+          console.log(`Token ${token.symbol} allowance:`, newAllowance);
+          return {
+            ...token,
+            allowance: newAllowance
+          };
+        })
+      );
+    }
+  }, [allowanceData]);
+
+  useEffect(() => {
+    if (tokens) {
+      console.log("打印tokens 🚀🚀🚀", tokens);
+    }
+  }, [tokens]);
+
+  const { writeContract } = useWriteContract();
+  const approve = (record: TokenDetail) => {
+    writeContract({
+      address: record.address as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "approve",
+      args: [ETFAbi.contractAddress, parseUnits("1000000000000000000000000", 18)],
+    });
+  };
+
+  /** --------------- interact --------------- */
   useEffect(() => {
     document.getElementById("etf")?.focus();
   }, [isInvest]);
@@ -134,37 +175,25 @@ export default function Trading() {
     setEtf(e.target.value);
   };
 
-  // 构建获取 allowance 的读取请求，仅在连接钱包时
-  const allowanceReads = useMemo(() => {
-    if (!tokensData || !Array.isArray(tokensData) || !currentAddress) {
-      return [];
+  const timer = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
     }
+    timer.current = setTimeout(() => {
+      refetchInvestTokenAmounts();
+    }, 1000);
+  }, [etf]);
 
-    return tokensData.map((tokenAddress: string) => ({
-      address: tokenAddress as `0x${string}`,
-      abi: erc20Abi.abi,
-      functionName: "allowance",
-      args: [currentAddress, ETFAbi.contractAddress],
-    }));
-  }, [tokensData, currentAddress]);
-
-  // 使用 useReadContracts 获取 allowances
-  const { data: allowanceData, refetch: refetchAllowanceData } =
-    useReadContracts({
-      contracts: allowanceReads as any,
-    });
-
-  const { toast } = useToast();
-  const { writeContract } = useWriteContract();
   const handleInvest = async () => {
     console.log("allowanceData 🚀🚀🚀", allowanceData);
     if (etf && Number(etf) > 0) {
-      writeContract({
-        address: ETFAbi.contractAddress,
-        abi: ETFAbi.abi,
-        functionName: "invest",
-        args: [currentAddress ?? "0x", parseUnits(etf || "0", 18)],
-      });
+      // writeContract({
+      //   address: ETFAbi.contractAddress,
+      //   abi: ETFAbi.abi,
+      //   functionName: "invest",
+      //   args: [currentAddress ?? "0x", parseUnits(etf || "0", 18)],
+      // });
     } else {
       toast({
         title: "Please enter a valid amount",
@@ -174,7 +203,6 @@ export default function Trading() {
   };
 
   const [showCoinList, setShowCoinList] = useState(false);
-
   const [selectedCoin, setSelectedCoin] = useState<(typeof COIN_LIST)[0]>(
     COIN_LIST[0]
   );
@@ -280,28 +308,39 @@ export default function Trading() {
                             </div>
                           ) : (
                             tokens?.map((item, index) => (
-                              <TradingInput
-                                id={item.symbol}
-                                type="number"
-                                value={item.payAmount || ""}
-                                readOnly={true}
-                                key={item.symbol}
-                                onChange={() => {}}
-                                label={
-                                  <CoinLabel
-                                    disabled={true}
-                                    selectedCoin={
-                                      COIN_LIST.find(
-                                        (coin) => coin.code === item.symbol
-                                      ) as {
-                                        name: string;
-                                        icon: StaticImageData;
-                                        code: string;
+                              <div className="flex items-center justify-between">
+                                <TradingInput
+                                  id={item.symbol}
+                                  type="number"
+                                  value={item.payAmount || ""}
+                                  readOnly={true}
+                                  key={item.symbol}
+                                  onChange={() => {}}
+                                  label={
+                                    <CoinLabel
+                                      disabled={true}
+                                      selectedCoin={
+                                        COIN_LIST.find(
+                                          (coin) => coin.code === item.symbol
+                                        ) as {
+                                          name: string;
+                                          icon: StaticImageData;
+                                          code: string;
+                                        }
                                       }
-                                    }
-                                  />
-                                }
-                              />
+                                    />
+                                  }
+                                />
+                                {item.allowance === BigInt(0) ? (
+                                  <Button
+                                    className="w-16 ml-2 h-10 rounded-xl text-xs"
+                                    size="sm"
+                                    onClick={() => approve(item)}
+                                  >
+                                    Approve
+                                  </Button>
+                                ) : null}
+                              </div>
                             ))
                           )}
                         </React.Fragment>
