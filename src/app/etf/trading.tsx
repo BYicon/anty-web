@@ -49,15 +49,13 @@ export default function Trading() {
     [tradingType]
   );
 
-  /** --------------- init --------------- */
+  /** --------------- tokens --------------- */
   // 获取 token 的地址
   const { data: tokensData, isLoading: isTokensLoading } = useReadContract({
     abi: ETFAbi.abi,
     address: ETFAbi.contractAddress,
     functionName: "getTokens",
   });
-
-  // 获取 token 的 symbol 和 decimals 的读取合约
   const symbolDecimalsReads = useMemo(() => {
     if (!tokensData?.length) return [];
     return tokensData.flatMap((tokenAddress: string) => [
@@ -73,11 +71,9 @@ export default function Trading() {
       },
     ]);
   }, [tokensData]);
-
   const { data: symbolDecimalsData } = useReadContracts({
     contracts: symbolDecimalsReads as any,
   });
-
   const processedTokens = useMemo(() => {
     if (!symbolDecimalsData?.length || !tokensData?.length) return [];
     return tokensData.map((tokenAddress, index) => ({
@@ -87,12 +83,11 @@ export default function Trading() {
     }));
   }, [symbolDecimalsData, tokensData]);
 
-  // 设置 tokens
   useEffect(() => {
     if (processedTokens.length) setTokens(processedTokens);
   }, [processedTokens]);
 
-  // 获取投资 token 的数量
+  /** --------------- investTokenAmounts --------------- */
   const { data: investTokenAmounts, refetch: refetchInvestTokenAmounts } =
     useReadContract({
       abi: ETFAbi.abi,
@@ -112,6 +107,47 @@ export default function Trading() {
     }
   }, [investTokenAmounts]);
 
+  /** --------------- balance --------------- */
+  const balanceReads = useMemo(() => {
+    if (!tokensData || !Array.isArray(tokensData) || !currentAddress) {
+      return [];
+    }
+    return tokensData.map((tokenAddress: string) => ({
+      address: tokenAddress as `0x${string}`,
+      abi: erc20Abi.abi,
+      functionName: "balanceOf",
+      args: [currentAddress],
+    }));
+  }, [tokensData, currentAddress]);
+
+  const { data: balanceData } = useReadContracts({
+    contracts: balanceReads as any,
+  });
+  useEffect(() => {
+    console.log("balanceData 🚀🚀🚀", balanceData);
+    if (
+      balanceData &&
+      Array.isArray(balanceData) &&
+      tokensData &&
+      Array.isArray(tokensData)
+    ) {
+      setTokens((prevTokens) =>
+        prevTokens.map((token, index) => {
+          const balance = balanceData[index]?.result as bigint | undefined;
+          const available = balance
+            ? (Number(balance) / Math.pow(10, token.decimals)).toFixed(2) // 修改为带小数的格式，最多两位
+            : "0";
+          return {
+            ...token,
+            available,
+          };
+        })
+      );
+    }
+  }, [balanceData, tokensData]);
+
+  /** --------------- allowance --------------- */
+
   const allowanceReads = useMemo(() => {
     if (!tokensData || !Array.isArray(tokensData) || !currentAddress) {
       return [];
@@ -128,29 +164,19 @@ export default function Trading() {
     useReadContracts({
       contracts: allowanceReads as any,
     });
-
-  // 处理 allowance 数据
   useEffect(() => {
     if (allowanceData) {
-      console.log("allowanceData 🚀🚀��", allowanceData);
       setTokens((prevTokens) =>
         prevTokens.map((token, index) => {
           const newAllowance = allowanceData[index]?.result as bigint;
-          console.log(`Token ${token.symbol} allowance:`, newAllowance);
           return {
             ...token,
-            allowance: newAllowance
+            allowance: newAllowance,
           };
         })
       );
     }
-  }, [allowanceData]);
-
-  useEffect(() => {
-    if (tokens) {
-      console.log("打印tokens 🚀🚀🚀", tokens);
-    }
-  }, [tokens]);
+  }, [allowanceData, tokens.length]);
 
   const { writeContract } = useWriteContract();
   const approve = (record: TokenDetail) => {
@@ -158,7 +184,10 @@ export default function Trading() {
       address: record.address as `0x${string}`,
       abi: erc20Abi.abi,
       functionName: "approve",
-      args: [ETFAbi.contractAddress, parseUnits("1000000000000000000000000", 18)],
+      args: [
+        ETFAbi.contractAddress,
+        parseUnits("1000000000000000000000000", 18),
+      ],
     });
   };
 
@@ -308,7 +337,10 @@ export default function Trading() {
                             </div>
                           ) : (
                             tokens?.map((item, index) => (
-                              <div className="flex items-center justify-between">
+                              <div
+                                className="flex items-center justify-between"
+                                key={item.symbol}
+                              >
                                 <TradingInput
                                   id={item.symbol}
                                   type="number"
@@ -340,6 +372,9 @@ export default function Trading() {
                                     Approve
                                   </Button>
                                 ) : null}
+                                {/* <div className="text-xs text-gray-500">
+                                  {item.available}
+                                </div> */}
                               </div>
                             ))
                           )}
