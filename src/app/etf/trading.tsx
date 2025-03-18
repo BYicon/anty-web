@@ -93,7 +93,7 @@ export default function Trading() {
       abi: ETFAbi.abi,
       address: ETFAbi.contractAddress,
       functionName: "getInvestTokenAmounts",
-      args: [parseUnits(etf || "0", 18)],
+      args: [parseUnits(etf && !isNaN(Number(etf)) ? etf : "0", 18)],
     });
 
   useEffect(() => {
@@ -201,7 +201,11 @@ export default function Trading() {
   };
 
   const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEtf(e.target.value);
+    const value = e.target.value;
+    // 只允许输入数字和小数点，且最多只能有一个小数点
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      setEtf(value);
+    }
   };
 
   const timer = useRef<NodeJS.Timeout | null>(null);
@@ -210,13 +214,15 @@ export default function Trading() {
       clearTimeout(timer.current);
     }
     timer.current = setTimeout(() => {
-      refetchInvestTokenAmounts();
+      if (etf && !isNaN(Number(etf))) {
+        refetchInvestTokenAmounts();
+      }
     }, 1000);
   }, [etf]);
 
   const handleInvest = async () => {
     console.log("allowanceData 🚀🚀🚀", allowanceData);
-    if (etf && Number(etf) > 0) {
+    if (etf && !isNaN(Number(etf)) && Number(etf) > 0) {
       // writeContract({
       //   address: ETFAbi.contractAddress,
       //   abi: ETFAbi.abi,
@@ -284,6 +290,8 @@ export default function Trading() {
                         label="AntyETF"
                         value={etf || ""}
                         onChange={onEtfValueChange}
+                        type="number"
+                        step="any"
                       />
                     </div>
                   </div>

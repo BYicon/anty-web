@@ -14,8 +14,8 @@ export default function TokenApprove(props: {
   onError?: (error: any) => void;
 }) {
   const { address: currentAddress } = useAccount();
-
   const { data: hash, writeContract } = useWriteContract();
+
   const onApproveHandler = async () => {
     props.onApprove && props.onApprove();
     if (currentAddress) {
@@ -50,15 +50,6 @@ export default function TokenApprove(props: {
       props.onError && props.onError(isConfirmError);
     }
   }, [isConfirmed, isConfirmError]);
-
-  // useWatchContractEvent({
-  //   address: erc20Abi.contractAddress as `0x${string}`,
-  //   abi: erc20Abi.abi,
-  //   eventName: "Approval",
-  //   onLogs(logs) {
-  //     console.log("Approval event logs 🔵🔵🔵", logs);
-  //   }
-  // })
 
   return (
     <Button
