@@ -203,7 +203,7 @@ export default function Trading() {
   const onEtfValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     // 只允许输入数字和小数点，且最多只能有一个小数点
-    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+    if (value === "" || /^\d*\.?\d*$/.test(value)) {
       setEtf(value);
     }
   };
@@ -274,7 +274,7 @@ export default function Trading() {
                       "space-y-4 transition-transform duration-300 ease-in-out",
                       isInvest
                         ? !withUnderlyingTokens
-                          ? "translate-y-[400px]"
+                          ? "translate-y-[580px]"
                           : "translate-y-[200px]"
                         : "translate-y-0"
                     )}
@@ -300,7 +300,7 @@ export default function Trading() {
                     className={cn(
                       "flex items-center justify-center h-px w-full bg-gray-200 my-14",
                       isInvest && !withUnderlyingTokens
-                        ? "translate-y-[230px]"
+                        ? "translate-y-[400px]"
                         : "translate-y-0"
                     )}
                   >
@@ -319,11 +319,6 @@ export default function Trading() {
                     )}
                   >
                     <div className="space-y-4">
-                      <div className="text-sm font-bold select-none">
-                        {tradingType === EnumTradingType.INVEST
-                          ? "You pay"
-                          : "You receive"}
-                      </div>
                       {withUnderlyingTokens ? (
                         <TradingInput
                           type="number"
@@ -346,9 +341,30 @@ export default function Trading() {
                           ) : (
                             tokens?.map((item, index) => (
                               <div
-                                className="flex items-center justify-between"
+                                className="bg-gray-100 rounded-xl"
                                 key={item.symbol}
                               >
+                                <div className="text-sm font-bold select-none flex items-center justify-between p-4">
+                                  <span className="text-sm font-bold select-none">
+                                    {tradingType === EnumTradingType.INVEST
+                                      ? "You pay"
+                                      : "You receive"}
+                                  </span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-bold select-none">
+                                      balance: {item.available || "0"}
+                                    </span>
+                                    {item.allowance === BigInt(0) ? (
+                                      <Button
+                                        className="w-16 h-8 rounded-xl text-xs"
+                                        size="sm"
+                                        onClick={() => approve(item)}
+                                      >
+                                        Approve
+                                      </Button>
+                                    ) : null}
+                                  </div>
+                                </div>
                                 <TradingInput
                                   id={item.symbol}
                                   type="number"
@@ -371,15 +387,6 @@ export default function Trading() {
                                     />
                                   }
                                 />
-                                {item.allowance === BigInt(0) ? (
-                                  <Button
-                                    className="w-16 ml-2 h-10 rounded-xl text-xs"
-                                    size="sm"
-                                    onClick={() => approve(item)}
-                                  >
-                                    Approve
-                                  </Button>
-                                ) : null}
                                 {/* <div className="text-xs text-gray-500">
                                   {item.available}
                                 </div> */}
