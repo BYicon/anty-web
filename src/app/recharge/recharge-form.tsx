@@ -49,8 +49,7 @@ const formSchema = z.object({
     })
     .refine((val) => val <= 100000000, {
       message: "Amount must be at most 100000000.",
-    }),
-  referral: z.string().optional(),
+    })
 });
 
 function RechargeForm() {
@@ -62,7 +61,6 @@ function RechargeForm() {
     defaultValues: {
       userid: "10086",
       amount: 0.0,
-      referral: "",
     },
   });
 
@@ -195,18 +193,6 @@ function RechargeForm() {
                       label="Anty"
                       {...field}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="referral"
-              render={({ field }) => (
-                <FormItem className="relative mt-8">
-                  <FormControl>
-                    <TradingInput label="Referral" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

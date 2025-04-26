@@ -341,7 +341,7 @@ export default function Trading() {
                           ) : (
                             tokens?.map((item, index) => (
                               <div
-                                className="bg-gray-100 rounded-xl"
+                                className="bg-muted rounded-xl"
                                 key={item.symbol}
                               >
                                 <div className="text-sm font-bold select-none flex items-center justify-between p-4">
