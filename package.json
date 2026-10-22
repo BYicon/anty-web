@@ -13,7 +13,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx,.js --max-warnings=0",
-    "typecheck": "tsc --noEmit --incremental false",
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
     "test": "tsx --test tests/*.test.ts",
     "ui:init": "npx shadcn@latest",
     "ui:add": "npx shadcn@latest add"
