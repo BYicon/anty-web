@@ -1,3 +1,4 @@
+@reference "../../styles/tailwind.css";
 $card-label-bg: rgba(40, 13, 95, 0.2);
 .nft-card {
   @apply relative w-64 rounded-lg shadow-lg pb-4;

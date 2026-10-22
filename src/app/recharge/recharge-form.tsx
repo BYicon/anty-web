@@ -1,15 +1,20 @@
 "use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useAccount, useReadContract } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatUnits, parseUnits } from "viem";
+import { Loader2, Wallet } from "lucide-react";
+import erc20Abi from "@/abis/MIR";
+import nftAbi from "@/abis/NFTMIR";
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import {
@@ -20,163 +25,128 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import TokenApprove from "@/components/token-approve/token-approve";
-import { useEffect, useState } from "react";
-import erc20Abi from "@/abis/MIR";
-import nftAbi from "@/abis/NFTMIR";
-import {
-  useAccount,
-  useBalance,
-  useReadContract,
-  useWriteContract,
-  useWaitForTransactionReceipt,
-} from "wagmi";
-import { useToast } from "@/components/ui/use-toast";
-import ConnectWalletButton from "@/components/connect-wallet-button/connect-wallet-button";
-import { Loader2, Wallet } from "lucide-react";
-import { formatUnits, parseUnits } from "viem";
 import { TradingInput } from "@/components/ui/trading-input";
+import { useToast } from "@/components/ui/use-toast";
+import TokenApprove from "@/components/token-approve/token-approve";
+import { SepoliaGate } from "@/components/connect-wallet-button/sepolia-gate";
+import { TransactionLink } from "@/components/transaction-link";
+import { useSepoliaTransaction } from "@/hooks/use-sepolia-transaction";
+import { APP_CHAIN_ID } from "@/lib/wagmi";
+import { rechargeSchema, type RechargeValues } from "@/lib/recharge";
 
-const formSchema = z.object({
-  userid: z.string().min(2, {
-    message: "userid must be at least 2 characters.",
-  }),
-  amount: z
-    .string()
-    .transform((val) => Number(val))
-    .refine((val) => val >= 1, {
-      message: "Amount must be at least 1.",
-    })
-    .refine((val) => val <= 100000000, {
-      message: "Amount must be at most 100000000.",
-    })
-});
-
-function RechargeForm() {
-  const { address: currentAddress } = useAccount();
+export default function RechargeForm() {
+  const { address, chainId } = useAccount();
   const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      userid: "10086",
-      amount: 0.0,
-    },
+  const queryClient = useQueryClient();
+  const [isApproving, setIsApproving] = useState(false);
+  const { run, writeContractAsync, isPending, hash } = useSepoliaTransaction();
+  const form = useForm<RechargeValues>({
+    resolver: zodResolver(rechargeSchema),
+    mode: "onChange",
+    defaultValues: { userid: "", amount: "" },
   });
-
-  const watchAllFields = form.watch();
-
-  const { data: hash, writeContract } = useWriteContract();
-
-  const { refetch: refetchWaitingForRedeem } = useReadContract({
-    address: nftAbi.contractAddress,
-    abi: nftAbi.abi,
-    functionName: "getWaitingForRedeem",
-    args: [currentAddress as `0x${string}`],
-  });
-
-  // 获取当前用户ERC20的授权额度
-  const { data: allowanceData, refetch: refetchAllowance } = useReadContract({
+  const parsed = rechargeSchema.safeParse(form.watch());
+  const amount = parsed.success
+    ? parseUnits(parsed.data.amount, erc20Abi.contractDecimals)
+    : 0n;
+  const enabled = Boolean(address) && chainId === APP_CHAIN_ID;
+  const account = address ?? "0x0000000000000000000000000000000000000000";
+  const allowance = useReadContract({
+    chainId: APP_CHAIN_ID,
     address: erc20Abi.contractAddress,
     abi: erc20Abi.abi,
     functionName: "allowance",
-    args: [currentAddress as `0x${string}`, nftAbi.contractAddress],
+    args: [account, nftAbi.contractAddress],
+    query: { enabled },
   });
-
-  const { data: erc20Balance, refetch: refetchTokenBalance } = useBalance({
-    address: currentAddress,
-    token: erc20Abi.contractAddress,
+  const balance = useReadContract({
+    chainId: APP_CHAIN_ID,
+    address: erc20Abi.contractAddress,
+    abi: erc20Abi.abi,
+    functionName: "balanceOf",
+    args: [account],
+    query: { enabled },
   });
+  const readError = allowance.isError || balance.isError;
+  const ready =
+    enabled &&
+    allowance.data !== undefined &&
+    balance.data !== undefined &&
+    !readError;
+  const insufficientBalance = ready && amount > balance.data!;
+  const needApprove = ready && amount > 0n && amount !== allowance.data!;
+  const busy = isPending || isApproving || form.formState.isSubmitting;
 
-  const onApproveHandler = () => {};
-  const onApproveSuccess = () => {
-    refetchAllowance();
-  };
-  const onApproveError = (error: any) => {
-    console.log("onApproveError", error);
-  };
-
-  const onRecharge = async (values: any) => {
-    const _amount = parseUnits(
-      values.amount.toString() || "0",
-      erc20Abi.contractDecimals
-    );
-    await writeContract({
-      address: nftAbi.contractAddress,
-      abi: nftAbi.abi,
-      functionName: "recharge",
-      args: [values.userid || 0, _amount],
+  async function onSubmit(values: RechargeValues) {
+    const receipt = await run(async (sender) => {
+      const [freshAllowance, freshBalance] = await Promise.all([
+        allowance.refetch(),
+        balance.refetch(),
+      ]);
+      const exactAmount = parseUnits(values.amount, erc20Abi.contractDecimals);
+      if (
+        freshAllowance.data === undefined ||
+        freshBalance.data === undefined ||
+        freshAllowance.isError ||
+        freshBalance.isError
+      )
+        throw new Error(
+          "Could not verify your balance and allowance. Please retry.",
+        );
+      if (freshAllowance.data !== exactAmount)
+        throw new Error("Approve this amount before recharging.");
+      if (freshBalance.data < exactAmount)
+        throw new Error("Insufficient Anty balance.");
+      return writeContractAsync({
+        account: sender,
+        chainId: APP_CHAIN_ID,
+        address: nftAbi.contractAddress,
+        abi: nftAbi.abi,
+        functionName: "recharge",
+        args: [BigInt(values.userid), exactAmount],
+      });
     });
-  };
-  const {
-    isLoading: isRechargeLoading,
-    isSuccess: isRechargeSuccess,
-    error: isRechargeError,
-  } = useWaitForTransactionReceipt({
-    hash,
-  });
-
-  useEffect(() => {
-    if (isRechargeSuccess) {
-      refetchTokenBalance();
-      refetchAllowance();
-      refetchWaitingForRedeem();
+    if (receipt) {
+      await queryClient.invalidateQueries();
       toast({
-        title: "Success",
-        description: "You have successfully recharged.",
+        title: "Recharge confirmed",
+        description: "Your recharge transaction was confirmed on Sepolia.",
       });
     }
-    if (isRechargeError) {
-      toast({
-        title: "Error",
-        description: "There was a problem with your request.",
-        variant: "destructive",
-      });
-    }
-  }, [isRechargeSuccess, isRechargeError]);
-
-  const [needApprove, setNeedApprove] = useState(false);
-  useEffect(() => {
-    const allowance = formatUnits(
-      allowanceData || BigInt(0),
-      erc20Abi.contractDecimals
-    );
-    setNeedApprove(Number(allowance) < Number(watchAllFields.amount));
-  }, [allowanceData, watchAllFields.amount]);
-
-  // 2. Define a submit handler.
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    onRecharge(values);
-  };
+  }
 
   return (
-    <Card className="w-[520px] px-6 common-bg">
+    <Card className="w-full max-w-[520px] px-2 sm:px-6 common-bg">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <CardHeader className="px-8 pb-0">
+          <CardHeader>
             <CardTitle className="recharge-form-title">Buy G coins</CardTitle>
-            <CardDescription className="text-xs">
-              Buy G coins for your WECHAT MINI PROGRAM.
+            <CardDescription>
+              Sepolia testnet · Enter the recipient&apos;s mini program user ID.
             </CardDescription>
             <div className="recharge-form-allowance">
               <Wallet className="w-4 h-4" />
-              Anty
-              <span>
-                {formatUnits(
-                  erc20Balance?.value || BigInt(0),
-                  erc20Abi.contractDecimals
-                )}
-              </span>
+              Anty balance:{" "}
+              {balance.data !== undefined
+                ? formatUnits(balance.data, erc20Abi.contractDecimals)
+                : "—"}
             </div>
           </CardHeader>
-          <CardContent className="px-8">
+          <CardContent className="space-y-8">
             <FormField
               control={form.control}
               name="userid"
               render={({ field }) => (
-                <FormItem className="relative mt-8">
+                <FormItem>
                   <FormControl>
-                    <TradingInput label="User ID" {...field} />
+                    <TradingInput
+                      label="User ID"
+                      aria-label="Mini program user ID"
+                      inputMode="numeric"
+                      maxLength={78}
+                      disabled={busy}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,11 +156,15 @@ function RechargeForm() {
               control={form.control}
               name="amount"
               render={({ field }) => (
-                <FormItem className="relative mt-8">
+                <FormItem>
                   <FormControl>
                     <TradingInput
-                      type="number"
                       label="Anty"
+                      aria-label="Anty amount"
+                      inputMode="decimal"
+                      maxLength={16}
+                      placeholder="1.000000"
+                      disabled={busy}
                       {...field}
                     />
                   </FormControl>
@@ -198,34 +172,66 @@ function RechargeForm() {
                 </FormItem>
               )}
             />
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            {needApprove ? (
-              <TokenApprove
-                className="w-full h-12 rounded-xl"
-                onApprove={() => onApproveHandler()}
-                onSuccess={onApproveSuccess}
-                onError={onApproveError}
-              />
-            ) : currentAddress ? (
-              <Button
-                className="w-full h-12 rounded-xl"
-                size="lg"
-                disabled={isRechargeLoading}
-              >
-                {isRechargeLoading && (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                )}
-                {isRechargeLoading ? "Recharging..." : "Recharge"}
-              </Button>
-            ) : (
-              <ConnectWalletButton className="recharge-actions-btn" />
+            {insufficientBalance && (
+              <p role="alert" className="text-sm text-destructive">
+                Insufficient Anty balance.
+              </p>
             )}
+            {readError && (
+              <div role="alert" className="text-sm">
+                <p>Could not load your balance or allowance.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  disabled={busy}
+                  onClick={() => {
+                    void allowance.refetch();
+                    void balance.refetch();
+                  }}
+                >
+                  Retry
+                </Button>
+              </div>
+            )}
+          </CardContent>
+          <CardFooter className="flex-col items-stretch gap-3">
+            <SepoliaGate className="w-full h-12 rounded-xl">
+              {needApprove ? (
+                <TokenApprove
+                  amount={amount}
+                  disabled={busy || !parsed.success || insufficientBalance}
+                  className="w-full h-12 rounded-xl"
+                  onBusyChange={setIsApproving}
+                  onSuccess={() => queryClient.invalidateQueries()}
+                />
+              ) : (
+                <Button
+                  className="w-full h-12 rounded-xl"
+                  size="lg"
+                  disabled={
+                    busy || !ready || !parsed.success || insufficientBalance
+                  }
+                >
+                  {isPending && (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  )}
+                  {isPending ? "Recharging..." : "Recharge"}
+                </Button>
+              )}
+            </SepoliaGate>
+            {ready && allowance.data! > 0n && (
+              <TokenApprove
+                amount={0n}
+                disabled={busy}
+                className="w-full"
+                onBusyChange={setIsApproving}
+                onSuccess={() => queryClient.invalidateQueries()}
+              />
+            )}
+            <TransactionLink hash={hash} />
           </CardFooter>
         </form>
       </Form>
     </Card>
   );
 }
-
-export default RechargeForm;

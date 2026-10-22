@@ -1,27 +1,33 @@
-import axios from "axios";
+import { validateImageUrl } from "@/lib/nft-image";
 
-const IPFS_KEY = process.env.NEXT_PUBLIC_IPFS_KEY;
-const IPFS_FILE_PATH = process.env.NEXT_PUBLIC_IPFS_FILE_PATH;
-export const getEthereumRealTimePrice = async () => {
-  const result = await axios.get(
-    "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT"
+export async function getEthereumRealTimePrice() {
+  const response = await fetch(
+    "https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT",
+    { signal: AbortSignal.timeout(15_000) },
   );
+  if (!response.ok) throw new Error("Could not fetch the ETH price.");
+  const result = await response.json();
   return {
-    price: (+result.data.price).toFixed(2),
-    symbol: result.data.symbol,
+    price: Number(result.price).toFixed(2),
+    symbol: String(result.symbol),
   };
-};
+}
 
-export const uploadImage= async (file: File) => {
+export async function uploadImage(file: File): Promise<string> {
+  if (
+    file.type !== "image/png" ||
+    file.size === 0 ||
+    file.size > 10 * 1024 * 1024
+  )
+    throw new Error("Upload a PNG image smaller than 10 MB.");
   const formData = new FormData();
   formData.append("file", file);
-  const response = await axios({
-    method: "post",
-    url: `/api/upload`,
-    data: formData,
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
+  const response = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+    signal: AbortSignal.timeout(30_000),
   });
-  return `${response.data.url}`;
-};
+  if (!response.ok) throw new Error("Image upload failed. Please try again.");
+  const result = await response.json();
+  return validateImageUrl(result.url);
+}

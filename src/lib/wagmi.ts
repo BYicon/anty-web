@@ -1,29 +1,29 @@
-import { http, cookieStorage, createConfig, createStorage } from 'wagmi'
-import { mainnet, sepolia } from 'wagmi/chains'
-import { coinbaseWallet, injected } from 'wagmi/connectors'
+import { http, cookieStorage, createConfig, createStorage } from "wagmi";
+import { sepolia } from "wagmi/chains";
+import { coinbaseWallet, injected } from "wagmi/connectors";
+
+export const APP_CHAIN_ID = sepolia.id;
 
 export function getConfig() {
   return createConfig({
-    chains: [mainnet, sepolia],
-    connectors: [
-      injected(),
-      coinbaseWallet(),
-      // walletConnect({ projectId: process.env.NEXT_PUBLIC_WC_PROJECT_ID }),
-    ],
+    chains: [sepolia],
+    connectors: [injected(), coinbaseWallet()],
     storage: createStorage({
       storage: cookieStorage,
     }),
     ssr: true,
     transports: {
-      [sepolia.id]: http(`https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`),
-      [mainnet.id]: http(),
-      // [sepolia.id]: http(RPC_URL),
+      [sepolia.id]: http(
+        process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+          ? `https://eth-sepolia.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`
+          : undefined,
+      ),
     },
-  })
+  });
 }
 
-declare module 'wagmi' {
+declare module "wagmi" {
   interface Register {
-    config: ReturnType<typeof getConfig>
+    config: ReturnType<typeof getConfig>;
   }
 }

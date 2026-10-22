@@ -1,6 +1,7 @@
-import { useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+"use client";
+
 import "./nft-card.scss";
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { uploadImage } from "@/http/api";
 import nftAbi from "@/abis/NFTMIR";
 import html2canvas from "html2canvas";
@@ -8,8 +9,11 @@ import { createIcon } from "@/shared/blockies";
 import { generateHash, padTokenId } from "@/shared/utils";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
-import { useToast } from "../ui/use-toast";
-import { ToastAction } from "@radix-ui/react-toast";
+import { APP_CHAIN_ID } from "@/lib/wagmi";
+import { canvasToBlob } from "@/lib/nft-image";
+import { useSepoliaTransaction } from "@/hooks/use-sepolia-transaction";
+import { SepoliaGate } from "@/components/connect-wallet-button/sepolia-gate";
+import { TransactionLink } from "@/components/transaction-link";
 
 export default function NftCard({
   id,
@@ -19,133 +23,83 @@ export default function NftCard({
   onRedeemError,
 }: {
   id: string;
-  tokenId: number;
+  tokenId: bigint;
   onRedeem?: () => void;
   onRedeemSuccess?: () => void;
   onRedeemError?: () => void;
 }) {
   const cardNumber = padTokenId(tokenId);
-  const { data: tx, writeContract } = useWriteContract();
-  const { toast } = useToast();
+  const { run, writeContractAsync, isPending, hash } = useSepoliaTransaction();
+  const uploadedImage = useRef<string>();
+  const [isMinted, setIsMinted] = useState(false);
 
-  const [loading, setLoading] = useState(false);
-
-  function generateImage() {
-    const cardElement = document.getElementById(id) as HTMLElement;
-    const seed = generateHash(cardNumber);
+  async function generateImage(): Promise<string> {
+    if (uploadedImage.current) return uploadedImage.current;
+    const cardElement = document.getElementById(id);
+    if (!cardElement)
+      throw new Error("Could not find the NFT card. Please refresh the page.");
     const canvas = createIcon({
-      seed,
+      seed: generateHash(cardNumber),
       size: 5,
       scale: 30,
     });
-    canvas.style.position = "absolute";
-    canvas.style.top = "0";
-    canvas.style.left = "0";
-    canvas.style.opacity = "0.6";
-    cardElement.style.background = `url(${canvas.toDataURL()}) no-repeat center center`;
+    cardElement.style.backgroundImage = "url(" + canvas.toDataURL() + ")";
     cardElement.style.backgroundSize = "cover";
-    return new Promise((resolve, reject) => {
-      html2canvas(cardElement, {
-        scale: 2,
-      })
-        .then((canvas) => {
-          if (canvas) {
-            canvas.toBlob(async (blob) => {
-              if (blob) {
-                const url = await uploadImage(
-                  new File([blob], "image.png", { type: "image/png" })
-                );
-                resolve(url);
-              }
-            }, "image/png");
-          }
-        })
-        .catch((err) => {
-          setLoading(false);
-          reject(err);
-        });
-    });
+    const image = await html2canvas(cardElement, { scale: 2 });
+    const blob = await canvasToBlob(image);
+    const url = await uploadImage(
+      new File([blob], "image.png", { type: "image/png" }),
+    );
+    uploadedImage.current = url;
+    return url;
   }
 
-  const handleRedeem = async () => {
-    setLoading(true);
-    const img = await generateImage();
-    console.log("img", img);
-    onRedeem && onRedeem();
-    await writeContract({
-      address: nftAbi.contractAddress,
-      abi: nftAbi.abi,
-      functionName: "redeem",
-      args: [BigInt(tokenId), img as string],
-    });
-    setLoading(false);
-  };
-
-  const {
-    isLoading: isRedeemLoading,
-    isSuccess: isRedeemSuccess,
-    error: isRedeemError,
-  } = useWaitForTransactionReceipt({
-    hash: tx,
-  });
-
-  useEffect(() => {
-    if (isRedeemSuccess) {
-      onRedeemSuccess && onRedeemSuccess();
-    }
-    if (isRedeemError) {
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
-        variant: "destructive",
-        action: (
-          <ToastAction altText="Try again" onClick={handleRedeem}>
-            Try again
-          </ToastAction>
-        ),
+  async function handleRedeem() {
+    const receipt = await run(async (account) => {
+      const img = await generateImage();
+      onRedeem?.();
+      return writeContractAsync({
+        account,
+        chainId: APP_CHAIN_ID,
+        address: nftAbi.contractAddress,
+        abi: nftAbi.abi,
+        functionName: "redeem",
+        args: [tokenId, img],
       });
-      onRedeemError && onRedeemError();
-    }
-  }, [isRedeemSuccess, isRedeemError]);
+    });
+    if (receipt) {
+      setIsMinted(true);
+      onRedeemSuccess?.();
+    } else onRedeemError?.();
+  }
 
   return (
-    <div className="nft-card hover:scale-105 transition-all duration-300">
+    <div className="nft-card">
       <div className="nft-card-content">
         <div className="card-title">VIP</div>
-        <div className="card-number" id="cardNumber">
-          NO.{cardNumber}
-        </div>
-        <div className="text-md text-gray-500 mt-2">
-          <span className="text-black">status:</span> waiting for redeem
+        <div className="card-number">NO.{cardNumber}</div>
+        <div className="text-sm text-gray-600 mt-2">
+          Waiting for mint · Sepolia
         </div>
       </div>
-      <div className="mt-4 px-4">
-        <div className="flex items-center">
+      <div className="mt-4 px-4 space-y-2">
+        <SepoliaGate className="w-full">
           <Button
             onClick={handleRedeem}
             className="w-full h-10"
-            disabled={isRedeemLoading || loading}
+            disabled={isPending || isMinted}
           >
-            {isRedeemLoading || loading ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              ""
-            )}
-            {isRedeemLoading || loading ? "Redeeming..." : "Redeem"}
+            {isPending && <Loader2 className="mr-2 animate-spin" />}
+            {isMinted ? "Minted" : isPending ? "Minting..." : "Mint NFT"}
           </Button>
-        </div>
+        </SepoliaGate>
+        <TransactionLink hash={hash} />
       </div>
-      {/* 用户生成图片 */}
-      <div className="nft-card-content-user" id={id}>
-        <img className="card-logo" src="/images/logo.png" alt="nft" />
+      <div className="nft-card-content-user" id={id} aria-hidden="true">
+        <img className="card-logo" src="/images/logo.png" alt="" />
         <div className="card-title">VIP</div>
-        <div className="card-number" id="cardNumber">
-          NO.{cardNumber}
-        </div>
-        <div className="card-date">
-          {/* TODO:使用链上时间 */}
-          {new Date().toLocaleDateString()}
-        </div>
+        <div className="card-number">NO.{cardNumber}</div>
+        <div className="card-date">Sepolia testnet</div>
       </div>
     </div>
   );

@@ -1,3 +1,4 @@
+@reference "../../styles/tailwind.css";
 .header-section-container {
   @apply flex flex-col justify-between items-center box-border relative isolate;
   height: calc(100vh - var(--nav-height));

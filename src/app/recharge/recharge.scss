@@ -1,3 +1,4 @@
+@reference "../../styles/tailwind.css";
 .recharge-page {
 }
 .recharge-page-content {
@@ -7,7 +8,7 @@
 $recharge-input-height: 60px;
 .recharge-form-title {
   @apply text-2xl font-bold;
-   color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
 }
 
 .recharge-form-allowance {
@@ -23,12 +24,12 @@ $recharge-input-height: 60px;
   @apply absolute left-4 font-bold text-sm font-bold;
   top: calc($recharge-input-height / 2);
   width: 100px;
-   color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
   transform: translateY(-50%);
 }
 .recharge-input {
   @apply bg-input w-full text-sm rounded-xl;
-   color: hsl(var(--foreground));
+  color: hsl(var(--foreground));
   height: $recharge-input-height;
   margin: 0 auto;
   padding-left: 20px;
@@ -42,4 +43,3 @@ $recharge-input-height: 60px;
 .recharge-actions-btn {
   @apply w-full h-[56px] rounded-xl;
 }
-

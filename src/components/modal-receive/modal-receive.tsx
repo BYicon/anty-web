@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Dialog,
   DialogContent,
@@ -10,90 +11,86 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { useEffect, useState } from "react";
-import { useBalance, useAccount, useWriteContract, useReadContract, useWaitForTransactionReceipt } from "wagmi";
-import erc20Abi from '@/abis/MIR';
+import { useAccount, useReadContract } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
+import erc20Abi from "@/abis/MIR";
 import { useToast } from "../ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { APP_CHAIN_ID } from "@/lib/wagmi";
+import { useSepoliaTransaction } from "@/hooks/use-sepolia-transaction";
+import { SepoliaGate } from "@/components/connect-wallet-button/sepolia-gate";
+import { TransactionLink } from "@/components/transaction-link";
 
-const ModalReceive = ({ children }: { children?: React.ReactNode }) => {
+export default function ModalReceive({
+  children,
+}: {
+  children?: React.ReactNode;
+}) {
   const [open, setOpen] = useState(false);
-  const { address: currentAddress } = useAccount();
+  const { address, chainId } = useAccount();
   const { toast } = useToast();
-  const {
-    data: hash,
-    writeContract,
-  } = useWriteContract();
-
-  const { data: erc20Balance, refetch: refetcherc20Balance } = useBalance({
-    address: currentAddress,
-    token: erc20Abi.contractAddress,
-    });
-
-
+  const queryClient = useQueryClient();
+  const { run, writeContractAsync, isPending, hash } = useSepoliaTransaction();
   const { data: hasClaimed } = useReadContract({
+    chainId: APP_CHAIN_ID,
     address: erc20Abi.contractAddress,
     abi: erc20Abi.abi,
     functionName: "claims",
-    args: [currentAddress as `0x${string}`],
-  });
-
-
-  useEffect(() => {
-    if(hasClaimed === false) {
-      setOpen(true);
-    };
-  }, [hasClaimed]);
-
-  const onClaim = async () => {
-    await writeContract({
-      address: erc20Abi.contractAddress,
-      abi: erc20Abi.abi,
-      functionName: "registerClaim",
-    });
-    console.log(hash);
-  };
-
-  const {
-    isLoading: isClaimLoading,
-    isSuccess: isClaimSuccess,
-    error: isClaimError,
-  } = useWaitForTransactionReceipt({
-    hash,
+    args: [address ?? "0x0000000000000000000000000000000000000000"],
+    query: { enabled: Boolean(address) && chainId === APP_CHAIN_ID },
   });
 
   useEffect(() => {
-    if (isClaimSuccess) {
-      refetcherc20Balance();
+    setOpen(
+      Boolean(address) && chainId === APP_CHAIN_ID && hasClaimed === false,
+    );
+  }, [address, chainId, hasClaimed]);
+
+  async function onClaim() {
+    const receipt = await run((account) =>
+      writeContractAsync({
+        account,
+        chainId: APP_CHAIN_ID,
+        address: erc20Abi.contractAddress,
+        abi: erc20Abi.abi,
+        functionName: "registerClaim",
+      }),
+    );
+    if (receipt) {
+      setOpen(false);
+      await queryClient.invalidateQueries();
       toast({
-        title: "Success",
-        description: "You have successfully claimed your tokens.",
+        title: "Tokens claimed",
+        description: "Your token claim was confirmed on Sepolia.",
       });
     }
-  }, [isClaimSuccess]);
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
-        {children}
-      </DialogTrigger>
+      {children && <DialogTrigger asChild>{children}</DialogTrigger>}
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Thank you for supporting this project!
-          </DialogTitle>
+          <DialogTitle>Claim your test tokens</DialogTitle>
           <DialogDescription>
-            Would you like to claim your tokens now?
+            Claim Anty once per wallet on Sepolia. You will need Sepolia ETH for
+            gas.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <Button  type="button" disabled={isClaimLoading} onClick={onClaim}>
-            {isClaimLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            {isClaimLoading ? "Claiming..." : "Claim"}
-          </Button>
+        <DialogFooter className="gap-3">
+          <TransactionLink hash={hash} />
+          <SepoliaGate>
+            <Button
+              type="button"
+              disabled={isPending || hasClaimed !== false}
+              onClick={onClaim}
+            >
+              {isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isPending ? "Claiming..." : "Claim Anty"}
+            </Button>
+          </SepoliaGate>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
-};
-
-export default ModalReceive;
+}

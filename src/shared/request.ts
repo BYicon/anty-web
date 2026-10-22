@@ -6,45 +6,42 @@ export async function request({
   headers = {},
   params,
   data,
-  type,
 }: FetchClientOptions): Promise<FetchResponse> {
-  // 请求拦截器
-  const requestHeaders = {
-    ...headers,
-    "Content-Type": "application/json",
-    // ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-  let requestBody = data;
-
-  if (method === "GET") {
-    url = `${url}?${new URLSearchParams(params).toString()}`;
-    requestBody = undefined;
+  const requestMethod = method.toUpperCase();
+  const requestUrl = new URL(
+    "/api" + url,
+    typeof window !== "undefined" ? window.location.origin : "http://localhost",
+  );
+  if (params)
+    for (const [key, value] of Object.entries(params))
+      requestUrl.searchParams.set(key, String(value));
+  const requestHeaders = new Headers(headers);
+  let body: BodyInit | undefined;
+  if (
+    data !== undefined &&
+    requestMethod !== "GET" &&
+    requestMethod !== "HEAD"
+  ) {
+    if (data instanceof FormData) {
+      requestHeaders.delete("Content-Type");
+      body = data;
+    } else {
+      requestHeaders.set("Content-Type", "application/json");
+      body = JSON.stringify(data);
+    }
   }
-
-
-  if (method === "POST") {
-    requestBody = requestBody ? JSON.stringify(requestBody) : undefined;
-  }
-
-  if (type && type === "upload" && method === "POST") {
-    requestBody = data;
-    requestHeaders["Content-Type"] = "multipart/form-data";
-  } else {
-    headers["Content-Type"] = "application/json";
-  }
-
-  const response = await fetch(`/api${url}`, {
-    method,
+  const response = await fetch(requestUrl.pathname + requestUrl.search, {
+    method: requestMethod,
     headers: requestHeaders,
-    body: requestBody,
+    body,
+    signal: AbortSignal.timeout(30_000),
   });
-
-  if (!response.ok) {
-    const errorData = await response.json();
-    throw new Error(errorData.message || "请求失败");
-  }
-
-  const responseData = await response.json();
+  const responseData =
+    response.status === 204 ? null : await response.json().catch(() => null);
+  if (!response.ok)
+    throw new Error(
+      responseData?.message || "Request failed (" + response.status + ").",
+    );
   return {
     data: responseData,
     status: response.status,
@@ -52,16 +49,13 @@ export async function request({
   };
 }
 
-export async function get(
-  url: string,
-  config: Omit<FetchClientOptions, "url">
-) {
-  return request({ url, method: "GET", ...config });
+export function get(url: string, config: Omit<FetchClientOptions, "url"> = {}) {
+  return request({ ...config, url, method: "GET" });
 }
 
-export async function post(
+export function post(
   url: string,
-  config: Omit<FetchClientOptions, "url">
+  config: Omit<FetchClientOptions, "url"> = {},
 ) {
-  return request({ url, method: "POST", ...config });
+  return request({ ...config, url, method: "POST" });
 }

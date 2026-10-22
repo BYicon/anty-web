@@ -13,7 +13,7 @@ export default function Portfolio() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Portfolio</CardTitle>
+        <CardTitle>Sample portfolio</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -34,7 +34,7 @@ export default function Portfolio() {
               <TableCell>20%</TableCell>
               <TableCell className="text-right">$23350.00</TableCell>
               <TableCell className="text-right">$22350.00</TableCell>
-              <TableCell className="text-right">$2250.00</TableCell> 
+              <TableCell className="text-right">$2250.00</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">WBTC</TableCell>
@@ -42,7 +42,7 @@ export default function Portfolio() {
               <TableCell>20%</TableCell>
               <TableCell className="text-right">$23350.00</TableCell>
               <TableCell className="text-right">$22350.00</TableCell>
-              <TableCell className="text-right">$2250.00</TableCell> 
+              <TableCell className="text-right">$2250.00</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">WBTC</TableCell>
@@ -50,7 +50,7 @@ export default function Portfolio() {
               <TableCell>20%</TableCell>
               <TableCell className="text-right">$23350.00</TableCell>
               <TableCell className="text-right">$22350.00</TableCell>
-              <TableCell className="text-right">$2250.00</TableCell> 
+              <TableCell className="text-right">$2250.00</TableCell>
             </TableRow>
             <TableRow>
               <TableCell className="font-medium">WBTC</TableCell>
@@ -58,7 +58,7 @@ export default function Portfolio() {
               <TableCell>20%</TableCell>
               <TableCell className="text-right">$23350.00</TableCell>
               <TableCell className="text-right">$22350.00</TableCell>
-              <TableCell className="text-right">$2250.00</TableCell> 
+              <TableCell className="text-right">$2250.00</TableCell>
             </TableRow>
           </TableBody>
         </Table>

@@ -1,19 +1,17 @@
-@import "./animation.scss";
-@import "./mixin.scss";
+@use "./animation";
+@use "./mixin";
+@import "./tailwind.css";
 @import "../../public/iconfont/iconfont.css";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
-html,body {
+html,
+body {
   color: var(--foreground);
-  min-width: 1280px;
+  min-width: 320px;
 }
 
 .home-page {
-  background: var(--colors-background) url('/images/bg-star.png') no-repeat center center;
+  background: var(--colors-background) url("/images/bg-star.png") no-repeat
+    center center;
   background-size: cover;
 }
 
@@ -33,13 +31,11 @@ html,body {
   @apply px-4;
 }
 
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
-
 
 @layer base {
   :root {
@@ -47,21 +43,21 @@ html,body {
     --foreground: 260 76% 21%;
     --card: 0 0% 100%; // Background color for <Card />
     --card-foreground: 260 76% 21%;
-    --muted: 264 31% 94%;  // Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />
+    --muted: 264 31% 94%; // Muted backgrounds such as <TabsList />, <Skeleton /> and <Switch />
     --muted-foreground: 252 26% 55%;
-    --popover: 0 0% 100%;// TODO: // Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />
+    --popover: 0 0% 100%; // TODO: // Background color for popovers such as <DropdownMenu />, <HoverCard />, <Popover />
     --popover-foreground: 240 10% 3.9%;
-    --primary: 184 74% 48%;   // Primary colors for <Button />
+    --primary: 184 74% 48%; // Primary colors for <Button />
     --primary-foreground: 0, 0%, 100%;
-    --secondary: 260 60% 60%;  // Secondary colors for <Button />
+    --secondary: 260 60% 60%; // Secondary colors for <Button />
     --secondary-foreground: 0 0% 98%;
-    --accent: 0, 100%, 50%;  // Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc
+    --accent: 0, 100%, 50%; // Used for accents such as hover effects on <DropdownMenuItem>, <SelectItem>...etc
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0, 100%, 50%; //Used for destructive actions such as <Button variant="destructive">
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%; //Default border color
     --input: 264 31% 94%; // Border color for inputs such as <Input />, <Select />, <Textarea />
-    --ring: 240 10% 3.9%;  // Used for focus ring
+    --ring: 240 10% 3.9%; // Used for focus ring
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -73,11 +69,15 @@ html,body {
     --nav-height: 64px;
     --min-section-height: calc(100vh - var(--nav-height));
     --colors-background: #faf9fa;
-    --colors-gradientBubblegum: linear-gradient(139.73deg,#e5fdff,#f3efff);
+    --colors-gradientBubblegum: linear-gradient(139.73deg, #e5fdff, #f3efff);
     --colors-textSubtle: #7a6eaa;
-    --colors-gradientPrimary: linear-gradient(228.54deg,#1fc7d4 -13.69%,#7645d9 91.33%);
+    --colors-gradientPrimary: linear-gradient(
+      228.54deg,
+      #1fc7d4 -13.69%,
+      #7645d9 91.33%
+    );
   }
-  
+
   .dark {
     --background: 250 7% 16%;
     --foreground: 261 100% 97%;
@@ -106,9 +106,13 @@ html,body {
     --radius: 0.5rem;
     // 自定义颜色
     --colors-background: #08060b;
-    --colors-gradientBubblegum: linear-gradient(139.73deg,#313d5c,#3d2a54);
+    --colors-gradientBubblegum: linear-gradient(139.73deg, #313d5c, #3d2a54);
     --colors-textSubtle: #b8add2;
-    --colors-gradientPrimary: linear-gradient(228.54deg,#1fc7d4 -13.69%,#9a6aff 91.33%);
+    --colors-gradientPrimary: linear-gradient(
+      228.54deg,
+      #1fc7d4 -13.69%,
+      #9a6aff 91.33%
+    );
   }
 }
 
@@ -126,7 +130,6 @@ html,body {
   background-size: cover;
 }
 
-
 @layer base {
   * {
     // @apply border-border;
@@ -140,5 +143,3 @@ html,body {
   @apply min-h-screen p-4;
   background: var(--colors-gradientBubblegum);
 }
-
-

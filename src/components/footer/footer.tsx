@@ -3,7 +3,11 @@ const Footer = () => {
     <footer className="bg-gray-900 text-white">
       <div className="md:flex md:justify-between md:items-center sm:px-12 px-4 bg-[#ffffff19] py-7">
         <div>
-          <a href="https://github.com/BYicon" target="_blank">
+          <a
+            href="https://github.com/BYicon"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <span className="iconfont icon-github font-bold text-4xl"></span>
           </a>
         </div>
@@ -12,8 +16,8 @@ const Footer = () => {
      md:w-2/5"
         >
           <span className="text-teal-400 text-sm line-height-1">
-            If you don’t have any Sepolia ETH, you can send me an email to
-            get some.
+            If you don’t have any Sepolia ETH, you can send me an email to get
+            some.
           </span>
           <br />
           <span className="text-teal-400 text-sm">

@@ -1,4 +1,4 @@
-export default {
+const erc20 = {
   abi: [
     {
       inputs: [
@@ -349,3 +349,5 @@ export default {
     },
   ],
 };
+
+export default erc20;

@@ -1,5 +1,4 @@
-import crypto from "crypto";
-import { keccak256 } from "viem/utils";
+import { keccak256, sha256, stringToHex } from "viem";
 
 export function safeLocalStorage(): {
   getItem: (key: string) => string | null;
@@ -26,7 +25,7 @@ export function safeLocalStorage(): {
         return storage.getItem(key);
       } else {
         console.warn(
-          `Attempted to get item "${key}" from localStorage, but localStorage is not available.`
+          `Attempted to get item "${key}" from localStorage, but localStorage is not available.`,
         );
         return null;
       }
@@ -36,7 +35,7 @@ export function safeLocalStorage(): {
         storage.setItem(key, value);
       } else {
         console.warn(
-          `Attempted to set item "${key}" in localStorage, but localStorage is not available.`
+          `Attempted to set item "${key}" in localStorage, but localStorage is not available.`,
         );
       }
     },
@@ -45,7 +44,7 @@ export function safeLocalStorage(): {
         storage.removeItem(key);
       } else {
         console.warn(
-          `Attempted to remove item "${key}" from localStorage, but localStorage is not available.`
+          `Attempted to remove item "${key}" from localStorage, but localStorage is not available.`,
         );
       }
     },
@@ -54,7 +53,7 @@ export function safeLocalStorage(): {
         storage.clear();
       } else {
         console.warn(
-          "Attempted to clear localStorage, but localStorage is not available."
+          "Attempted to clear localStorage, but localStorage is not available.",
         );
       }
     },
@@ -62,34 +61,37 @@ export function safeLocalStorage(): {
 }
 
 export function generateHash(input: string) {
-  // 使用 SHA-256 哈希函数
-  const hash = crypto.createHash("sha256");
-  hash.update(input.toString());
-  // 获取哈希值并截取前16位
-  return hash.digest("hex").slice(0, 16);
+  return sha256(stringToHex(input)).slice(2, 18);
 }
-
 
 export function generateHashV2(input: string) {
-  return keccak256(`0x${input}`);
+  return keccak256(stringToHex(input));
 }
 
-export function padTokenId(tokenId: number, length: number = 8) {
+export function padTokenId(tokenId: bigint | number, length: number = 8) {
   return tokenId.toString().padStart(length, "0");
 }
 
-
-
 export function merge(target: any, source: any) {
+  if (!source || typeof source !== "object") return target;
   Object.keys(source).forEach(function (key) {
+    if (key === "__proto__" || key === "constructor" || key === "prototype")
+      return;
     if (
-      source.hasOwnProperty(key) && // Check if the property is not inherited
       source[key] &&
-      typeof source[key] === "object" || key === "__proto__" || key === "constructor"
+      typeof source[key] === "object" &&
+      !Array.isArray(source[key])
     ) {
-      merge((target[key] = target[key] || {}), source[key]);
+      const current =
+        Object.prototype.hasOwnProperty.call(target, key) &&
+        target[key] &&
+        typeof target[key] === "object"
+          ? target[key]
+          : {};
+      target[key] = merge(current, source[key]);
       return;
     }
     target[key] = source[key];
   });
-} 
+  return target;
+}

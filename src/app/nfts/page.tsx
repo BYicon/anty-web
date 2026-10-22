@@ -1,8 +1,7 @@
 "use client";
-import {
-  useAccount,
-  useReadContract,
-} from "wagmi";
+
+import { useAccount, useReadContract } from "wagmi";
+import { useQueryClient } from "@tanstack/react-query";
 import nftAbi from "@/abis/NFTMIR";
 import NftCardWaiting from "@/components/nft-card/nft-waiting";
 import NftCardMinted from "@/components/nft-card/nft-minted";
@@ -13,105 +12,106 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { SepoliaGate } from "@/components/connect-wallet-button/sepolia-gate";
+import { APP_CHAIN_ID } from "@/lib/wagmi";
 import confetti from "canvas-confetti";
 import "./nfts.scss";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function NftsPage() {
-  const { address: currentAddress } = useAccount();
-  const {
-    isPending: isUserNftsPending,
-    data: userNfts,
-    refetch: refetchUserNfts,
-  } = useReadContract({
+  const { address, chainId } = useAccount();
+  const queryClient = useQueryClient();
+  const enabled = Boolean(address) && chainId === APP_CHAIN_ID;
+  const account = address ?? "0x0000000000000000000000000000000000000000";
+  const owned = useReadContract({
+    chainId: APP_CHAIN_ID,
     address: nftAbi.contractAddress,
     abi: nftAbi.abi,
     functionName: "getNFTsByUser",
-    args: [currentAddress as `0x${string}`],
+    args: [account],
+    query: { enabled },
   });
-
-  const {
-    isPending: isWaitingForRedeemPending,
-    data: waitingForRedeem,
-    refetch: refetchWaitingForRedeem,
-  } = useReadContract({
+  const waiting = useReadContract({
+    chainId: APP_CHAIN_ID,
     address: nftAbi.contractAddress,
     abi: nftAbi.abi,
     functionName: "getWaitingForRedeem",
-    args: [currentAddress as `0x${string}`],
+    args: [account],
+    query: { enabled },
   });
 
-  const onRedeem = () => {};
+  function onRedeemSuccess() {
+    void queryClient.invalidateQueries();
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      void confetti({ particleCount: 100, spread: 100, origin: { y: 0.7 } });
+    }
+  }
 
-  const onRedeemSuccess = () => {
-    refetchWaitingForRedeem();
-    refetchUserNfts();
-    confetti({
-      particleCount: 100,
-      spread: 100,
-      origin: { y: 0.7 },
-    });
-  };
-  const onRedeemError = () => {};
   return (
     <div className="common-page nfts-page">
-      <Card className="nfts-list mb-8">
-        <CardHeader>
-          <CardTitle>Owned</CardTitle>
-          <CardDescription>total {userNfts?.length || 0} NFTs</CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-4 gap-8 min-h-[230px]">
-          {isUserNftsPending ? (
-            <>
+      <SepoliaGate>
+        <Card className="nfts-list mb-8">
+          <CardHeader>
+            <CardTitle>Owned NFTs</CardTitle>
+            <CardDescription>
+              Sepolia · {owned.data?.length ?? 0} NFTs
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-8 min-h-[230px]">
+            {owned.isPending ? (
               <Skeleton className="w-64 h-[230px]" />
+            ) : owned.isError ? (
+              <div role="alert">
+                <p>Could not load your NFTs.</p>
+                <Button variant="outline" onClick={() => void owned.refetch()}>
+                  Retry
+                </Button>
+              </div>
+            ) : owned.data?.length ? (
+              owned.data.map((item) => (
+                <NftCardMinted key={item.tokenID.toString()} data={item} />
+              ))
+            ) : (
+              <p>No NFTs yet.</p>
+            )}
+          </CardContent>
+        </Card>
+        <Card className="nfts-list">
+          <CardHeader>
+            <CardTitle>Waiting for mint</CardTitle>
+            <CardDescription>
+              {waiting.data?.length ?? 0} NFTs available to mint on Sepolia
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-8 min-h-[230px]">
+            {waiting.isPending ? (
               <Skeleton className="w-64 h-[230px]" />
-              <Skeleton className="w-64 h-[230px]" />
-              <Skeleton className="w-64 h-[230px]" />
-            </>
-          ) : userNfts && userNfts.length > 0 ? (
-            userNfts.map((item: any) => (
-              <NftCardMinted key={item.tokenID} data={item} />
-            ))
-          ) : (
-            <div className="flex w-full justify-center items-center h-full text-2xl font-bold text-gray-500">
-              no data
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      <Card className="nfts-list">
-        <CardHeader>
-          <CardTitle>Waiting For Redeem</CardTitle>
-          <CardDescription>
-            total {waitingForRedeem?.length || 0} waiting for redeem
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid grid-cols-4 gap-8 min-h-[230px]">
-          {isWaitingForRedeemPending ? (
-            <>
-              <Skeleton className="w-64 h-[230px]" />
-              <Skeleton className="w-64 h-[230px]" />
-              <Skeleton className="w-64 h-[230px]" />
-              <Skeleton className="w-64 h-[230px]" />
-            </>
-          ) : waitingForRedeem && waitingForRedeem.length > 0 ? (
-            (waitingForRedeem as any).map((item: any) => (
-              <NftCardWaiting
-                key={item}
-                id={`card-${item}`}
-                tokenId={item}
-                onRedeem={onRedeem}
-                onRedeemSuccess={onRedeemSuccess}
-                onRedeemError={onRedeemError}
-              />
-            ))
-          ) : (
-            <div className="flex w-full justify-center items-center h-full text-2xl font-bold text-gray-500">
-              No data
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            ) : waiting.isError ? (
+              <div role="alert">
+                <p>Could not load your mint eligibility.</p>
+                <Button
+                  variant="outline"
+                  onClick={() => void waiting.refetch()}
+                >
+                  Retry
+                </Button>
+              </div>
+            ) : waiting.data?.length ? (
+              waiting.data.map((tokenId) => (
+                <NftCardWaiting
+                  key={tokenId.toString()}
+                  id={"card-" + tokenId.toString()}
+                  tokenId={tokenId}
+                  onRedeemSuccess={onRedeemSuccess}
+                />
+              ))
+            ) : (
+              <p>No NFTs waiting for mint.</p>
+            )}
+          </CardContent>
+        </Card>
+      </SepoliaGate>
     </div>
   );
 }

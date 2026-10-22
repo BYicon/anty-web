@@ -1,5 +1,6 @@
+@reference "../../styles/tailwind.css";
 .main-header {
-  @apply sticky top-0 z-50 flex w-full items-center justify-between px-4 border-b border-gray-300; 
+  @apply sticky top-0 z-50 flex w-full items-center justify-between px-4 border-b border-gray-300;
   background-color: hsl(var(--card));
   color: hsl(var(--foreground));
   height: var(--nav-height);
@@ -7,7 +8,7 @@
 }
 
 .main-nav {
-  @apply flex items-center gap-16 mr-16 text-sm font-bold;
+  @apply flex items-center gap-3 sm:gap-8 sm:mr-6 text-sm font-bold;
 }
 
 .eth-price {
@@ -17,7 +18,7 @@
 
 .waiting-nft-count {
   @apply absolute top-[-5px] right-[-30px] bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs px-4;
-  animation: shake-lr 1.6s cubic-bezier(0.455, 0.030, 0.515, 0.955) infinite;
+  animation: shake-lr 1.6s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
 }
 
 @keyframes shake-lr {
